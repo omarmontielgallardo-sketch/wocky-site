@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JP 333 · Cocina de Autor</title>
+<meta name="description" content="JP 333, cocina de autor: platillos de temporada, técnica y sabor. Reserva tu mesa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <a href="#inicio" class="logo">JP<span>333</span></a>
+  <button class="burger" id="burger" aria-label="Menú"><i></i><i></i></button>
+  <nav id="menu">
+    <a href="#historia">Historia</a>
+    <a href="#menu-carta">Menú</a>
+    <a href="#galeria">Galería</a>
+    <a href="#reservas">Reservas</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="hero-inner">
+    <p class="eyebrow reveal">Cocina de autor</p>
+    <h1 class="split" data-text="JP 333"></h1>
+    <p class="lead reveal">Técnica, producto de temporada y fuego. Una experiencia de mesa que se cocina despacio.</p>
+    <div class="cta reveal">
+      <a class="btn" href="#reservas">Reservar mesa</a>
+      <a class="btn ghost" href="#menu-carta">Ver el menú</a>
+    </div>
+  </div>
+  <a href="#historia" class="scroll" aria-label="Bajar"><span></span></a>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Producto local</span><span>✦</span><span>Fuego y brasa</span><span>✦</span><span>Menú de temporada</span><span>✦</span><span>Maridaje</span><span>✦</span>
+    <span>Producto local</span><span>✦</span><span>Fuego y brasa</span><span>✦</span><span>Menú de temporada</span><span>✦</span><span>Maridaje</span><span>✦</span>
+  </div>
+</div>
+
+<section class="section" id="historia">
+  <div class="wrap two">
+    <div class="art reveal left"><div class="plate"><div class="ring"></div><div class="ring r2"></div><div class="dot"></div></div></div>
+    <div class="reveal right">
+      <p class="eyebrow">Nuestra historia</p>
+      <h2>Cocinar es contar algo</h2>
+      <p>En JP 333 cada plato nace de una idea: un recuerdo, un ingrediente, una técnica. Trabajamos con productores cercanos y dejamos que la temporada decida la carta.</p>
+      <p>Cocina abierta, ritmo tranquilo y atención cercana. Venimos a que comas bien y te quedes un rato.</p>
+      <div class="stats">
+        <div><b data-count="12">0</b><small>Años de oficio</small></div>
+        <div><b data-count="40">0</b><small>Productores</small></div>
+        <div><b data-count="7">0</b><small>Tiempos</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section dark" id="menu-carta">
+  <div class="wrap">
+    <p class="eyebrow reveal">Carta</p>
+    <h2 class="reveal">Menú de temporada</h2>
+    <div class="tabs reveal" role="tablist">
+      <button class="tab active" data-tab="entradas">Entradas</button>
+      <button class="tab" data-tab="fuertes">Fuertes</button>
+      <button class="tab" data-tab="postres">Postres</button>
+    </div>
+    <div class="panel active" id="entradas">
+      <article class="dish"><h3>Tostada de betabel</h3><p>Queso fresco, nuez tostada, vinagreta cítrica</p><span>$—</span></article>
+      <article class="dish"><h3>Crudo del día</h3><p>Aceite verde, rábano, flor comestible</p><span>$—</span></article>
+      <article class="dish"><h3>Crema de elote asado</h3><p>Aceite de chile, crocante de maíz</p><span>$—</span></article>
+    </div>
+    <div class="panel" id="fuertes">
+      <article class="dish"><h3>Res a la brasa</h3><p>Puré ahumado, jus reducido, hierbas</p><span>$—</span></article>
+      <article class="dish"><h3>Pesca del día</h3><p>Mantequilla de limón, vegetales de temporada</p><span>$—</span></article>
+      <article class="dish"><h3>Risotto de hongos</h3><p>Parmesano, aceite de trufa, tomillo</p><span>$—</span></article>
+    </div>
+    <div class="panel" id="postres">
+      <article class="dish"><h3>Chocolate y sal</h3><p>Ganache tibia, helado de vainilla</p><span>$—</span></article>
+      <article class="dish"><h3>Cítricos</h3><p>Sorbete, merengue, aceite de oliva</p><span>$—</span></article>
+    </div>
+    <p class="note reveal">* Platillos y precios de ejemplo; sustitúyelos por los de tu carta real.</p>
+  </div>
+</section>
+
+<section class="section" id="galeria">
+  <div class="wrap">
+    <p class="eyebrow reveal">Galería</p>
+    <h2 class="reveal">Un vistazo a la mesa</h2>
+    <div class="gallery">
+      <figure class="g g1 reveal"><span>Brasa</span></figure>
+      <figure class="g g2 reveal"><span>Salón</span></figure>
+      <figure class="g g3 reveal"><span>Postres</span></figure>
+      <figure class="g g4 reveal"><span>Bar</span></figure>
+      <figure class="g g5 reveal"><span>Cocina</span></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section dark" id="reservas">
+  <div class="wrap narrow">
+    <p class="eyebrow reveal">Reservas</p>
+    <h2 class="reveal">Aparta tu mesa</h2>
+    <form class="form reveal" id="form">
+      <input name="nombre" placeholder="Nombre" required>
+      <input name="tel" type="tel" placeholder="Teléfono" required>
+      <input name="fecha" type="date" required>
+      <select name="personas"><option>2 personas</option><option>3 personas</option><option>4 personas</option><option>5+ personas</option></select>
+      <button class="btn" type="submit">Enviar solicitud</button>
+      <p class="ok" id="ok" hidden>¡Gracias! Te confirmaremos pronto.</p>
+    </form>
+  </div>
+</section>
+
+<footer class="section" id="contacto">
+  <div class="wrap three">
+    <div><h4>JP 333</h4><p>Cocina de autor</p></div>
+    <div><h4>Horario</h4><p>Mar–Sáb · 13:00–23:00<br>Dom · 13:00–18:00</p></div>
+    <div><h4>Contacto</h4><p>wockycontacto@gmail.com<br>Dirección y teléfono por definir</p></div>
+  </div>
+  <p class="copy">© 2026 JP 333</p>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
