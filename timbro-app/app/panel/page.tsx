@@ -15,6 +15,7 @@ export default async function PanelPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+  if (!user.email_confirmed_at) { await supabase.auth.signOut(); redirect('/login?error=confirma'); }
   const empresaId = await asegurarEmpresa(supabase, user);
 
   if (!empresaId) {

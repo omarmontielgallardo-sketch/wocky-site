@@ -25,16 +25,22 @@ const throws = async (name, sql, params, msg) => {
 const q = async (sql, params) => (await db.query(sql, params)).rows;
 
 await as(A);
-const [emp] = await q(`select * from crear_empresa('Estudio Aurora SA', 'eau200101ab1', '601', '2026-10-13', '2026-10-13')`);
-ok('crear_empresa normaliza el RFC', emp.rfc === 'EAU200101AB1' && emp.plan === 'emprendedor');
+const [emp] = await q(`select * from crear_empresa('Estudio Aurora SA', 'eau200101ab6', '601', '2026-10-13', '2026-10-13')`);
+ok('crear_empresa normaliza el RFC', emp.rfc === 'EAU200101AB6' && emp.plan === 'emprendedor');
+await throws('RFC con dígito verificador falso se rechaza', `select crear_empresa('X SA', 'EAU200101AB1', '601', 'v', 'v')`, [], 'rfc_invalido');
+await throws('RFC con fecha imposible se rechaza', `select crear_empresa('X SA', 'EAU201301AB6', '601', 'v', 'v')`, [], 'rfc_invalido');
+await throws('RFC genérico no sirve para registrar empresa', `select crear_empresa('X SA', 'XAXX010101000', '601', 'v', 'v')`, [], 'rfc_invalido');
+ok('RFC real del SAT es válido', (await q(`select rfc_valido('SAT970701NN3') v`))[0].v === true);
+ok('RFC persona física válido', (await q(`select rfc_valido('GAMJ800101AB8') v`))[0].v === true);
 await throws('RFC inválido se rechaza', `select crear_empresa('X SA', 'abc', '601', 'v', 'v')`, [], 'rfc_invalido');
-await throws('sin aceptar aviso no se crea', `select crear_empresa('X SA', 'XAXX010101000', '601', '', '')`, [], 'aceptacion_requerida');
+await throws('sin aceptar aviso no se crea', `select crear_empresa('X SA', 'NUB200101ABA', '601', '', '')`, [], 'aceptacion_requerida');
 ok('aceptaciones registradas', (await q(`select count(*)::int c from aceptaciones`))[0].c === 2);
 
 const lineas = JSON.stringify([{ descripcion: 'Diseño', cantidad: 2, precio: 100.5 }]);
 const [f1] = await q(`select * from guardar_factura($1, 'Cliente Uno', 'xaxx010101000', 'G03', 'PUE', $2::jsonb, false)`, [emp.id, lineas]);
 ok('totales calculados en servidor', f1.subtotal === '201.00' && f1.iva === '32.16' && f1.total === '233.16', JSON.stringify(f1));
 ok('folio A-0001 y estatus borrador', f1.folio === 'A-0001' && f1.estatus === 'borrador');
+await throws('cliente con RFC falso se rechaza', `select guardar_factura($1,'Cliente','GAMJ800101AB1','G03','PUE',$2::jsonb,false)`, [emp.id, lineas], 'rfc_invalido');
 await throws('líneas con precio negativo se rechazan', `select guardar_factura($1,'Cliente','XAXX010101000','G03','PUE','[{"descripcion":"x","cantidad":1,"precio":-5}]'::jsonb,false)`, [emp.id], 'lineas_invalidas');
 const [f1s] = await q(`select * from timbrar_factura($1)`, [f1.id]);
 ok('timbrar cambia estatus y genera UUID demo', f1s.estatus === 'timbrada' && !!f1s.uuid_demo);
@@ -43,7 +49,7 @@ ok('timbres usados = 1', (await q(`select timbres_usados($1) n`, [emp.id]))[0].n
 ok('cliente y concepto guardados', (await q(`select (select count(*) from clientes) c, (select count(*) from conceptos_frecuentes) k`))[0].c == 1);
 const [c1] = await q(`select * from cancelar_factura($1)`, [f1.id]);
 ok('cancelar funciona y el timbre sigue contado', c1.estatus === 'cancelada' && (await q(`select timbres_usados($1) n`, [emp.id]))[0].n === 1);
-const [d1] = await q(`select * from guardar_factura($1, 'Cliente Dos', 'EAU200101AB1', 'G03', 'PPD', $2::jsonb, false)`, [emp.id, lineas]);
+const [d1] = await q(`select * from guardar_factura($1, 'Cliente Dos', 'EAU200101AB6', 'G03', 'PPD', $2::jsonb, false)`, [emp.id, lineas]);
 await q(`select eliminar_borrador($1)`, [d1.id]);
 ok('eliminar borrador', (await q(`select count(*)::int c from facturas where id = $1`, [d1.id]))[0].c === 0);
 await throws('no se elimina una factura timbrada', `select eliminar_borrador($1)`, [f1.id], 'estatus_invalido');

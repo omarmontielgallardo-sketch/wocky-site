@@ -4,7 +4,7 @@ import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { login, registrar, recuperar, restablecer, type FormState } from '@/app/auth/actions';
 import { REGIMENES_OTROS, REGIMENES_USADOS } from '@/lib/constants';
-import { rfcOk } from '@/lib/rfc';
+import { limpiarRfc, validarRfc } from '@/lib/rfc';
 
 const init: FormState = {};
 
@@ -47,23 +47,22 @@ export function LoginForm({ aviso }: { aviso?: string }) {
 export function RegistroForm() {
   const [s, action] = useActionState(registrar, init);
   const [rfc, setRfc] = useState('');
+  const rc = validarRfc(rfc), n = rfc.length;
   return (
     <form className="afrm" action={action}>
       <label htmlFor="razon_social">Razón social o nombre</label>
       <input id="razon_social" name="razon_social" placeholder="Estudio Aurora S.A. de C.V." autoComplete="organization" required />
-      <div className="two-f">
-        <div>
-          <label htmlFor="rfc">RFC</label>
-          <input id="rfc" name="rfc" placeholder="EAU200101AB1" maxLength={13} autoCapitalize="characters" value={rfc} className={rfcOk(rfc) ? 'ok' : ''} onChange={e => setRfc(e.target.value.toUpperCase())} required />
-        </div>
-        <div>
-          <label htmlFor="regimen">Régimen fiscal</label>
-          <select id="regimen" name="regimen" defaultValue="626">
-            <optgroup label="Más usados">{REGIMENES_USADOS.map(([c, n]) => <option key={c} value={c}>{c} · {n}</option>)}</optgroup>
-            <optgroup label="Otros regímenes">{REGIMENES_OTROS.map(([c, n]) => <option key={c} value={c}>{c} · {n}</option>)}</optgroup>
-          </select>
-        </div>
-      </div>
+      <label htmlFor="rfc">RFC de tu empresa</label>
+      <input id="rfc" name="rfc" className={'rfc-input' + (rc.ok ? ' ok' : n >= 12 ? ' bad' : '')} placeholder="EAU200101AB6" maxLength={20} autoCapitalize="characters" autoComplete="off" spellCheck={false}
+        value={rfc} onChange={e => setRfc(limpiarRfc(e.target.value))} aria-describedby="rfcHint" required />
+      <p id="rfcHint" className={'fhint' + (rc.ok ? ' ok' : n >= 12 ? ' err' : '')} aria-live="polite">
+        {!n ? '12 caracteres para personas morales, 13 para personas físicas.' : rc.ok ? '✓ ' + rc.msg : n >= 12 ? rc.msg : `${n}/13 · ${rc.msg}`}
+      </p>
+      <label htmlFor="regimen">Régimen fiscal</label>
+      <select id="regimen" name="regimen" defaultValue="626">
+        <optgroup label="Más usados">{REGIMENES_USADOS.map(([c, n]) => <option key={c} value={c}>{c} · {n}</option>)}</optgroup>
+        <optgroup label="Otros regímenes">{REGIMENES_OTROS.map(([c, n]) => <option key={c} value={c}>{c} · {n}</option>)}</optgroup>
+      </select>
       <label htmlFor="email">Correo</label>
       <input id="email" name="email" type="email" placeholder="tu@empresa.mx" autoComplete="email" required />
       <label htmlFor="password">Contraseña</label>

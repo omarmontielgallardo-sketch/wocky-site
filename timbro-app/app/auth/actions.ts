@@ -4,7 +4,8 @@ import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { asegurarEmpresa } from '@/lib/empresa';
 import { LEGAL_VERSION } from '@/lib/legal';
-import { rfcOk } from '@/lib/rfc';
+import { limpiarRfc, validarRfc } from '@/lib/rfc';
+import { validarCorreo } from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string };
 const text = (f: FormData, k: string) => String(f.get(k) ?? '').trim();
@@ -26,12 +27,14 @@ export async function login(_: FormState, f: FormData): Promise<FormState> {
 
 export async function registrar(_: FormState, f: FormData): Promise<FormState> {
   if (!configured()) return NO_CONFIG;
-  const razon = text(f, 'razon_social'), rfc = text(f, 'rfc').toUpperCase(), regimen = text(f, 'regimen').slice(0, 3);
+  const razon = text(f, 'razon_social'), rfc = limpiarRfc(text(f, 'rfc')), regimen = text(f, 'regimen').slice(0, 3);
   const email = text(f, 'email').toLowerCase(), password = String(f.get('password') ?? '');
   if (razon.length < 2) return { error: 'Escribe la razón social o tu nombre.' };
-  if (!rfcOk(rfc)) return { error: 'El RFC no tiene un formato válido (12 o 13 caracteres).' };
+  const rc = validarRfc(rfc);
+  if (!rc.ok) return { error: rc.msg || 'Escribe el RFC de tu empresa.' };
   if (!/^\d{3}$/.test(regimen)) return { error: 'Elige un régimen fiscal.' };
-  if (!/^\S+@\S+\.\S+$/.test(email)) return { error: 'Escribe un correo válido.' };
+  const ce = await validarCorreo(email);
+  if (!ce.ok) return { error: ce.error };
   if (password.length < 8) return { error: 'La contraseña debe tener al menos 8 caracteres.' };
   if (f.get('acepto') !== 'on') return { error: 'Para crear tu cuenta debes aceptar el Aviso de privacidad y los Términos y condiciones.' };
 

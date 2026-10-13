@@ -113,7 +113,40 @@ const setSession = e => { memSession = e; try { e ? localStorage.setItem('timbro
 
 // ---------- Utilidades ----------
 const money = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n || 0);
-const rfcOk = v => /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/.test(v);
+const GENERICOS = ['XAXX010101000', 'XEXX010101000'];
+const DIC = '0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ';
+const cleanRfc = v => String(v).toUpperCase().replace(/[^A-ZÑ&0-9]/g, '').slice(0, 13);
+// Valida estructura, fecha y dígito verificador del RFC (algoritmo del SAT). La existencia ante el SAT se confirmará con el PAC.
+function rfcCheck(raw, { generico = false } = {}) {
+  const r = cleanRfc(raw);
+  if (!r) return { ok: false, msg: '' };
+  if (GENERICOS.includes(r)) return generico ? { ok: true, msg: 'RFC genérico válido' } : { ok: false, msg: 'Un RFC genérico no se puede usar para registrar una empresa.' };
+  if (r.length < 12) return { ok: false, msg: `Faltan caracteres (${r.length}/12 o 13).` };
+  if (!/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/.test(r)) return { ok: false, msg: 'Formato inválido: 3 o 4 letras, 6 números de fecha y 3 de homoclave.' };
+  const f = r.slice(r.length - 9, r.length - 3), yy = +f.slice(0, 2), mm = +f.slice(2, 4), dd = +f.slice(4, 6);
+  const fechaOk = [1900, 2000].some(b => { const d = new Date(b + yy, mm - 1, dd); return d.getFullYear() === b + yy && d.getMonth() === mm - 1 && d.getDate() === dd; });
+  if (!fechaOk) return { ok: false, msg: 'La fecha dentro del RFC no es válida.' };
+  const base = r.padStart(13, ' ');
+  let sum = 0; for (let i = 0; i < 12; i++) sum += DIC.indexOf(base[i]) * (13 - i);
+  const d = 11 - (sum % 11), esperado = d === 11 ? '0' : d === 10 ? 'A' : String(d);
+  if (base[12] !== esperado) return { ok: false, msg: 'Ese RFC no existe: el dígito verificador no coincide. Revisa que esté bien escrito.' };
+  return { ok: true, msg: 'RFC válido' };
+}
+const rfcOk = (v, o) => rfcCheck(v, o).ok;
+
+const DESECHABLES = ['mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com', 'temp-mail.org', 'yopmail.com', 'trashmail.com', 'sharklasers.com', 'getnada.com', 'dispostable.com', 'maildrop.cc', 'fakeinbox.com', 'throwawaymail.com', 'mailnesia.com'];
+const ERRATAS = { 'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gmail.con': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com', 'gmail.co': 'gmail.com', 'hotmial.com': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'hotmail.con': 'hotmail.com', 'outlok.com': 'outlook.com', 'outlook.con': 'outlook.com', 'yahooo.com': 'yahoo.com', 'yaho.com': 'yahoo.com', 'yahoo.con': 'yahoo.com', 'icloud.con': 'icloud.com' };
+// Revisa que el correo tenga forma real. Que el buzón exista se confirma con el enlace que se envía en la app completa.
+function correoCheck(v) {
+  const e = String(v).trim().toLowerCase();
+  if (!e) return { ok: false, msg: '' };
+  const [user, dom] = e.split('@');
+  if (!dom || !/^[a-z0-9._%+-]{1,64}$/.test(user) || user.startsWith('.') || user.endsWith('.') || user.includes('..') ||
+      !/^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/.test(dom) || dom.includes('..')) return { ok: false, msg: 'Escribe un correo válido, por ejemplo tu@empresa.mx.' };
+  if (ERRATAS[dom]) return { ok: false, msg: `¿Quisiste escribir ${user}@${ERRATAS[dom]}? Corrígelo para continuar.` };
+  if (DESECHABLES.includes(dom)) return { ok: false, msg: 'Ese correo es temporal. Usa un correo real que revises.' };
+  return { ok: true, msg: '' };
+}
 const monthKey = (d = new Date()) => new Date(d).toISOString().slice(0, 7);
 const say = (el, text, err) => { el.hidden = false; el.textContent = text; el.classList.toggle('err', !!err); el.style.animation = 'none'; el.offsetWidth; el.style.animation = ''; };
 const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
@@ -127,10 +160,19 @@ const update = fn => { fn(acct); persist(); renderDash(); };
 const swap = (hide, show) => { hide.hidden = true; show.hidden = false; show.classList.remove('view-in'); show.offsetWidth; show.classList.add('view-in'); };
 
 // Validación de RFC en vivo
-$$('#rRfc,#iRfc').forEach(i => i.addEventListener('input', () => {
-  i.value = i.value.toUpperCase();
-  i.classList.toggle('ok', rfcOk(i.value)); i.classList.remove('bad');
-}));
+function bindRfc(input, hint, generico) {
+  const paint = () => {
+    const c = rfcCheck(input.value, { generico }), n = cleanRfc(input.value).length;
+    input.classList.toggle('ok', c.ok); input.classList.toggle('bad', !c.ok && n >= 12);
+    hint.className = 'fhint' + (c.ok ? ' ok' : n >= 12 ? ' err' : '');
+    hint.textContent = !n ? (generico ? 'Para público en general usa XAXX010101000.' : '12 caracteres para personas morales, 13 para personas físicas.') : c.ok ? '✓ ' + c.msg : (n >= 12 ? c.msg : `${n}/13 · ${c.msg || 'sigue escribiendo'}`);
+  };
+  input.addEventListener('input', () => { const pos = input.selectionStart; const v = cleanRfc(input.value); if (v !== input.value) { input.value = v; try { input.setSelectionRange(pos, pos); } catch {} } paint(); });
+  paint(); input.paint = paint;
+}
+bindRfc($('#rRfc'), $('#rRfcHint'), false);
+bindRfc($('#iRfc'), $('#iRfcHint'), true);
+$('#rEmail').addEventListener('blur', () => { const c = correoCheck($('#rEmail').value), h = $('#rEmailHint'); h.className = 'fhint' + (c.msg ? ' err' : ''); h.textContent = c.msg; $('#rEmail').classList.toggle('bad', !!c.msg); });
 // Mostrar u ocultar contraseña
 $$('[data-eye]').forEach(b => b.onclick = () => {
   const i = document.getElementById(b.dataset.eye), show = i.type === 'password';
@@ -150,10 +192,13 @@ function showAuth() { swap($('#dashView'), $('#authView'));  }
 
 $('#fReg').onsubmit = async e => {
   e.preventDefault();
-  const rfc = $('#rRfc'); rfc.value = rfc.value.trim().toUpperCase();
+  const rfc = $('#rRfc'); rfc.value = cleanRfc(rfc.value);
   const msg = $('#rMsg'), mail = $('#rEmail').value.trim().toLowerCase();
-  rfc.classList.toggle('bad', !rfcOk(rfc.value));
-  if (!rfcOk(rfc.value)) return say(msg, 'El RFC no tiene un formato válido (12 o 13 caracteres).', true);
+  const rc = rfcCheck(rfc.value);
+  rfc.classList.toggle('bad', !rc.ok);
+  if (!rc.ok) { rfc.focus(); return say(msg, rc.msg || 'Escribe el RFC de tu empresa.', true); }
+  const cc = correoCheck(mail);
+  if (!cc.ok) { $('#rEmail').classList.add('bad'); $('#rEmail').focus(); return say(msg, cc.msg || 'Escribe tu correo.', true); }
   if (!$('#rAcc').checked) return say(msg, 'Para crear tu cuenta debes aceptar el Aviso de privacidad y los Términos y condiciones.', true);
   if (!e.target.checkValidity()) return say(msg, 'Completa todos los campos. La contraseña lleva mínimo 8 caracteres.', true);
   if (!crypto.subtle) return say(msg, 'Tu navegador no permite crear la cuenta en este contexto.', true);
@@ -163,7 +208,7 @@ $('#fReg').onsubmit = async e => {
   const a = { role: 'admin', email: mail, razon: $('#rRazon').value.trim(), rfc: rfc.value, regimen: $('#rReg').value, salt, hash: await hashPass($('#rPass').value, salt),
     plan: 'emp', month: monthKey(), used: 0, seq: 0, invoices: [], clients: [], items: [], aceptoEn: Date.now() };
   db[mail] = a; saveDb(db); setSession(mail); localEmail = mail; acct = a;
-  e.target.reset(); $$('#fReg input').forEach(i => i.classList.remove('ok')); msg.hidden = true; openDash(); toast('Cuenta creada. ¡Bienvenido a Timbro!');
+  e.target.reset(); $$('#fReg input').forEach(i => i.classList.remove('ok')); $('#rRfc').paint(); $('#rEmailHint').textContent = ''; msg.hidden = true; openDash(); toast('Cuenta creada. ¡Bienvenido a Timbro!');
 };
 
 $('#fLogin').onsubmit = async e => {
@@ -269,18 +314,19 @@ function totals() { const t = calc(); $('#tSub').textContent = money(t.sub); $('
 $('#bAdd').onclick = () => addLine(true);
 
 // Autocompletar cliente
-$('#iName').addEventListener('change', () => { const c = acct && acct.clients.find(x => x.name.toLowerCase() === $('#iName').value.trim().toLowerCase()); if (c) { $('#iRfc').value = c.rfc; $('#iRfc').classList.add('ok'); } });
+$('#iName').addEventListener('change', () => { const c = acct && acct.clients.find(x => x.name.toLowerCase() === $('#iName').value.trim().toLowerCase()); if (c) { $('#iRfc').value = c.rfc; $('#iRfc').paint(); } });
 
 function buildInvoice() {
-  const msg = $('#iMsg'), rfc = $('#iRfc'); rfc.value = rfc.value.trim().toUpperCase();
+  const msg = $('#iMsg'), rfc = $('#iRfc'); rfc.value = cleanRfc(rfc.value);
   const name = $('#iName').value.trim(), valid = lines.filter(l => l.d.trim() && l.p > 0 && l.q > 0);
-  rfc.classList.toggle('bad', !rfcOk(rfc.value));
+  const rc = rfcCheck(rfc.value, { generico: true });
+  rfc.classList.toggle('bad', !rc.ok);
   if (!name) { say(msg, 'Escribe el nombre del cliente.', true); $('#iName').focus(); return null; }
-  if (!rfcOk(rfc.value)) { say(msg, 'El RFC del cliente no es válido.', true); rfc.focus(); return null; }
+  if (!rc.ok) { say(msg, rc.msg || 'Escribe el RFC del cliente.', true); rfc.focus(); return null; }
   if (!valid.length) { say(msg, 'Agrega al menos un concepto con cantidad y precio.', true); return null; }
   return { id: crypto.randomUUID(), cliente: name, rfc: rfc.value, uso: $('#iUso').value, metodo: $('#iMet').value, lineas: valid.map(l => ({ ...l })), total: calc().tot, fecha: Date.now(), estatus: 'borrador' };
 }
-function resetForm() { $('#fInv').reset(); $('#iRfc').classList.remove('ok', 'bad'); lines = []; addLine(); $('#iMsg').hidden = true; }
+function resetForm() { $('#fInv').reset(); $('#iRfc').paint(); lines = []; addLine(); $('#iMsg').hidden = true; }
 function remember(x, inv) {
   const c = x.clients.find(k => k.rfc === inv.rfc); if (c) c.name = inv.cliente; else x.clients.push({ name: inv.cliente, rfc: inv.rfc });
   inv.lineas.forEach(l => { const it = x.items.find(k => k.d === l.d); if (it) it.p = l.p; else x.items.push({ d: l.d, p: l.p }); });
@@ -305,7 +351,7 @@ $('#bDraft').onclick = () => {
   flashId = inv.id; renderDash(); say($('#iMsg'), 'Borrador guardado. No consume timbres.'); toast('Borrador guardado.'); resetForm();
 };
 function duplicate(inv) {
-  $('#iName').value = inv.cliente; $('#iRfc').value = inv.rfc; $('#iRfc').classList.add('ok');
+  $('#iName').value = inv.cliente; $('#iRfc').value = inv.rfc; $('#iRfc').paint();
   $('#iUso').value = inv.uso; $('#iMet').value = inv.metodo;
   lines = inv.lineas.map(l => ({ ...l })); drawLines();
   $('#fInv').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
@@ -393,7 +439,7 @@ function renderExtras() {
   const box = $('#recent'), rec = [...acct.clients].slice(-5).reverse();
   box.hidden = !rec.length; box.replaceChildren(...rec.map(c => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'rchip'; b.textContent = c.name.length > 22 ? c.name.slice(0, 21) + '…' : c.name; b.title = c.name + ' · ' + c.rfc;
-    b.onclick = () => { $('#iName').value = c.name; $('#iRfc').value = c.rfc; $('#iRfc').classList.add('ok'); saveDraft(); const l = $('.line input'); l && l.focus(); };
+    b.onclick = () => { $('#iName').value = c.name; $('#iRfc').value = c.rfc; $('#iRfc').paint(); saveDraft(); const l = $('.line input'); l && l.focus(); };
     return b;
   }));
   $('#qRepeat').disabled = !acct.invoices.length;
@@ -402,7 +448,7 @@ const goForm = () => { $('#fInv').scrollIntoView({ behavior: reduceMotion ? 'aut
 $('#qNew').onclick = goForm;
 $('#qRepeat').onclick = () => { const last = acct && acct.invoices[acct.invoices.length - 1]; if (last) duplicate(last); else toast('Aún no hay facturas para repetir.', 'err'); };
 $('#qExample').onclick = () => {
-  $('#iName').value = 'Estudio Aurora S.A. de C.V.'; $('#iRfc').value = 'EAU200101AB1'; $('#iRfc').classList.add('ok');
+  $('#iName').value = 'Estudio Aurora S.A. de C.V.'; $('#iRfc').value = 'GAMJ800101AB8'; $('#iRfc').paint();
   lines = [{ d: 'Diseño de marca', q: 1, p: 12000 }]; drawLines(); goForm(); toast('Ejemplo cargado. Presiona «Timbrar factura».');
 };
 $('#qSearch').onclick = () => { const i = $('#hSearch'); i.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); setTimeout(() => i.focus({ preventScroll: true }), 350); };
@@ -426,7 +472,7 @@ function saveDraft() {
 }
 function restoreDraft() {
   const f = acct && acct.formDraft; if (!f || $('#iName').value || lines.some(l => l.d || l.p)) return;
-  $('#iName').value = f.name; $('#iRfc').value = f.rfc; $('#iRfc').classList.toggle('ok', rfcOk(f.rfc)); $('#iUso').value = f.uso; $('#iMet').value = f.met;
+  $('#iName').value = f.name; $('#iRfc').value = f.rfc; $('#iRfc').paint(); $('#iUso').value = f.uso; $('#iMet').value = f.met;
   lines = f.lines.length ? f.lines : [{ d: '', q: 1, p: 0 }]; drawLines(); toast('Recuperamos tu borrador sin terminar.');
 }
 $('#fInv').addEventListener('input', saveDraft); $('#fInv').addEventListener('change', saveDraft);

@@ -477,3 +477,10 @@ details[open]::details-content{block-size:auto}
 
 @media(max-width:520px){.hstats{gap:18px}.quick{display:grid;grid-template-columns:1fr 1fr}.qbtn kbd{display:none}.totop{bottom:76px}}
 @media(prefers-reduced-motion:reduce){.rotor,.ripple,.celebrate,.toast:after,.rchip,tr.flash{animation:none!important}.feat:hover,.plan:hover{transform:none}}
+
+/* RFC y correo: campos completos con ayuda en vivo */
+.rfc-input{font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.08em;text-transform:uppercase;font-size:1rem!important}
+.rfc-input::placeholder{text-transform:none;letter-spacing:.04em}
+.fhint{font-size:.74rem;color:var(--muted);min-height:1.1em;margin:-2px 0 6px;transition:color .2s}
+.fhint.ok{color:var(--ok);font-weight:600}
+.fhint.err{color:var(--bad);font-weight:600}

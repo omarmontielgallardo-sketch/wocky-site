@@ -13,7 +13,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
         <div className="authbox">
           <h1>Iniciar sesión</h1>
           <p className="auth-sub">Entra al panel de tu empresa.</p>
-          <LoginForm aviso={sp.error ? "El enlace expiró o no es válido. Intenta de nuevo." : undefined} />
+          <LoginForm aviso={sp.error === 'confirma' ? 'Confirma tu correo para entrar: te enviamos un enlace cuando creaste la cuenta.' : sp.error ? 'El enlace expiró o no es válido. Intenta de nuevo.' : undefined} />
         </div>
       </main>
       <Footer />

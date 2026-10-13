@@ -131,12 +131,34 @@ grant update (razon_social, regimen) on public.empresas to authenticated;   -- e
 grant select, insert, update, delete on public.clientes, public.conceptos_frecuentes to authenticated;
 
 -- ---------- Funciones de negocio ----------
+-- Valida estructura, fecha y dígito verificador del RFC (algoritmo del SAT).
+create or replace function public.rfc_valido(p_rfc text) returns boolean
+language plpgsql immutable set search_path = public as $$
+declare
+  r text := upper(trim(coalesce(p_rfc, '')));
+  dic constant text := '0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ';
+  base text; suma int := 0; i int; d int; esperado text; yy int; mm int; dd int; y int; fecha_ok boolean := false;
+begin
+  if r !~ '^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$' then return false; end if;
+  base := case when length(r) = 12 then substr(r, 4, 6) else substr(r, 5, 6) end;
+  yy := substr(base, 1, 2)::int; mm := substr(base, 3, 2)::int; dd := substr(base, 5, 2)::int;
+  foreach y in array array[1900 + yy, 2000 + yy] loop
+    begin perform make_date(y, mm, dd); fecha_ok := true; exception when others then null; end;
+  end loop;
+  if not fecha_ok then return false; end if;
+  base := lpad(r, 13, ' ');
+  for i in 1..12 loop suma := suma + (position(substr(base, i, 1) in dic) - 1) * (14 - i); end loop;
+  d := 11 - (suma % 11);
+  esperado := case when d = 11 then '0' when d = 10 then 'A' else d::text end;
+  return substr(base, 13, 1) = esperado;
+end $$;
+
 create or replace function public.crear_empresa(p_razon text, p_rfc text, p_regimen text, p_version_privacidad text, p_version_terminos text)
 returns public.empresas language plpgsql security definer set search_path = public as $$
 declare v_uid uuid := auth.uid(); v_rfc text := upper(trim(p_rfc)); v_emp public.empresas;
 begin
   if v_uid is null then raise exception 'no_autenticado'; end if;
-  if v_rfc !~ '^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$' then raise exception 'rfc_invalido'; end if;
+  if not public.rfc_valido(v_rfc) or v_rfc in ('XAXX010101000', 'XEXX010101000') then raise exception 'rfc_invalido'; end if;
   if char_length(trim(p_razon)) < 2 then raise exception 'razon_invalida'; end if;
   if p_regimen !~ '^[0-9]{3}$' then raise exception 'regimen_invalido'; end if;
   if coalesce(p_version_privacidad, '') = '' or coalesce(p_version_terminos, '') = '' then raise exception 'aceptacion_requerida'; end if;
@@ -169,7 +191,7 @@ begin
   if v_uid is null then raise exception 'no_autenticado'; end if;
   if not public.es_miembro(p_empresa) then raise exception 'sin_acceso'; end if;
   if char_length(trim(coalesce(p_cliente_nombre, ''))) < 2 then raise exception 'cliente_invalido'; end if;
-  if v_rfc !~ '^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$' then raise exception 'rfc_invalido'; end if;
+  if not public.rfc_valido(v_rfc) and v_rfc not in ('XAXX010101000', 'XEXX010101000') then raise exception 'rfc_invalido'; end if;
   if p_metodo not in ('PUE', 'PPD') then raise exception 'metodo_invalido'; end if;
   if p_uso !~ '^[A-Z][0-9]{2}$' then raise exception 'uso_invalido'; end if;
   if jsonb_typeof(p_lineas) <> 'array' or jsonb_array_length(p_lineas) = 0 or jsonb_array_length(p_lineas) > 100 then raise exception 'lineas_invalidas'; end if;

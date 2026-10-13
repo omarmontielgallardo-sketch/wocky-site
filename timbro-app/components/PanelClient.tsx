@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { cancelarFactura, eliminarBorrador, eliminarCuenta, exportarMisDatos, guardarFactura, timbrarFactura, type Resultado } from '@/app/panel/actions';
 import { cerrarSesion } from '@/app/auth/actions';
 import { NOMBRE_PLAN, USOS_CFDI } from '@/lib/constants';
-import { money, rfcOk } from '@/lib/rfc';
+import { limpiarRfc, money, validarRfc } from '@/lib/rfc';
 
 export type Empresa = { id: string; razon_social: string; rfc: string; regimen: string; plan: string };
 export type Linea = { descripcion: string; cantidad: number; precio: number };
@@ -50,6 +50,7 @@ export default function PanelClient({ empresa, email, facturas, clientes, concep
     } else { toast(r.error, true); setMsg({ text: r.error, err: true }); }
   });
 
+  const rfcRes = validarRfc(rfc, { generico: true });
   const sub = lineas.reduce((s, l) => s + r2(l.cantidad * l.precio), 0), iva = r2(sub * 0.16), total = r2(sub + iva);
   const left = Math.max(limite - usados, 0);
   const kpi = useMemo(() => {
@@ -70,16 +71,17 @@ export default function PanelClient({ empresa, email, facturas, clientes, concep
   const enviar = (timbrar: boolean) => {
     const valid = lineas.filter(l => l.descripcion.trim() && l.cantidad > 0 && l.precio > 0);
     if (!nombre.trim()) return setMsg({ text: 'Escribe el nombre del cliente.', err: true });
-    if (!rfcOk(rfc)) return setMsg({ text: 'El RFC del cliente no es válido.', err: true });
+    const rc = validarRfc(rfc, { generico: true });
+    if (!rc.ok) return setMsg({ text: rc.msg || 'Escribe el RFC del cliente.', err: true });
     if (!valid.length) return setMsg({ text: 'Agrega al menos un concepto con cantidad y precio.', err: true });
-    run(guardarFactura({ empresaId: empresa.id, clienteNombre: nombre.trim(), clienteRfc: rfc.trim().toUpperCase(), uso, metodo, lineas: valid, timbrar }), reset, { celebrar: timbrar, flash: 'first' });
+    run(guardarFactura({ empresaId: empresa.id, clienteNombre: nombre.trim(), clienteRfc: limpiarRfc(rfc), uso, metodo, lineas: valid, timbrar }), reset, { celebrar: timbrar, flash: 'first' });
   };
   const duplicar = (f: Factura) => {
     setNombre(f.cliente_nombre); setRfc(f.cliente_rfc); setUso(f.uso_cfdi); setMetodo(f.metodo_pago); setLineas(f.lineas.map(l => ({ ...l })));
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); toast('Factura copiada al formulario. Ajusta y timbra.');
   };
   const irFormulario = () => { formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => document.getElementById('iName')?.focus({ preventScroll: true }), 350); };
-  const ejemplo = () => { setNombre('Estudio Aurora S.A. de C.V.'); setRfc('EAU200101AB1'); setLineas([{ descripcion: 'Diseño de marca', cantidad: 1, precio: 12000 }]); irFormulario(); toast('Ejemplo cargado. Presiona «Timbrar factura».'); };
+  const ejemplo = () => { setNombre('Estudio Aurora S.A. de C.V.'); setRfc('GAMJ800101AB8'); setLineas([{ descripcion: 'Diseño de marca', cantidad: 1, precio: 12000 }]); irFormulario(); toast('Ejemplo cargado. Presiona «Timbrar factura».'); };
   const repetir = () => { if (facturas[0]) duplicar(facturas[0]); else toast('Aún no hay facturas para repetir.', true); };
   const irBuscar = () => { buscarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => buscarRef.current?.focus({ preventScroll: true }), 350); };
   const verDatos = async () => { setDatos('Cargando…'); dData.current?.showModal(); setDatos(await exportarMisDatos()); };
@@ -176,7 +178,8 @@ export default function PanelClient({ empresa, email, facturas, clientes, concep
               {recientes.length > 0 && <div className="recent">{recientes.map(c => <button key={c.rfc} type="button" className="rchip" title={`${c.nombre} · ${c.rfc}`} onClick={() => { setNombre(c.nombre); setRfc(c.rfc); }}>{c.nombre.length > 22 ? c.nombre.slice(0, 21) + '…' : c.nombre}</button>)}</div>}
               <datalist id="dlClientes">{clientes.map(c => <option key={c.id} value={c.nombre} label={c.rfc} />)}</datalist></div>
             <div><label htmlFor="iRfc">RFC del cliente</label>
-              <input id="iRfc" placeholder="XAXX010101000" maxLength={13} autoCapitalize="characters" value={rfc} className={rfcOk(rfc) ? 'ok' : ''} onChange={e => setRfc(e.target.value.toUpperCase())} /></div>
+              <input id="iRfc" className={'rfc-input' + (rfcRes.ok ? ' ok' : rfc.length >= 12 ? ' bad' : '')} placeholder="GAMJ800101AB8" maxLength={20} autoCapitalize="characters" autoComplete="off" spellCheck={false} value={rfc} onChange={e => setRfc(limpiarRfc(e.target.value))} aria-describedby="iRfcHint" />
+              <p id="iRfcHint" className={'fhint' + (rfcRes.ok ? ' ok' : rfc.length >= 12 ? ' err' : '')} aria-live="polite">{!rfc ? 'Para público en general usa XAXX010101000.' : rfcRes.ok ? '✓ ' + rfcRes.msg : rfc.length >= 12 ? rfcRes.msg : `${rfc.length}/13 · ${rfcRes.msg}`}</p></div>
           </div>
           <div className="two-f eq">
             <div><label htmlFor="iUso">Uso del CFDI</label><select id="iUso" value={uso} onChange={e => setUso(e.target.value)}>{USOS_CFDI.map(([c, n]) => <option key={c} value={c}>{n}</option>)}</select></div>
