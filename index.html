@@ -3,129 +3,134 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JP 333 · Cocina de Autor</title>
-<meta name="description" content="JP 333, cocina de autor: platillos de temporada, técnica y sabor. Reserva tu mesa.">
+<title>Facturito · Facturación electrónica CFDI 4.0</title>
+<meta name="description" content="Facturito: emite tus facturas CFDI 4.0 en menos de un minuto, desde el navegador o el celular. Hecho para freelancers y negocios pequeños en México.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="progress" id="progress"></div>
 
 <header class="nav" id="nav">
-  <a href="#inicio" class="logo">JP<span>333</span></a>
+  <a href="#inicio" class="logo"><i></i>Facturito</a>
   <button class="burger" id="burger" aria-label="Menú"><i></i><i></i></button>
   <nav id="menu">
-    <a href="#historia">Historia</a>
-    <a href="#menu-carta">Menú</a>
-    <a href="#galeria">Galería</a>
-    <a href="#reservas">Reservas</a>
-    <a href="#contacto">Contacto</a>
+    <a href="#funciones">Funciones</a>
+    <a href="#como">Cómo funciona</a>
+    <a href="#precios">Precios</a>
+    <a href="#faq">Preguntas</a>
+    <a class="btn sm" href="#lista">Quiero acceso</a>
   </nav>
 </header>
 
 <section class="hero" id="inicio">
-  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
-  <div class="hero-inner">
-    <p class="eyebrow reveal">Cocina de autor</p>
-    <h1 class="split" data-text="JP 333"></h1>
-    <p class="lead reveal">Técnica, producto de temporada y fuego. Una experiencia de mesa que se cocina despacio.</p>
-    <div class="cta reveal">
-      <a class="btn" href="#reservas">Reservar mesa</a>
-      <a class="btn ghost" href="#menu-carta">Ver el menú</a>
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <p class="pill reveal">CFDI 4.0 · Hecho para México</p>
+      <h1 class="reveal">Factura en <em>un minuto</em>, sin dolores de cabeza.</h1>
+      <p class="lead reveal">Crea, timbra y envía tus facturas desde el navegador o el celular. Sin ser contador, sin instalar nada.</p>
+      <div class="cta reveal">
+        <a class="btn" href="#lista">Unirme a la lista de espera</a>
+        <a class="btn ghost" href="#como">Ver cómo funciona</a>
+      </div>
+      <p class="tiny reveal">Gratis para empezar · Sin tarjeta</p>
+    </div>
+    <div class="mock reveal" aria-hidden="true">
+      <div class="inv">
+        <div class="inv-top"><b>Factura</b><span class="stamp">Timbrada ✓</span></div>
+        <div class="row"><small>Cliente</small><span>Estudio Aurora S.A. de C.V.</span></div>
+        <div class="row"><small>RFC</small><span>EAU 200101 AB1</span></div>
+        <div class="row"><small>Concepto</small><span>Diseño de marca</span></div>
+        <div class="line"></div>
+        <div class="row"><small>Subtotal</small><span>$12,000.00</span></div>
+        <div class="row"><small>IVA 16%</small><span>$1,920.00</span></div>
+        <div class="row total"><small>Total</small><span>$13,920.00</span></div>
+        <div class="send">Enviar por correo →</div>
+      </div>
+      <div class="chip c1">⚡ 45 segundos</div>
+      <div class="chip c2">📄 PDF + XML</div>
     </div>
   </div>
-  <a href="#historia" class="scroll" aria-label="Bajar"><span></span></a>
 </section>
 
 <div class="marquee" aria-hidden="true">
   <div class="track">
-    <span>Producto local</span><span>✦</span><span>Fuego y brasa</span><span>✦</span><span>Menú de temporada</span><span>✦</span><span>Maridaje</span><span>✦</span>
-    <span>Producto local</span><span>✦</span><span>Fuego y brasa</span><span>✦</span><span>Menú de temporada</span><span>✦</span><span>Maridaje</span><span>✦</span>
+    <span>CFDI 4.0</span><span>✦</span><span>Complemento de pago</span><span>✦</span><span>Cancelaciones</span><span>✦</span><span>Facturas recurrentes</span><span>✦</span>
+    <span>CFDI 4.0</span><span>✦</span><span>Complemento de pago</span><span>✦</span><span>Cancelaciones</span><span>✦</span><span>Facturas recurrentes</span><span>✦</span>
   </div>
 </div>
 
-<section class="section" id="historia">
-  <div class="wrap two">
-    <div class="art reveal left"><div class="plate"><div class="ring"></div><div class="ring r2"></div><div class="dot"></div></div></div>
-    <div class="reveal right">
-      <p class="eyebrow">Nuestra historia</p>
-      <h2>Cocinar es contar algo</h2>
-      <p>En JP 333 cada plato nace de una idea: un recuerdo, un ingrediente, una técnica. Trabajamos con productores cercanos y dejamos que la temporada decida la carta.</p>
-      <p>Cocina abierta, ritmo tranquilo y atención cercana. Venimos a que comas bien y te quedes un rato.</p>
-      <div class="stats">
-        <div><b data-count="12">0</b><small>Años de oficio</small></div>
-        <div><b data-count="40">0</b><small>Productores</small></div>
-        <div><b data-count="7">0</b><small>Tiempos</small></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section dark" id="menu-carta">
+<section class="section" id="funciones">
   <div class="wrap">
-    <p class="eyebrow reveal">Carta</p>
-    <h2 class="reveal">Menú de temporada</h2>
-    <div class="tabs reveal" role="tablist">
-      <button class="tab active" data-tab="entradas">Entradas</button>
-      <button class="tab" data-tab="fuertes">Fuertes</button>
-      <button class="tab" data-tab="postres">Postres</button>
+    <p class="eyebrow reveal">Funciones</p>
+    <h2 class="reveal">Todo lo que necesitas para facturar</h2>
+    <div class="grid">
+      <article class="card reveal"><div class="ico">⚡</div><h3>Rápido de verdad</h3><p>Guarda tus clientes y conceptos una vez. La siguiente factura son tres clics.</p></article>
+      <article class="card reveal"><div class="ico">✅</div><h3>Validación automática</h3><p>Revisamos RFC, régimen fiscal y código postal antes de timbrar para evitar errores.</p></article>
+      <article class="card reveal"><div class="ico">🔁</div><h3>Facturas recurrentes</h3><p>Programa cobros mensuales y que Facturito emita y envíe por ti.</p></article>
+      <article class="card reveal"><div class="ico">💳</div><h3>Complemento de pago</h3><p>Registra pagos parciales o diferidos (PPD) sin complicarte.</p></article>
+      <article class="card reveal"><div class="ico">📱</div><h3>Desde tu celular</h3><p>Pensado primero para móvil: factura desde donde estés.</p></article>
+      <article class="card reveal"><div class="ico">🔒</div><h3>Datos protegidos</h3><p>Tus certificados y datos fiscales se guardan cifrados.</p></article>
     </div>
-    <div class="panel active" id="entradas">
-      <article class="dish"><h3>Tostada de betabel</h3><p>Queso fresco, nuez tostada, vinagreta cítrica</p><span>$—</span></article>
-      <article class="dish"><h3>Crudo del día</h3><p>Aceite verde, rábano, flor comestible</p><span>$—</span></article>
-      <article class="dish"><h3>Crema de elote asado</h3><p>Aceite de chile, crocante de maíz</p><span>$—</span></article>
-    </div>
-    <div class="panel" id="fuertes">
-      <article class="dish"><h3>Res a la brasa</h3><p>Puré ahumado, jus reducido, hierbas</p><span>$—</span></article>
-      <article class="dish"><h3>Pesca del día</h3><p>Mantequilla de limón, vegetales de temporada</p><span>$—</span></article>
-      <article class="dish"><h3>Risotto de hongos</h3><p>Parmesano, aceite de trufa, tomillo</p><span>$—</span></article>
-    </div>
-    <div class="panel" id="postres">
-      <article class="dish"><h3>Chocolate y sal</h3><p>Ganache tibia, helado de vainilla</p><span>$—</span></article>
-      <article class="dish"><h3>Cítricos</h3><p>Sorbete, merengue, aceite de oliva</p><span>$—</span></article>
-    </div>
-    <p class="note reveal">* Platillos y precios de ejemplo; sustitúyelos por los de tu carta real.</p>
   </div>
 </section>
 
-<section class="section" id="galeria">
+<section class="section alt" id="como">
   <div class="wrap">
-    <p class="eyebrow reveal">Galería</p>
-    <h2 class="reveal">Un vistazo a la mesa</h2>
-    <div class="gallery">
-      <figure class="g g1 reveal"><span>Brasa</span></figure>
-      <figure class="g g2 reveal"><span>Salón</span></figure>
-      <figure class="g g3 reveal"><span>Postres</span></figure>
-      <figure class="g g4 reveal"><span>Bar</span></figure>
-      <figure class="g g5 reveal"><span>Cocina</span></figure>
+    <p class="eyebrow reveal">Cómo funciona</p>
+    <h2 class="reveal">Tres pasos y listo</h2>
+    <div class="steps">
+      <div class="step reveal"><b>1</b><h3>Configura tu RFC</h3><p>Sube tu certificado (CSD) una sola vez.</p></div>
+      <div class="step reveal"><b>2</b><h3>Crea tu factura</h3><p>Elige cliente, concepto y monto.</p></div>
+      <div class="step reveal"><b>3</b><h3>Timbra y envía</h3><p>Se genera el PDF y XML y se manda a tu cliente.</p></div>
     </div>
   </div>
 </section>
 
-<section class="section dark" id="reservas">
+<section class="section" id="precios">
+  <div class="wrap">
+    <p class="eyebrow reveal">Precios</p>
+    <h2 class="reveal">Simple y transparente</h2>
+    <div class="prices">
+      <article class="plan reveal"><h3>Gratis</h3><p class="amt">$0</p><ul><li>5 facturas al mes</li><li>PDF y XML</li><li>Envío por correo</li></ul><a class="btn ghost-d" href="#lista">Empezar</a></article>
+      <article class="plan hot reveal"><span class="tag">Más popular</span><h3>Básico</h3><p class="amt">$199<small>/mes</small></p><ul><li>Hasta 30 facturas</li><li>Complemento de pago</li><li>Cancelaciones</li><li>Soporte por WhatsApp</li></ul><a class="btn" href="#lista">Lo quiero</a></article>
+      <article class="plan reveal"><h3>Pro</h3><p class="amt">$449<small>/mes</small></p><ul><li>Facturas ilimitadas</li><li>Recurrentes</li><li>Varios usuarios</li><li>Acceso a API</li></ul><a class="btn ghost-d" href="#lista">Empezar</a></article>
+    </div>
+    <p class="note reveal">* Precios de referencia durante la fase de validación; pueden cambiar al lanzamiento.</p>
+  </div>
+</section>
+
+<section class="section alt" id="faq">
   <div class="wrap narrow">
-    <p class="eyebrow reveal">Reservas</p>
-    <h2 class="reveal">Aparta tu mesa</h2>
-    <form class="form reveal" id="form">
-      <input name="nombre" placeholder="Nombre" required>
-      <input name="tel" type="tel" placeholder="Teléfono" required>
-      <input name="fecha" type="date" required>
-      <select name="personas"><option>2 personas</option><option>3 personas</option><option>4 personas</option><option>5+ personas</option></select>
-      <button class="btn" type="submit">Enviar solicitud</button>
-      <p class="ok" id="ok" hidden>¡Gracias! Te confirmaremos pronto.</p>
-    </form>
+    <p class="eyebrow reveal">Preguntas</p>
+    <h2 class="reveal">Preguntas frecuentes</h2>
+    <details class="reveal"><summary>¿Ya puedo facturar con Facturito?</summary><p>Todavía estamos construyendo el producto. Apúntate a la lista de espera y te avisamos cuando abramos el acceso anticipado.</p></details>
+    <details class="reveal"><summary>¿Necesito saber de contabilidad?</summary><p>No. Facturito te guía con los campos y valida los datos antes de timbrar. Aun así, para dudas fiscales consulta a tu contador.</p></details>
+    <details class="reveal"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
+    <details class="reveal"><summary>¿Cómo se timbran las facturas?</summary><p>A través de un Proveedor Autorizado de Certificación (PAC) autorizado por el SAT.</p></details>
   </div>
 </section>
 
-<footer class="section" id="contacto">
-  <div class="wrap three">
-    <div><h4>JP 333</h4><p>Cocina de autor</p></div>
-    <div><h4>Horario</h4><p>Mar–Sáb · 13:00–23:00<br>Dom · 13:00–18:00</p></div>
-    <div><h4>Contacto</h4><p>wockycontacto@gmail.com<br>Dirección y teléfono por definir</p></div>
+<section class="section cta-band" id="lista">
+  <div class="wrap narrow center">
+    <h2 class="reveal">Sé de los primeros en probarlo</h2>
+    <p class="reveal">Déjanos tu correo y te damos acceso anticipado.</p>
+    <form class="form reveal" id="form">
+      <input name="email" type="email" placeholder="tu@correo.com" required aria-label="Correo electrónico">
+      <button class="btn" type="submit">Avísame</button>
+    </form>
+    <p class="ok" id="ok" hidden>¡Gracias! Te escribiremos pronto.</p>
   </div>
-  <p class="copy">© 2026 JP 333</p>
+</section>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a href="#inicio" class="logo"><i></i>Facturito</a>
+    <p>wockycontacto@gmail.com</p>
+    <p class="copy">© 2026 Facturito. Servicio en desarrollo.</p>
+  </div>
 </footer>
 <script src="script.js"></script>
 </body>
