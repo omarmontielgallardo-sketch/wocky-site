@@ -219,7 +219,7 @@ h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin-bottom:0}
 .foot .word{font-size:1.3rem;color:var(--ink)}
 
 /* Cookies */
-.cookie{position:fixed;left:16px;right:16px;bottom:16px;max-width:720px;margin:0 auto;z-index:90;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#14142b;color:#e8e8f6;border-radius:18px;padding:16px 20px;box-shadow:0 20px 50px rgba(20,20,43,.35);animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+.cookie{position:fixed;left:16px;right:16px;bottom:16px;max-width:720px;margin:0 auto;z-index:90;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#14142b;color:#e8e8f6;border-radius:18px;padding:16px 20px;box-shadow:0 20px 50px rgba(20,20,43,.35);animation:viewIn .6s cubic-bezier(.2,.8,.2,1)}
 .cookie[hidden]{display:none}
 .cookie p{font-size:.84rem;flex:1 1 320px}
 .cookie a{color:#2ff0cf;text-decoration:underline}
@@ -229,7 +229,7 @@ h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin-bottom:0}
 
 /* Documentos legales */
 dialog.legal{border:0;border-radius:20px;padding:0;width:min(720px,calc(100vw - 32px));max-height:min(86vh,820px);color:var(--ink);background:#fff;box-shadow:0 30px 90px rgba(20,20,43,.4)}
-dialog.legal[open]{display:flex;flex-direction:column;animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+dialog.legal[open]{display:flex;flex-direction:column;animation:viewIn .35s cubic-bezier(.2,.8,.2,1)}
 dialog.legal::backdrop{background:rgba(20,20,43,.55);backdrop-filter:blur(3px)}
 .legal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 26px;border-bottom:1px solid var(--line)}
 .legal-head h2{font-size:1.35rem;margin:0}
@@ -262,9 +262,9 @@ dialog.legal::backdrop{background:rgba(20,20,43,.55);backdrop-filter:blur(3px)}
 .burger[aria-expanded="true"] i:last-child{top:19px;transform:rotate(-45deg)}
 
 /* Vistas */
-.view-in{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.view-in{animation:viewIn .5s cubic-bezier(.2,.8,.2,1)}
 .authbox .afrm{animation:none}
-.authbox .afrm.view-in{animation:rise .4s cubic-bezier(.2,.8,.2,1) both}
+.authbox .afrm.view-in{animation:viewIn .4s cubic-bezier(.2,.8,.2,1)}
 
 /* Campos */
 input.ok{border-color:var(--brand2);background:#f3fcfa}
@@ -340,7 +340,7 @@ dialog textarea{width:100%;border:1px solid var(--line);border-radius:12px;paddi
 .panel-plan{font-size:.82rem;color:var(--muted)}
 .panel-plan b{color:var(--ink)}
 .dash-title{font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em;font-weight:800}
-.page-auth .authbox{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.page-auth .authbox{animation:viewIn .5s cubic-bezier(.2,.8,.2,1)}
 .foot li a[href^="mailto:"],.legal-body a[href^="mailto:"]{color:var(--brand);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 
 /* Pestaña "Panel" del menú superior */
@@ -486,7 +486,7 @@ details[open]::details-content{block-size:auto}
 .fhint.err{color:var(--bad);font-weight:600}
 
 /* ---- Elegir plan ---- */
-.planview{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.planview{animation:viewIn .5s cubic-bezier(.2,.8,.2,1)}
 .plan-head{max-width:620px;margin:0 auto 26px;text-align:center}
 .plan-head .sub{margin-top:8px}
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto}
@@ -510,3 +510,5 @@ details[open]::details-content{block-size:auto}
 .planbtn:hover{border-color:var(--brand);transform:translateY(-1px)}
 @media(max-width:860px){.pgrid{grid-template-columns:1fr}.pcard.sel,.pcard:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){.pcard,.pcheck{transition:none}}
+
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}

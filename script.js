@@ -247,7 +247,7 @@ function openDash() {
   acct.clients = acct.clients || []; acct.items = acct.items || [];
   if (acct.month !== monthKey()) { acct.month = monthKey(); acct.used = 0; persist(); }
   if (!acct.planElegido) { showPlan(true); return; }
-  only($('#dashView'));
+  only($('#dashView')); setTab('res');
   if (!lines.length) addLine();
   restoreDraft();
   renderDash();
@@ -258,7 +258,7 @@ function renderDash() {
   const u = acct; if (!u) return;
   const limit = PLANS[u.plan].limit, left = Math.max(limit - u.used, 0);
   $('#dCompany').textContent = u.razon;
-  $('#dRfc').textContent = 'RFC ' + u.rfc + ' · Régimen ' + u.regimen.split(' ')[0] + ' · ' + (GIROS[u.giro || 'general'] || GIROS.general).n; $('#iGiro').value = u.giro || 'general'; applyTaxDefaults(); $('#dMail').textContent = u.email || localEmail;
+  $('#dRfc').textContent = 'RFC ' + u.rfc; $('#dGiro').textContent = 'Régimen ' + u.regimen.split(' ')[0] + ' · ' + (GIROS[u.giro || 'general'] || GIROS.general).n; $('#dInitial').textContent = (u.razon || 'T').trim()[0].toUpperCase(); $('#iGiro').value = u.giro || 'general'; applyTaxDefaults(); $('#dMail').textContent = u.email || localEmail;
   $('#dPlanName').textContent = PLANS[u.plan].name + ' · $' + PLANS[u.plan].precio;
   countTo($('#mLeft'), left, v => Math.round(v));
   $('#mUsed').textContent = u.used; $('#mLimit').textContent = limit;
@@ -298,7 +298,7 @@ function renderDash() {
     body.append(tr);
   });
   $('#hEmpty').hidden = list.length > 0;
-  renderExtras(); renderEmpresas(); renderRecibidas(); if (typeof tab !== 'undefined' && tab === 'tax') renderTaxes();
+  renderExtras(); renderEmpresas(); renderRecibidas(); if (typeof tab !== 'undefined' && tab === 'tax') renderTaxes(); if (typeof tab !== 'undefined' && tab === 'res') renderResumen();
   $('#hEmpty p').innerHTML = u.invoices.length ? '<b>Sin resultados</b><br>Prueba con otro filtro o búsqueda.' : '<b>Aún no hay facturas</b><br>Crea la primera con el formulario de arriba.';
 }
 $$('#chips button').forEach(b => b.onclick = () => { filter = b.dataset.f; renderDash(); });
@@ -607,17 +607,20 @@ $('#fInv').addEventListener('input', saveDraft); $('#fInv').addEventListener('ch
 [$('#fReg'), $('#fLogin')].forEach(f => { const orig = f.onsubmit; f.onsubmit = async e => { const sb = e.submitter; sb && sb.classList.add('loading'); try { return await orig.call(f, e); } finally { setTimeout(() => sb && sb.classList.remove('loading'), 250); } }; });
 
 // ---------- Mis empresas (panel del administrador) ----------
-let tab = 'fact';
+let tab = 'res';
 function setTab(t) {
   tab = t;
-  const map = { fact: ['#tabFact', '#ptFact'], rec: ['#tabRec', '#ptRec'], emp: ['#tabEmp', '#ptEmp'], tax: ['#tabTax', '#ptTax'] };
+  const map = { res: ['#tabRes', '#ptRes'], fact: ['#tabFact', '#ptFact'], rec: ['#tabRec', '#ptRec'], emp: ['#tabEmp', '#ptEmp'], tax: ['#tabTax', '#ptTax'] };
+  const TIT = { res: ['Tu panel', 'Resumen'], fact: ['Facturas', 'Emitidas'], rec: ['Gastos y proveedores', 'Recibidas'], tax: ['IVA e ISR', 'Impuestos'], emp: ['Tu cuenta', 'Mis empresas'] };
+  $('#pgEyebrow').textContent = TIT[t][0]; $('#pgTitle').textContent = TIT[t][1];
   Object.entries(map).forEach(([k, [pane, btn]]) => { $(pane).hidden = k !== t; $(btn).classList.toggle('on', k === t); $(btn).setAttribute('aria-selected', k === t); });
   const el = $(map[t][0]); el.classList.remove('view-in'); el.offsetWidth; el.classList.add('view-in');
   if (t === 'emp') renderEmpresas();
   if (t === 'tax') renderTaxes();
   if (t === 'rec') renderRecibidas();
+  if (t === 'res') renderResumen();
 }
-$('#ptFact').onclick = () => setTab('fact'); $('#ptEmp').onclick = () => setTab('emp'); $('#ptTax').onclick = () => setTab('tax'); $('#ptRec').onclick = () => setTab('rec');
+$('#ptRes').onclick = () => setTab('res'); $('#ptFact').onclick = () => setTab('fact'); $('#ptEmp').onclick = () => setTab('emp'); $('#ptTax').onclick = () => setTab('tax'); $('#ptRec').onclick = () => setTab('rec');
 $('#eReg').innerHTML = $('#rReg').innerHTML;
 bindRfc($('#eRfc'), $('#eRfcHint'), false);
 
@@ -911,6 +914,104 @@ function renderTips(r, key) {
   tips.push(['Haz pruebas antes de facturar', 'Usa el simulador de arriba para ver cómo cambia tu IVA y tu ISR con una factura emitida o un gasto más.']);
   const ul = $('#tipList'); ul.replaceChildren(...tips.map(([t, d]) => { const li = document.createElement('li'); const b = document.createElement('b'); b.textContent = t; const sp = document.createElement('span'); sp.textContent = d; li.append(b, sp); return li; }));
 }
+
+// ---------- Resumen (inicio del panel) ----------
+const MES3 = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const kfmt = n => n >= 1e6 ? '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + ' M' : n >= 1e3 ? '$' + (n / 1e3).toFixed(1).replace(/\.0$/, '') + ' k' : '$' + Math.round(n);
+const niceMax = v => { if (v <= 0) return 1000; const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * e; };
+function ultimosMeses(n) {
+  const out = [], d = new Date(); d.setDate(1);
+  for (let i = n - 1; i >= 0; i--) { const x = new Date(d.getFullYear(), d.getMonth() - i, 1); out.push(`${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}`); }
+  return out;
+}
+function renderResumen() {
+  if (!acct) return;
+  const meses = ultimosMeses(6), cur = meses[5], prev = meses[4];
+  const emit = acct.invoices.filter(i => i.estatus === 'timbrada'), rec = (acct.received || []).filter(r => r.deducible);
+  const ing = k => r2(emit.filter(i => monthKey(i.fecha) === k).reduce((t, i) => t + invAmt(i).sub, 0));
+  const gas = k => r2(rec.filter(r => monthKey(r.fecha) === k).reduce((t, r) => t + r.sub, 0));
+  const serie = meses.map(k => ({ k, ing: ing(k), gas: gas(k) }));
+  const delta = (a, b) => b > 0 ? (a >= b ? '▲ ' : '▼ ') + Math.abs(Math.round((a - b) / b * 100)) + '% vs mes anterior' : (a > 0 ? 'Primer movimiento' : 'Sin movimientos');
+  $('#rsIng').textContent = money(serie[5].ing); $('#rsIngD').textContent = delta(serie[5].ing, serie[4].ing);
+  $('#rsGas').textContent = money(serie[5].gas); $('#rsGasD').textContent = delta(serie[5].gas, serie[4].gas);
+  const r = estimarImpuestos(cur, acct.taxIn || {});
+  const favor = r.ivaNeto < 0;
+  $('#rsIvaL').textContent = favor ? 'IVA a favor' : 'IVA por pagar'; $('#rsIva').textContent = money(Math.abs(r.ivaNeto));
+  $('#rsIvaBox').className = 'kpi ' + (r.ivaNeto === 0 ? '' : favor ? 'good' : 'warn'); $('#rsIvaD').textContent = favor ? 'Se acredita en meses siguientes' : r.ivaNeto > 0 ? 'Vence el 17 del mes siguiente' : 'Sin IVA este mes';
+  const limite = PLANS[acct.plan].limit, left = Math.max(limite - acct.used, 0);
+  $('#rsTim').textContent = left; $('#rsTimD').textContent = `${acct.used} de ${limite} usados`;
+  // Gráfica de barras (SVG)
+  const W = 600, H = 230, L = 46, B = 28, T = 12, R = 8, max = niceMax(Math.max(...serie.flatMap(x => [x.ing, x.gas]), 0)), ph = H - B - T, bw = (W - L - R) / serie.length;
+  const y = v => T + ph - (v / max) * ph;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">`;
+  [0, .5, 1].forEach(f => { const yy = y(max * f); svg += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" class="gl"/><text x="${L - 8}" y="${yy + 4}" text-anchor="end" class="ax">${kfmt(max * f)}</text>`; });
+  serie.forEach((x, i) => {
+    const cx = L + i * bw + bw / 2, w = Math.min(bw * 0.32, 26);
+    const bar = (v, dx, cls, t) => v > 0 ? `<rect class="${cls}" x="${cx + dx}" y="${y(v)}" width="${w}" height="${T + ph - y(v)}" rx="5" style="animation-delay:${i * 60}ms"><title>${t}: ${money(v)}</title></rect>` : '';
+    svg += bar(x.ing, -w - 2, 'bi', 'Emitidas') + bar(x.gas, 2, 'bg', 'Recibidas') + `<text x="${cx}" y="${H - 8}" text-anchor="middle" class="ax${x.k === cur ? ' cur' : ''}">${MES3[+x.k.slice(5) - 1]}</text>`;
+  });
+  $('#chart').innerHTML = svg + '</svg>';
+  const tot = serie.reduce((t, x) => t + x.ing, 0), totG = serie.reduce((t, x) => t + x.gas, 0);
+  $('#chartNote').textContent = tot || totG ? `En 6 meses: ${money(tot)} emitidos y ${money(totG)} en gastos deducibles.` : 'Aquí verás tus facturas emitidas y recibidas de los últimos 6 meses.';
+  // IVA del mes
+  const mx = Math.max(r.ivaTr, r.ivaRec + (+(acct.taxIn || {}).ivaAc || 0), 1);
+  const ac = r2(r.ivaRec + (+(acct.taxIn || {}).ivaAc || 0));
+  $('#ivaBars').innerHTML = [['IVA que cobraste', r.ivaTr, 'tr'], ['IVA que pagaste (acreditable)', ac, 'ac']].map(([t, v, c]) => `<div class="ib"><div><span>${t}</span><b>${money(v)}</b></div><i class="${c}" style="width:${Math.max(v / mx * 100, v > 0 ? 4 : 0)}%"></i></div>`).join('');
+  $('#ivaMsg').textContent = r.ivaNeto > 0 ? `Pagarías ${money(r.ivaNeto)} de IVA este mes.` : r.ivaNeto < 0 ? `Tendrías ${money(-r.ivaNeto)} de IVA a favor.` : 'Todavía no hay IVA en este periodo.';
+  $('#ivaMsg').className = 'ivamsg' + (r.ivaNeto < 0 ? ' fav' : r.ivaNeto > 0 ? ' pay' : '');
+  // Actividad reciente
+  const ev = [
+    ...acct.invoices.map(i => ({ f: i.fecha, ico: 'e', t: `Factura ${i.folio} · ${i.cliente}`, s: i.estatus, a: i.total })),
+    ...(acct.received || []).map(x => ({ f: x.fecha, ico: 'r', t: `Gasto · ${x.proveedor}`, s: x.deducible ? 'deducible' : 'no deducible', a: -x.total })),
+  ].sort((a, b) => b.f - a.f).slice(0, 7);
+  $('#actEmpty').hidden = ev.length > 0;
+  const rel = f => { const d = Math.floor((Date.now() - f) / 864e5); return d <= 0 ? 'Hoy' : d === 1 ? 'Ayer' : d < 30 ? `Hace ${d} días` : new Date(f).toLocaleDateString('es-MX'); };
+  $('#actList').replaceChildren(...ev.map(e => {
+    const li = document.createElement('li');
+    const i = document.createElement('span'); i.className = 'ai ' + e.ico; i.textContent = e.ico === 'e' ? '↑' : '↓';
+    const m = document.createElement('div'); const t = document.createElement('b'); t.textContent = e.t; const sm = document.createElement('small'); sm.textContent = rel(e.f) + ' · ' + e.s; m.append(t, sm);
+    const a = document.createElement('span'); a.className = 'am ' + (e.a < 0 ? 'neg' : ''); a.textContent = (e.a < 0 ? '−' : '+') + money(Math.abs(e.a));
+    li.append(i, m, a); return li;
+  }));
+}
+$('#goTax').onclick = () => setTab('tax');
+$('#rNewInv').onclick = () => { setTab('fact'); setTimeout(goForm, 60); };
+$('#rNewRec').onclick = () => { setTab('rec'); setTimeout(() => $('#cProv').focus(), 80); };
+
+// ---------- Paleta de comandos (Ctrl + K) ----------
+const CMDS = () => [
+  ['Ir a Resumen', 'Sección', () => setTab('res')], ['Ir a Facturas emitidas', 'Sección', () => setTab('fact')], ['Ir a Facturas recibidas', 'Sección', () => setTab('rec')],
+  ['Ir a Impuestos', 'Sección', () => setTab('tax')], ['Ir a Mis empresas', 'Sección', () => setTab('emp')],
+  ['Nueva factura emitida', 'Acción', () => { setTab('fact'); setTimeout(goForm, 60); }],
+  ['Registrar factura recibida', 'Acción', () => { setTab('rec'); setTimeout(() => $('#cProv').focus(), 80); }],
+  ['Abrir la calculadora de facturas', 'Acción', () => { setTab('fact'); $('#calc').open = true; setTimeout(() => $('#calc').scrollIntoView({ behavior: 'smooth', block: 'center' }), 80); }],
+  ['Simular IVA a favor o por pagar', 'Acción', () => { setTab('tax'); setTimeout(() => $('#sim').scrollIntoView({ behavior: 'smooth', block: 'start' }), 120); }],
+  ['Agregar una empresa', 'Acción', () => { setTab('emp'); setTimeout(() => $('#bAddEmp').click(), 80); }],
+  ['Cambiar de plan', 'Cuenta', () => showPlan(false)], ['Ver mis datos', 'Cuenta', () => $('#bData').click()], ['Cerrar sesión', 'Cuenta', () => $('#bOut').click()],
+];
+let cmdSel = 0, cmdItems = [];
+function cmdRender() {
+  const q = $('#cmdIn').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  cmdItems = CMDS().filter(c => !q || c[0].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').includes(q));
+  cmdSel = Math.min(cmdSel, Math.max(cmdItems.length - 1, 0));
+  const ul = $('#cmdList'); ul.replaceChildren(...(cmdItems.length ? cmdItems : [['Sin resultados', '', null]]).map((c, i) => {
+    const li = document.createElement('li'); li.setAttribute('role', 'option'); li.className = i === cmdSel && c[2] ? 'on' : ''; li.setAttribute('aria-selected', i === cmdSel && !!c[2]);
+    const a = document.createElement('span'); a.textContent = c[0]; const b = document.createElement('small'); b.textContent = c[1]; li.append(a, b);
+    if (c[2]) li.onclick = () => cmdRun(i); return li;
+  }));
+  const on = $('li.on', ul); if (on) on.scrollIntoView({ block: 'nearest' });
+}
+function cmdRun(i) { const c = cmdItems[i]; if (!c) return; $('#dlgCmd').close(); c[2](); }
+function cmdOpen() { if (!acct || $('#dashView').hidden) return; $$('dialog[open]').forEach(d => d.close()); lastFocus = document.activeElement; $('#cmdIn').value = ''; cmdSel = 0; cmdRender(); $('#dlgCmd').showModal(); $('#cmdIn').focus(); }
+$('#bCmd').onclick = cmdOpen;
+$('#cmdIn').addEventListener('input', () => { cmdSel = 0; cmdRender(); });
+$('#cmdIn').addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); cmdSel = Math.min(cmdSel + 1, cmdItems.length - 1); cmdRender(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); cmdSel = Math.max(cmdSel - 1, 0); cmdRender(); }
+  else if (e.key === 'Enter') { e.preventDefault(); cmdRun(cmdSel); }
+});
+$('#dlgCmd').addEventListener('click', e => { if (e.target.id === 'dlgCmd') e.target.close(); });
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); cmdOpen(); } });
 
 // ---------- Inicio ----------
 setView(location.hash === '#panel' ? 'panel' : 'home', { scroll: false });
