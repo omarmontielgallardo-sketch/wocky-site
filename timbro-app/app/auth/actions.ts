@@ -27,7 +27,7 @@ export async function login(_: FormState, f: FormData): Promise<FormState> {
 
 export async function registrar(_: FormState, f: FormData): Promise<FormState> {
   if (!configured()) return NO_CONFIG;
-  const razon = text(f, 'razon_social'), rfc = limpiarRfc(text(f, 'rfc')), regimen = text(f, 'regimen').slice(0, 3);
+  const razon = text(f, 'razon_social'), rfc = limpiarRfc(text(f, 'rfc')), regimen = text(f, 'regimen').slice(0, 3), giro = text(f, 'giro').replace(/[^a-z_]/g, '').slice(0, 30) || 'general';
   const email = text(f, 'email').toLowerCase(), password = String(f.get('password') ?? '');
   if (razon.length < 2) return { error: 'Escribe la razón social o tu nombre.' };
   const rc = validarRfc(rfc);
@@ -44,7 +44,7 @@ export async function registrar(_: FormState, f: FormData): Promise<FormState> {
     email, password,
     options: {
       emailRedirectTo: `${base}/auth/callback`,
-      data: { razon_social: razon, rfc, regimen, aceptado_privacidad: LEGAL_VERSION, aceptado_terminos: LEGAL_VERSION },
+      data: { razon_social: razon, rfc, regimen, giro, aceptado_privacidad: LEGAL_VERSION, aceptado_terminos: LEGAL_VERSION },
     },
   });
   if (error) return { error: /password/i.test(error.message) ? 'Elige una contraseña más segura (mínimo 8 caracteres).' : 'No pudimos crear tu cuenta. Intenta de nuevo.' };

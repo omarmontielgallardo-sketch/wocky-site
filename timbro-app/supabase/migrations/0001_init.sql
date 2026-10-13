@@ -27,6 +27,7 @@ create table if not exists public.empresas (
   plan text not null default 'emprendedor' references public.planes(id),
   owner_id uuid references auth.users(id) on delete set null,   -- administrador que creó la empresa; sus empresas comparten plan y timbres
   plan_elegido boolean not null default false,   -- el administrador debe elegir su plan después de crear la cuenta
+  giro text not null default 'general' check (giro ~ '^[a-z0-9_]{2,30}$'),   -- a qué se dedica; define los impuestos sugeridos
   folio_seq int not null default 0,
   creada_en timestamptz not null default now()
 );
@@ -67,7 +68,12 @@ create table if not exists public.facturas (
   metodo_pago text not null default 'PUE' check (metodo_pago in ('PUE', 'PPD')),
   lineas jsonb not null,
   subtotal numeric(14,2) not null,
+  iva_tipo text not null default '16' check (iva_tipo in ('16', '8', '0', 'exento')),
+  ieps numeric(14,2) not null default 0,
+  ish numeric(14,2) not null default 0,
   iva numeric(14,2) not null,
+  isr_retenido numeric(14,2) not null default 0,
+  iva_retenido numeric(14,2) not null default 0,
   total numeric(14,2) not null,
   estatus text not null default 'borrador' check (estatus in ('borrador', 'timbrada', 'cancelada')),
   uuid_demo uuid,                    -- UUID de demostración; el UUID fiscal real llegará con el PAC
@@ -134,7 +140,7 @@ create policy aceptaciones_propias on public.aceptaciones for select to authenti
 revoke all on public.planes, public.empresas, public.miembros, public.clientes, public.conceptos_frecuentes, public.facturas, public.aceptaciones from anon, authenticated;
 grant select on public.planes to anon, authenticated;
 grant select on public.empresas, public.miembros, public.facturas, public.aceptaciones to authenticated;
-grant update (razon_social, regimen) on public.empresas to authenticated;   -- el plan NO es editable por el usuario
+grant update (razon_social, regimen, giro) on public.empresas to authenticated;   -- el plan NO es editable por el usuario
 grant select, insert, update, delete on public.clientes, public.conceptos_frecuentes to authenticated;
 
 -- ---------- Funciones de negocio ----------
@@ -160,7 +166,7 @@ begin
   return substr(base, 13, 1) = esperado;
 end $$;
 
-create or replace function public.crear_empresa(p_razon text, p_rfc text, p_regimen text, p_version_privacidad text, p_version_terminos text)
+create or replace function public.crear_empresa(p_razon text, p_rfc text, p_regimen text, p_version_privacidad text, p_version_terminos text, p_giro text default 'general')
 returns public.empresas language plpgsql security definer set search_path = public as $$
 declare v_uid uuid := auth.uid(); v_rfc text := upper(trim(p_rfc)); v_emp public.empresas; v_prev public.empresas; v_n int;
 begin
@@ -174,8 +180,9 @@ begin
   select count(*)::int into v_n from public.empresas where owner_id = v_uid;
   if v_prev.id is not null and v_n >= (select rfc_max from public.planes where id = v_prev.plan) then raise exception 'limite_empresas'; end if;
   if exists (select 1 from public.empresas where owner_id = v_uid and rfc = v_rfc) then raise exception 'empresa_duplicada'; end if;
-  insert into public.empresas (razon_social, rfc, regimen, owner_id, plan, plan_elegido)
-    values (trim(p_razon), v_rfc, p_regimen, v_uid, coalesce(v_prev.plan, 'emprendedor'), coalesce(v_prev.plan_elegido, false)) returning * into v_emp;
+  if coalesce(p_giro, '') !~ '^[a-z0-9_]{2,30}$' then raise exception 'giro_invalido'; end if;
+  insert into public.empresas (razon_social, rfc, regimen, giro, owner_id, plan, plan_elegido)
+    values (trim(p_razon), v_rfc, p_regimen, p_giro, v_uid, coalesce(v_prev.plan, 'emprendedor'), coalesce(v_prev.plan_elegido, false)) returning * into v_emp;
   insert into public.miembros (empresa_id, user_id, rol) values (v_emp.id, v_uid, 'admin');
   if v_prev.id is null then
     insert into public.aceptaciones (user_id, documento, version) values (v_uid, 'privacidad', p_version_privacidad), (v_uid, 'terminos', p_version_terminos);
@@ -196,12 +203,15 @@ begin
   return v_f;
 end $$;
 
-create or replace function public.guardar_factura(p_empresa uuid, p_cliente_nombre text, p_cliente_rfc text, p_uso text, p_metodo text, p_lineas jsonb, p_timbrar boolean default false)
+create or replace function public.guardar_factura(p_empresa uuid, p_cliente_nombre text, p_cliente_rfc text, p_uso text, p_metodo text, p_lineas jsonb, p_timbrar boolean default false, p_impuestos jsonb default '{}'::jsonb)
 returns public.facturas language plpgsql security definer set search_path = public as $$
 declare
   v_uid uuid := auth.uid(); v_rfc text := upper(trim(p_cliente_rfc)); v_seq int; v_f public.facturas;
   v_sub numeric(14,2) := 0; v_iva numeric(14,2); l jsonb; v_n int := 0; v_lineas jsonb := '[]'::jsonb;
   v_q numeric; v_p numeric; v_d text;
+  v_iva_tipo text := coalesce(p_impuestos->>'iva', '16'); v_isr numeric := coalesce((p_impuestos->>'isr')::numeric, 0); v_ivaret numeric := coalesce((p_impuestos->>'iva_ret')::numeric, 0);
+  v_ieps_t numeric := coalesce((p_impuestos->>'ieps')::numeric, 0); v_ish_t numeric := coalesce((p_impuestos->>'ish')::numeric, 0);
+  v_ieps numeric(14,2); v_ish numeric(14,2); v_isr_m numeric(14,2); v_ivaret_m numeric(14,2); v_tasa numeric;
 begin
   if v_uid is null then raise exception 'no_autenticado'; end if;
   if not public.es_miembro(p_empresa) then raise exception 'sin_acceso'; end if;
@@ -220,11 +230,18 @@ begin
     v_lineas := v_lineas || jsonb_build_array(jsonb_build_object('descripcion', v_d, 'cantidad', v_q, 'precio', v_p));
     v_n := v_n + 1;
   end loop;
-  v_iva := round(v_sub * 0.16, 2);
+  -- Impuestos: solo valores permitidos; los montos los calcula el servidor.
+  if v_iva_tipo not in ('16', '8', '0', 'exento') or v_isr not in (0, 0.0125, 0.10) or v_ivaret not in (0, 0.04, 0.106667)
+     or v_ieps_t not in (0, 0.08, 0.265, 0.30, 0.53, 1.6) or v_ish_t not in (0, 0.02, 0.03, 0.04, 0.05)
+     or (v_iva_tipo = 'exento' and v_ivaret <> 0) then raise exception 'impuestos_invalidos'; end if;
+  v_tasa := case when v_iva_tipo = 'exento' then 0 else v_iva_tipo::numeric / 100 end;
+  v_ieps := round(v_sub * v_ieps_t, 2); v_ish := round(v_sub * v_ish_t, 2);
+  v_iva := round((v_sub + v_ieps) * v_tasa, 2);
+  v_isr_m := round(v_sub * v_isr, 2); v_ivaret_m := round(v_sub * v_ivaret, 2);
 
   update public.empresas set folio_seq = folio_seq + 1 where id = p_empresa returning folio_seq into v_seq;
-  insert into public.facturas (empresa_id, folio, cliente_nombre, cliente_rfc, uso_cfdi, metodo_pago, lineas, subtotal, iva, total, creada_por)
-  values (p_empresa, 'A-' || lpad(v_seq::text, 4, '0'), trim(p_cliente_nombre), v_rfc, p_uso, p_metodo, v_lineas, v_sub, v_iva, v_sub + v_iva, v_uid)
+  insert into public.facturas (empresa_id, folio, cliente_nombre, cliente_rfc, uso_cfdi, metodo_pago, lineas, subtotal, iva_tipo, ieps, ish, iva, isr_retenido, iva_retenido, total, creada_por)
+  values (p_empresa, 'A-' || lpad(v_seq::text, 4, '0'), trim(p_cliente_nombre), v_rfc, p_uso, p_metodo, v_lineas, v_sub, v_iva_tipo, v_ieps, v_ish, v_iva, v_isr_m, v_ivaret_m, v_sub + v_ieps + v_ish + v_iva - v_isr_m - v_ivaret_m, v_uid)
   returning * into v_f;
 
   insert into public.clientes (empresa_id, nombre, rfc) values (p_empresa, trim(p_cliente_nombre), v_rfc)
@@ -301,20 +318,20 @@ begin
   delete from public.aceptaciones where user_id = v_uid;
 end $$;
 
-revoke all on function public.crear_empresa(text, text, text, text, text), public._consumir_timbre(uuid),
-  public.guardar_factura(uuid, text, text, text, text, jsonb, boolean), public.timbrar_factura(uuid),
+revoke all on function public.crear_empresa(text, text, text, text, text, text), public._consumir_timbre(uuid),
+  public.guardar_factura(uuid, text, text, text, text, jsonb, boolean, jsonb), public.timbrar_factura(uuid),
   public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(), public.elegir_plan(uuid, text),
   public.es_miembro(uuid), public.es_admin(uuid), public.timbres_usados(uuid) from public, anon, authenticated;
-grant execute on function public.crear_empresa(text, text, text, text, text), public.guardar_factura(uuid, text, text, text, text, jsonb, boolean),
+grant execute on function public.crear_empresa(text, text, text, text, text, text), public.guardar_factura(uuid, text, text, text, text, jsonb, boolean, jsonb),
   public.timbrar_factura(uuid), public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(), public.elegir_plan(uuid, text),
   public.es_miembro(uuid), public.es_admin(uuid), public.timbres_usados(uuid) to authenticated;
 
 -- Panel del administrador: sus empresas con el número de facturas de cada una.
 create or replace function public.resumen_empresas()
-returns table (id uuid, razon_social text, rfc text, regimen text, plan text, creada_en timestamptz,
+returns table (id uuid, razon_social text, rfc text, regimen text, giro text, plan text, creada_en timestamptz,
                facturas int, timbradas int, borradores int, canceladas int, facturado numeric, timbres_mes int)
 language sql stable security definer set search_path = public as $$
-  select e.id, e.razon_social, e.rfc, e.regimen, e.plan, e.creada_en,
+  select e.id, e.razon_social, e.rfc, e.regimen, e.giro, e.plan, e.creada_en,
          count(f.id)::int,
          (count(f.id) filter (where f.estatus = 'timbrada'))::int,
          (count(f.id) filter (where f.estatus = 'borrador'))::int,
@@ -329,3 +346,66 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.resumen_empresas() from public, anon, authenticated;
 grant execute on function public.resumen_empresas() to authenticated;
+
+-- ---------- Facturas recibidas (gastos y proveedores) ----------
+create table if not exists public.recibidas (
+  id uuid primary key default gen_random_uuid(),
+  empresa_id uuid not null references public.empresas(id) on delete cascade,
+  fecha date not null,
+  proveedor text not null,
+  rfc text not null,
+  concepto text not null,
+  categoria text not null default 'Otros gastos',
+  metodo text not null check (metodo in ('transferencia', 'tarjeta', 'cheque', 'efectivo')),
+  iva_tasa text not null check (iva_tasa in ('16', '8', '0', 'exento')),
+  subtotal numeric(14,2) not null check (subtotal > 0),
+  iva numeric(14,2) not null,
+  total numeric(14,2) not null,
+  deducible boolean not null,
+  motivo text not null default '',
+  creada_por uuid references auth.users(id) on delete set null,
+  creada_en timestamptz not null default now()
+);
+create index if not exists recibidas_empresa_idx on public.recibidas(empresa_id, fecha desc);
+alter table public.recibidas enable row level security;
+create policy recibidas_lectura on public.recibidas for select to authenticated using (public.es_miembro(empresa_id));
+revoke all on public.recibidas from anon, authenticated;
+grant select on public.recibidas to authenticated;
+
+-- Registra una factura recibida. El servidor calcula el IVA y decide si es deducible:
+-- los pagos en efectivo mayores a $2,000 no son deducibles ni acreditables.
+create or replace function public.guardar_recibida(p_empresa uuid, p_fecha date, p_proveedor text, p_rfc text, p_concepto text, p_categoria text,
+  p_metodo text, p_iva_tasa text, p_subtotal numeric, p_deducible boolean default true)
+returns public.recibidas language plpgsql security definer set search_path = public as $$
+declare v_rfc text := upper(trim(p_rfc)); v_sub numeric(14,2) := round(p_subtotal, 2); v_iva numeric(14,2); v_total numeric(14,2); v_ded boolean := coalesce(p_deducible, true); v_mot text := ''; v_r public.recibidas;
+begin
+  if auth.uid() is null then raise exception 'no_autenticado'; end if;
+  if not public.es_miembro(p_empresa) then raise exception 'sin_acceso'; end if;
+  if char_length(trim(coalesce(p_proveedor, ''))) < 2 then raise exception 'proveedor_invalido'; end if;
+  if not public.rfc_valido(v_rfc) or v_rfc in ('XAXX010101000', 'XEXX010101000') then raise exception 'rfc_invalido'; end if;
+  if char_length(trim(coalesce(p_concepto, ''))) < 2 then raise exception 'concepto_invalido'; end if;
+  if v_sub is null or v_sub <= 0 then raise exception 'monto_invalido'; end if;
+  if p_fecha is null or p_fecha > current_date + 1 then raise exception 'fecha_invalida'; end if;
+  if p_metodo not in ('transferencia', 'tarjeta', 'cheque', 'efectivo') or p_iva_tasa not in ('16', '8', '0', 'exento') then raise exception 'datos_invalidos'; end if;
+  v_iva := case when p_iva_tasa = 'exento' then 0 else round(v_sub * p_iva_tasa::numeric / 100, 2) end;
+  v_total := v_sub + v_iva;
+  if p_metodo = 'efectivo' and v_total > 2000 then v_ded := false; v_mot := 'Pago en efectivo mayor a $2,000';
+  elsif not v_ded then v_mot := 'Marcado como no deducible'; end if;
+  insert into public.recibidas (empresa_id, fecha, proveedor, rfc, concepto, categoria, metodo, iva_tasa, subtotal, iva, total, deducible, motivo, creada_por)
+  values (p_empresa, p_fecha, trim(p_proveedor), v_rfc, trim(p_concepto), coalesce(nullif(trim(p_categoria), ''), 'Otros gastos'), p_metodo, p_iva_tasa, v_sub, v_iva, v_total, v_ded, v_mot, auth.uid())
+  returning * into v_r;
+  return v_r;
+end $$;
+
+create or replace function public.eliminar_recibida(p_id uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_emp uuid;
+begin
+  if auth.uid() is null then raise exception 'no_autenticado'; end if;
+  select empresa_id into v_emp from public.recibidas where id = p_id;
+  if v_emp is null or not public.es_miembro(v_emp) then raise exception 'sin_acceso'; end if;
+  delete from public.recibidas where id = p_id;
+end $$;
+
+revoke all on function public.guardar_recibida(uuid, date, text, text, text, text, text, text, numeric, boolean), public.eliminar_recibida(uuid) from public, anon, authenticated;
+grant execute on function public.guardar_recibida(uuid, date, text, text, text, text, text, text, numeric, boolean), public.eliminar_recibida(uuid) to authenticated;

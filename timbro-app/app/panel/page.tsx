@@ -6,7 +6,8 @@ import { LIMITES, RFC_MAX } from '@/lib/constants';
 import SiteNav from '@/components/SiteNav';
 import Footer from '@/components/Footer';
 import PlanPicker from '@/components/PlanPicker';
-import PanelClient, { type Empresa, type Factura, type Cliente, type Concepto, type ResumenEmpresa } from '@/components/PanelClient';
+import PanelShell from '@/components/panel/PanelShell';
+import type { Empresa, Factura, Recibida, Cliente, Concepto, ResumenEmpresa } from '@/components/panel/types';
 import { cerrarSesion } from '@/app/auth/actions';
 
 export const metadata: Metadata = { title: 'Mi panel' };
@@ -37,9 +38,10 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const [empresa, facturas, clientes, conceptos, usados] = await Promise.all([
-    supabase.from('empresas').select('id,razon_social,rfc,regimen,plan,plan_elegido').eq('id', empresaId).single(),
-    supabase.from('facturas').select('id,folio,cliente_nombre,cliente_rfc,uso_cfdi,metodo_pago,lineas,total,estatus,uuid_demo,timbrada_en,creada_en').eq('empresa_id', empresaId).order('creada_en', { ascending: false }).limit(500),
+  const [empresa, facturas, recibidas, clientes, conceptos, usados] = await Promise.all([
+    supabase.from('empresas').select('id,razon_social,rfc,regimen,giro,plan,plan_elegido').eq('id', empresaId).single(),
+    supabase.from('facturas').select('id,folio,cliente_nombre,cliente_rfc,uso_cfdi,metodo_pago,lineas,subtotal,iva_tipo,ieps,ish,iva,isr_retenido,iva_retenido,total,estatus,uuid_demo,timbrada_en,creada_en').eq('empresa_id', empresaId).order('creada_en', { ascending: false }).limit(500),
+    supabase.from('recibidas').select('id,fecha,proveedor,rfc,concepto,categoria,metodo,iva_tasa,subtotal,iva,total,deducible,motivo').eq('empresa_id', empresaId).order('fecha', { ascending: false }).limit(500),
     supabase.from('clientes').select('id,nombre,rfc').eq('empresa_id', empresaId).order('nombre'),
     supabase.from('conceptos_frecuentes').select('descripcion,precio').eq('empresa_id', empresaId).order('descripcion'),
     supabase.rpc('timbres_usados', { eid: empresaId }),
@@ -58,9 +60,9 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     <>
       <SiteNav />
       <main id="contenido" className="panel-wrap"><div className="wrap">
-        <PanelClient
+        <PanelShell
           empresa={e} email={user.email ?? ''}
-          facturas={(facturas.data ?? []) as Factura[]} clientes={(clientes.data ?? []) as Cliente[]} conceptos={(conceptos.data ?? []) as Concepto[]}
+          facturas={(facturas.data ?? []) as Factura[]} recibidas={(recibidas.data ?? []) as Recibida[]} clientes={(clientes.data ?? []) as Cliente[]} conceptos={(conceptos.data ?? []) as Concepto[]}
           usados={Number(usados.data ?? 0)} limite={LIMITES[e.plan] ?? 40} empresas={resumen} rfcMax={RFC_MAX[e.plan] ?? 1}
         />
       </div></main>

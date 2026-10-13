@@ -4,6 +4,7 @@ import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { login, registrar, recuperar, restablecer, type FormState } from '@/app/auth/actions';
 import { REGIMENES_OTROS, REGIMENES_USADOS } from '@/lib/constants';
+import { GIROS } from '@/lib/impuestos';
 import { limpiarRfc, validarRfc } from '@/lib/rfc';
 
 const init: FormState = {};
@@ -33,6 +34,8 @@ export function LoginForm({ aviso }: { aviso?: string }) {
   const [s, action] = useActionState(login, init);
   return (
     <form className="afrm" action={action}>
+      <label htmlFor="giro">¿A qué se dedica tu empresa?</label>
+      <select id="giro" name="giro" defaultValue="general">{Object.entries(GIROS).map(([k, g]) => <option key={k} value={k}>{g.n}</option>)}</select>
       <label htmlFor="email">Correo</label>
       <input id="email" name="email" type="email" placeholder="tu@empresa.mx" autoComplete="email" required />
       <label htmlFor="password">Contraseña</label>

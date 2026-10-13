@@ -21,6 +21,13 @@ const ERRORES: Record<string, string> = {
   limite_empresas: 'Tu plan ya no permite más empresas. Cambia de plan para agregar otra.',
   empresa_duplicada: 'Ya registraste una empresa con ese RFC.',
   razon_invalida: 'Escribe la razón social o el nombre de la empresa.',
+  impuestos_invalidos: 'Los impuestos de la factura no son válidos. Restablece la sugerencia e inténtalo de nuevo.',
+  proveedor_invalido: 'Escribe el nombre del proveedor.',
+  concepto_invalido: 'Escribe el concepto de la factura.',
+  monto_invalido: 'Escribe un subtotal mayor a cero.',
+  fecha_invalida: 'La fecha de la factura no es válida.',
+  datos_invalidos: 'Revisa los datos de la factura.',
+  giro_invalido: 'Elige a qué se dedica la empresa.',
   plan_insuficiente: 'Tienes más empresas de las que permite ese plan. Elige un plan con más empresas.',
 };
 const mapError = (msg: string) => {
@@ -31,12 +38,13 @@ const mapError = (msg: string) => {
 export type EntradaFactura = {
   empresaId: string; clienteNombre: string; clienteRfc: string; uso: string; metodo: string;
   lineas: { descripcion: string; cantidad: number; precio: number }[]; timbrar: boolean;
+  impuestos: { iva: string; isr: number; iva_ret: number; ieps: number; ish: number };
 };
 
 export async function guardarFactura(i: EntradaFactura): Promise<Resultado> {
   const { error } = await (await createClient()).rpc('guardar_factura', {
     p_empresa: i.empresaId, p_cliente_nombre: i.clienteNombre, p_cliente_rfc: i.clienteRfc, p_uso: i.uso, p_metodo: i.metodo,
-    p_lineas: i.lineas, p_timbrar: i.timbrar,
+    p_lineas: i.lineas, p_timbrar: i.timbrar, p_impuestos: i.impuestos,
   });
   if (error) return { ok: false, error: mapError(error.message) };
   revalidatePath('/panel');
@@ -53,16 +61,44 @@ export async function timbrarFactura(id: string): Promise<Resultado> { return si
 export async function cancelarFactura(id: string): Promise<Resultado> { return simple('cancelar_factura', id, 'Factura cancelada.'); }
 export async function eliminarBorrador(id: string): Promise<Resultado> { return simple('eliminar_borrador', id, 'Borrador eliminado.'); }
 
-export async function crearEmpresa(i: { razon: string; rfc: string; regimen: string }): Promise<Resultado> {
+export async function crearEmpresa(i: { razon: string; rfc: string; regimen: string; giro: string }): Promise<Resultado> {
   const rfc = limpiarRfc(i.rfc), rc = validarRfc(rfc);
   if (!rc.ok) return { ok: false, error: rc.msg || 'Escribe el RFC de la empresa.' };
   if (i.razon.trim().length < 2) return { ok: false, error: ERRORES.razon_invalida };
   const { data, error } = await (await createClient()).rpc('crear_empresa', {
-    p_razon: i.razon.trim(), p_rfc: rfc, p_regimen: i.regimen.slice(0, 3), p_version_privacidad: LEGAL_VERSION, p_version_terminos: LEGAL_VERSION,
+    p_razon: i.razon.trim(), p_rfc: rfc, p_regimen: i.regimen.slice(0, 3), p_version_privacidad: LEGAL_VERSION, p_version_terminos: LEGAL_VERSION, p_giro: i.giro,
   });
   if (error) return { ok: false, error: mapError(error.message) };
   revalidatePath('/panel');
   return { ok: true, mensaje: 'Empresa agregada.', id: (data as { id: string }).id };
+}
+
+export async function actualizarGiro(empresaId: string, giro: string): Promise<Resultado> {
+  if (!/^[a-z0-9_]{2,30}$/.test(giro)) return { ok: false, error: ERRORES.giro_invalido };
+  const { error } = await (await createClient()).from('empresas').update({ giro }).eq('id', empresaId);
+  if (error) return { ok: false, error: 'No se pudo actualizar el giro. Solo el administrador puede hacerlo.' };
+  revalidatePath('/panel');
+  return { ok: true, mensaje: 'Giro actualizado.' };
+}
+
+export type EntradaRecibida = { empresaId: string; fecha: string; proveedor: string; rfc: string; concepto: string; categoria: string; metodo: string; ivaTasa: string; subtotal: number; deducible: boolean };
+export async function guardarRecibida(i: EntradaRecibida): Promise<Resultado> {
+  const rfc = limpiarRfc(i.rfc), rc = validarRfc(rfc);
+  if (!rc.ok) return { ok: false, error: rc.msg || 'Escribe el RFC del proveedor.' };
+  const { data, error } = await (await createClient()).rpc('guardar_recibida', {
+    p_empresa: i.empresaId, p_fecha: i.fecha, p_proveedor: i.proveedor, p_rfc: rfc, p_concepto: i.concepto, p_categoria: i.categoria,
+    p_metodo: i.metodo, p_iva_tasa: i.ivaTasa, p_subtotal: i.subtotal, p_deducible: i.deducible,
+  });
+  if (error) return { ok: false, error: mapError(error.message) };
+  revalidatePath('/panel');
+  const r = data as { deducible: boolean; iva: number };
+  return { ok: true, mensaje: r.deducible ? `Factura recibida registrada. IVA acreditable: $${Number(r.iva).toFixed(2)}.` : 'Factura recibida registrada (no deducible).' };
+}
+export async function eliminarRecibida(id: string): Promise<Resultado> {
+  const { error } = await (await createClient()).rpc('eliminar_recibida', { p_id: id });
+  if (error) return { ok: false, error: mapError(error.message) };
+  revalidatePath('/panel');
+  return { ok: true, mensaje: 'Factura recibida eliminada.' };
 }
 
 export async function elegirPlan(empresaId: string, plan: string): Promise<Resultado> {

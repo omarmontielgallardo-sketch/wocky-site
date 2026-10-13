@@ -64,6 +64,33 @@ for (let i = 0; i < 39; i++) await q(`select guardar_factura($1, 'Cliente Uno', 
 ok('40 timbres usados', (await q(`select timbres_usados($1) n`, [emp.id]))[0].n === 40);
 await throws('timbre 41 se bloquea', `select guardar_factura($1, 'Cliente Uno', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, true)`, [emp.id, lineas], 'limite_timbres');
 
+// Impuestos de la factura y facturas recibidas
+await q(`select elegir_plan($1, 'negocio')`, [emp.id]);
+const imp = JSON.stringify({ iva: '16', isr: 0.10, iva_ret: 0.106667 });
+const lin10k = JSON.stringify([{ descripcion: 'Honorarios', cantidad: 1, precio: 10000 }]);
+const [fi] = await q(`select * from guardar_factura($1, 'Empresa SA', 'EAU200101AB6', 'G03', 'PUE', $2::jsonb, false, $3::jsonb)`, [emp.id, lin10k, imp]);
+ok('factura con IVA y retenciones: total calculado en servidor', Number(fi.iva) === 1600 && Number(fi.isr_retenido) === 1000 && Number(fi.iva_retenido) === 1066.67 && Number(fi.total) === 9533.33, JSON.stringify(fi));
+const [fh] = await q(`select * from guardar_factura($1, 'Hotel', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, false, $3::jsonb)`, [emp.id, lin10k, JSON.stringify({ iva: '16', ish: 0.03 })]);
+ok('impuesto sobre hospedaje', Number(fh.ish) === 300 && Number(fh.total) === 11900, JSON.stringify(fh));
+const [fl] = await q(`select * from guardar_factura($1, 'Licores', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, false, $3::jsonb)`, [emp.id, lin10k, JSON.stringify({ iva: '16', ieps: 0.265 })]);
+ok('IEPS y el IVA se calcula sobre subtotal + IEPS', Number(fl.ieps) === 2650 && Number(fl.iva) === 2024 && Number(fl.total) === 14674, JSON.stringify(fl));
+const [fe] = await q(`select * from guardar_factura($1, 'Escuela', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, false, $3::jsonb)`, [emp.id, lin10k, JSON.stringify({ iva: 'exento' })]);
+ok('IVA exento', Number(fe.iva) === 0 && Number(fe.total) === 10000, JSON.stringify(fe));
+await throws('tasa de ISR inventada se rechaza', `select guardar_factura($1, 'Cliente', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, false, $3::jsonb)`, [emp.id, lin10k, JSON.stringify({ isr: 0.5 })], 'impuestos_invalidos');
+await throws('retención de IVA con IVA exento se rechaza', `select guardar_factura($1, 'Cliente', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, false, $3::jsonb)`, [emp.id, lin10k, JSON.stringify({ iva: 'exento', iva_ret: 0.04 })], 'impuestos_invalidos');
+for (const f of [fi, fh, fl, fe]) await q(`select eliminar_borrador($1)`, [f.id]);
+const [r1] = await q(`select * from guardar_recibida($1, current_date, 'Papelería SA', 'EAU200101AB6', 'Material', 'Otros gastos', 'transferencia', '16', 5000, true)`, [emp.id]);
+ok('factura recibida: IVA acreditable y deducible', Number(r1.iva) === 800 && Number(r1.total) === 5800 && r1.deducible === true, JSON.stringify(r1));
+const [r2] = await q(`select * from guardar_recibida($1, current_date, 'Taller López', 'GAMJ800101AB8', 'Reparación', 'Otros gastos', 'efectivo', '16', 3000, true)`, [emp.id]);
+ok('efectivo mayor a $2,000 no es deducible', r2.deducible === false && r2.motivo.includes('efectivo'), JSON.stringify(r2));
+await throws('proveedor con RFC falso se rechaza', `select guardar_recibida($1, current_date, 'Falso SA', 'GAMJ800101AB1', 'x1', 'Otros', 'tarjeta', '16', 100, true)`, [emp.id], 'rfc_invalido');
+await throws('proveedor con RFC genérico se rechaza', `select guardar_recibida($1, current_date, 'Genérico', 'XAXX010101000', 'x1', 'Otros', 'tarjeta', '16', 100, true)`, [emp.id], 'rfc_invalido');
+await throws('fecha futura se rechaza', `select guardar_recibida($1, current_date + 30, 'Proveedor', 'EAU200101AB6', 'x1', 'Otros', 'tarjeta', '16', 100, true)`, [emp.id], 'fecha_invalida');
+ok('listado de recibidas', (await q(`select count(*)::int c from recibidas`))[0].c === 2);
+await q(`select eliminar_recibida($1)`, [r2.id]);
+ok('eliminar recibida', (await q(`select count(*)::int c from recibidas`))[0].c === 1);
+await q(`select elegir_plan($1, 'emprendedor')`, [emp.id]);
+
 // Varias empresas por administrador
 await q(`select elegir_plan($1, 'negocio')`, [emp.id]);
 const [emp2] = await q(`select * from crear_empresa('Beta Servicios', 'BET200101AAA', '612', '2026-10-13', '2026-10-13')`);
@@ -88,6 +115,8 @@ ok('con Despacho se pueden agregar más', (await q(`select count(*)::int c from 
 await as(B);
 ok('B no ve facturas de A', (await q(`select count(*)::int c from facturas`))[0].c === 0);
 ok('B no ve empresas de A', (await q(`select count(*)::int c from empresas`))[0].c === 0);
+ok('B no ve facturas recibidas de A', (await q(`select count(*)::int c from recibidas`))[0].c === 0);
+await throws('B no puede registrar recibidas en la empresa de A', `select guardar_recibida($1, current_date, 'Proveedor', 'EAU200101AB6', 'x1', 'Otros', 'tarjeta', '16', 100, true)`, [emp.id], 'sin_acceso');
 ok('B no tiene panel de empresas ajenas', (await q(`select count(*)::int c from resumen_empresas()`))[0].c === 0);
 await throws('B no puede elegir el plan de A', `select elegir_plan($1, 'despacho')`, [emp.id], 'sin_acceso');
 await throws('B no puede timbrar facturas de A', `select timbrar_factura($1)`, [f1.id], 'sin_acceso');
@@ -107,6 +136,7 @@ ok('anónimo sí ve los planes', (await q(`select count(*)::int c from planes`))
 // Derecho de cancelación
 await as(A);
 await q(`select eliminar_mis_datos()`);
+ok('eliminar_mis_datos borra también las recibidas', (await q(`select count(*)::int c from recibidas`))[0].c === 0);
 ok('eliminar_mis_datos borra todas sus empresas y facturas', (await q(`select (select count(*) from empresas)::int e, (select count(*) from facturas)::int f, (select count(*) from aceptaciones)::int a`))[0].e === 0);
 
 console.log(`\n${pass} correctas, ${fail} con falla`);
