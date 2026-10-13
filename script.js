@@ -21,34 +21,44 @@ const countTo = (el, to) => {
   requestAnimationFrame(tick);
 };
 
-// ---------- Datos ----------
-const PLANS = { emp: { name: 'Emprendedor', limit: 40 }, neg: { name: 'Negocio', limit: 150 }, des: { name: 'Despacho', limit: 600 } };
-let mem = {}, memSession = null;
+// ---------- Documentos legales y cookies ----------
+let lastFocus = null;
+document.addEventListener('click', e => {
+  const o = e.target.closest('[data-open]');
+  if (o) {
+    e.preventDefault();
+    $$('dialog[open]').forEach(d => d.close());
+    const d = document.getElementById(o.dataset.open);
+    lastFocus = o;
+    if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+    $('.legal-body', d).scrollTop = 0;
+    return;
+  }
+  if (e.target.closest('[data-close]')) { e.target.closest('dialog').close(); return; }
+  if (e.target.tagName === 'DIALOG') e.target.close();
+});
+$$('dialog.legal').forEach(d => d.addEventListener('close', () => lastFocus && lastFocus.focus && lastFocus.focus()));
+
+const CK = 'timbro_consent';
+const getConsent = () => { try { return localStorage.getItem(CK); } catch { return null; } };
+const setConsent = v => { try { localStorage.setItem(CK, v); } catch {} $('#cookie').hidden = true; };
+if (!getConsent()) setTimeout(() => { $('#cookie').hidden = false; }, 900);
+$('#ckOk').onclick = () => setConsent('all');
+$('#ckNec').onclick = () => setConsent('necessary');
+$('#cookiePrefs').onclick = e => { e.preventDefault(); $('#cookie').hidden = false; };
+
+// ---------- Datos (solo en este navegador) ----------
+const PLANS = { emp: { name: 'Emprendedor', limit: 40, users: 1 }, neg: { name: 'Negocio', limit: 150, users: 3 }, des: { name: 'Despacho', limit: 600, users: 'ilimitados' } };
+let mem = {}, memSession = null, acct = null, localEmail = null;
 const loadDb = () => { try { return JSON.parse(localStorage.getItem('timbro_db') || '{}'); } catch { return mem; } };
 const saveDb = db => { mem = db; try { localStorage.setItem('timbro_db', JSON.stringify(db)); } catch {} };
 const getSession = () => { try { return localStorage.getItem('timbro_session'); } catch { return memSession; } };
 const setSession = e => { memSession = e; try { e ? localStorage.setItem('timbro_session', e) : localStorage.removeItem('timbro_session'); } catch {} };
 
-// Modo nube: si el visor tiene cuenta de Claude y puede guardar, la cuenta vive en la base de datos de la página.
-// Modo local: correo y contraseña guardados solo en este navegador.
-let mode = 'local', cloud = null, acct = null, localEmail = null, queue = Promise.resolve();
-
-async function initCloud() {
-  try {
-    if (!window.claude || !claude.use) return;
-    const [user, db] = await Promise.all([claude.use('user'), claude.use('db')]);
-    if (!user || !db) return;
-    const me = await user.me();
-    if (!me.id) return;
-    cloud = { ref: db.doc('data/users/' + me.id + '/account'), name: me.name, avatar: me.avatarUrl };
-    mode = 'cloud';
-  } catch { mode = 'local'; }
-}
-
 // ---------- Utilidades ----------
 const money = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n || 0);
 const rfcOk = v => /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/.test(v);
-const monthKey = () => new Date().toISOString().slice(0, 7);
+const monthKey = (d = new Date()) => new Date(d).toISOString().slice(0, 7);
 const say = (el, text, err) => { el.hidden = false; el.textContent = text; el.classList.toggle('err', !!err); el.style.animation = 'none'; el.offsetWidth; el.style.animation = ''; };
 const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
 const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
@@ -56,21 +66,10 @@ async function hashPass(pass, salt) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']);
   return b64(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: unb64(salt), iterations: 150000, hash: 'SHA-256' }, key, 256));
 }
-const newAcct = (razon, rfc, regimen) => ({ razon, rfc, regimen, plan: 'emp', month: monthKey(), used: 0, seq: 0, invoices: [] });
-
-// Guardado: nube o navegador
-function persist() {
-  if (!acct) return;
-  if (mode === 'cloud') {
-    const copy = JSON.parse(JSON.stringify(acct));
-    queue = queue.then(() => cloud.ref.set(copy)).catch(() => say($('#iMsg'), 'No se pudo guardar en la nube. Intenta de nuevo.', true));
-  } else {
-    const db = loadDb(); db[localEmail] = acct; saveDb(db);
-  }
-}
+const persist = () => { if (!acct) return; const db = loadDb(); db[localEmail] = acct; saveDb(db); };
 const update = fn => { fn(acct); persist(); renderDash(); };
 
-// ---------- Acceso ----------
+// ---------- Acceso (cuenta de administrador) ----------
 const showTab = tab => {
   const reg = tab === 'registro';
   $('#fLogin').hidden = reg; $('#fReg').hidden = !reg;
@@ -78,49 +77,22 @@ const showTab = tab => {
 };
 $$('[data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 
-function showAuth() {
-  $('#dashView').hidden = true; $('#authView').hidden = false; $('#navAcct').textContent = 'Entrar';
-  const isCloud = mode === 'cloud';
-  $('#authView').classList.toggle('cloud', isCloud);
-  $('#authTabs').hidden = isCloud; $('#cloudNote').hidden = !isCloud;
-  $('#banner').textContent = isCloud
-    ? 'Tu cuenta de Claude está conectada: tus datos se guardan en la nube y solo tú los ves. Las facturas no se timbran ante el SAT todavía.'
-    : 'Modo demostración: las facturas no se timbran ante el SAT. Tus datos se guardan solo en este navegador.';
-  if (isCloud) {
-    $('#cName').textContent = cloud.name || 'Tu cuenta de Claude';
-    $('#cAv').src = cloud.avatar;
-    const has = !!acct;
-    $('#cloudEnter').hidden = !has; $('#fLogin').hidden = true; $('#fReg').hidden = has;
-    if (has) $('#cloudCo').textContent = acct.razon + ' · RFC ' + acct.rfc;
-    $('#bReg').textContent = 'Crear cuenta de empresa';
-  } else {
-    $('#cloudEnter').hidden = true; $('#bReg').textContent = 'Crear cuenta';
-  }
-  $$('.loc-only input').forEach(i => i.required = !isCloud);
-}
+function showAuth() { $('#dashView').hidden = true; $('#authView').hidden = false; $('#navAcct').textContent = 'Entrar'; }
 
 $('#fReg').onsubmit = async e => {
   e.preventDefault();
   const rfc = $('#rRfc'); rfc.value = rfc.value.trim().toUpperCase();
-  const msg = $('#rMsg'), cloudMode = mode === 'cloud';
+  const msg = $('#rMsg'), mail = $('#rEmail').value.trim().toLowerCase();
   rfc.classList.toggle('bad', !rfcOk(rfc.value));
   if (!rfcOk(rfc.value)) return say(msg, 'El RFC no tiene un formato válido (12 o 13 caracteres).', true);
-  if (!$('#rRazon').value.trim()) return say(msg, 'Escribe la razón social o tu nombre.', true);
-  const a = newAcct($('#rRazon').value.trim(), rfc.value, $('#rReg').value);
-  if (cloudMode) {
-    try { await cloud.ref.set(a); } catch {
-      mode = 'local'; showAuth(); showTab('registro');
-      return say($('#rMsg'), 'Tu acceso no permite guardar en la nube. Crea una cuenta local con correo y contraseña.', true);
-    }
-    acct = a; e.target.reset(); msg.hidden = true; return openDash();
-  }
-  const mail = $('#rEmail').value.trim().toLowerCase();
+  if (!$('#rAcc').checked) return say(msg, 'Para crear tu cuenta debes aceptar el Aviso de privacidad y los Términos y condiciones.', true);
   if (!e.target.checkValidity()) return say(msg, 'Completa todos los campos. La contraseña lleva mínimo 8 caracteres.', true);
   if (!crypto.subtle) return say(msg, 'Tu navegador no permite crear la cuenta en este contexto.', true);
   const db = loadDb();
   if (db[mail]) return say(msg, 'Ya existe una cuenta con ese correo. Inicia sesión.', true);
   const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
-  Object.assign(a, { salt, hash: await hashPass($('#rPass').value, salt) });
+  const a = { role: 'admin', email: mail, razon: $('#rRazon').value.trim(), rfc: rfc.value, regimen: $('#rReg').value, salt, hash: await hashPass($('#rPass').value, salt),
+    plan: 'emp', month: monthKey(), used: 0, seq: 0, invoices: [], aceptoEn: Date.now() };
   db[mail] = a; saveDb(db); setSession(mail); localEmail = mail; acct = a;
   e.target.reset(); msg.hidden = true; openDash();
 };
@@ -134,11 +106,7 @@ $('#fLogin').onsubmit = async e => {
   setSession(mail); localEmail = mail; acct = u; e.target.reset(); msg.hidden = true; openDash();
 };
 
-$('#bEnter').onclick = openDash;
-$('#bOut').onclick = () => {
-  if (mode === 'local') { setSession(null); acct = null; localEmail = null; }
-  showAuth();
-};
+$('#bOut').onclick = () => { setSession(null); acct = null; localEmail = null; showAuth(); };
 
 // ---------- Panel ----------
 let lines = [];
@@ -154,13 +122,18 @@ const CIRC = 326.7;
 function renderDash() {
   const u = acct; if (!u) return;
   const limit = PLANS[u.plan].limit, left = Math.max(limit - u.used, 0);
-  $('#dCompany').textContent = u.razon; $('#dRfc').textContent = 'RFC ' + u.rfc + ' · Régimen ' + u.regimen.split(' ')[0];
+  $('#dCompany').textContent = u.razon;
+  $('#dRfc').textContent = 'RFC ' + u.rfc; $('#dMail').textContent = u.email || localEmail;
   $('#dPlan').value = u.plan;
   countTo($('#mLeft'), left);
   $('#mUsed').textContent = u.used; $('#mLimit').textContent = limit;
   const ring = $('#mRing');
   ring.style.strokeDashoffset = CIRC * (1 - left / limit);
   ring.classList.toggle('warn', left / limit <= 0.2);
+  const mk = monthKey(), stamped = u.invoices.filter(i => i.estatus === 'timbrada' && monthKey(i.fecha) === mk);
+  $('#kTot').textContent = money(stamped.reduce((s, i) => s + i.total, 0));
+  $('#kStamp').textContent = stamped.length;
+  $('#kDraft').textContent = u.invoices.filter(i => i.estatus === 'borrador').length;
   const body = $('#hBody'); body.replaceChildren();
   [...u.invoices].reverse().forEach((inv, n) => {
     const tr = document.createElement('tr'); tr.style.animationDelay = Math.min(n, 8) * 0.04 + 's';
@@ -224,7 +197,7 @@ function stamp(id, newInv) {
     const inv = newInv || x.invoices.find(i => i.id === id);
     if (newInv) x.invoices.push(inv);
     if (!inv.folio) inv.folio = 'A-' + String(++x.seq).padStart(4, '0');
-    inv.estatus = 'timbrada'; inv.uuid = crypto.randomUUID(); x.used++;
+    inv.estatus = 'timbrada'; inv.uuid = crypto.randomUUID(); x.used++; inv.fecha = Date.now();
   });
   say(msg, 'Factura timbrada (demostración). Se descontó 1 timbre.'); return true;
 }
@@ -236,16 +209,7 @@ $('#bDraft').onclick = () => {
 };
 
 // ---------- Inicio ----------
-(async () => {
-  showAuth();
-  await initCloud();
-  if (mode === 'cloud') {
-    try { const snap = await cloud.ref.get(); acct = snap.exists ? JSON.parse(JSON.stringify(snap.data())) : null; } catch { mode = 'local'; }
-  }
-  if (mode === 'local') {
-    const s = getSession(), u = s && loadDb()[s];
-    if (u) { localEmail = s; acct = u; }
-  }
-  if (mode === 'cloud') { showAuth(); if (acct) openDash(); }
-  else if (acct) openDash();
+(() => {
+  const s = getSession(), u = s && loadDb()[s];
+  if (u) { localEmail = s; acct = u; openDash(); } else showAuth();
 })();
