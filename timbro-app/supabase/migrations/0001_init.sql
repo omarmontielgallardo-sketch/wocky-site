@@ -25,6 +25,7 @@ create table if not exists public.empresas (
   rfc text not null check (rfc ~ '^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$'),
   regimen text not null check (regimen ~ '^[0-9]{3}$'),
   plan text not null default 'emprendedor' references public.planes(id),
+  owner_id uuid references auth.users(id) on delete set null,   -- administrador que creó la empresa; sus empresas comparten plan y timbres
   plan_elegido boolean not null default false,   -- el administrador debe elegir su plan después de crear la cuenta
   folio_seq int not null default 0,
   creada_en timestamptz not null default now()
@@ -99,12 +100,17 @@ language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.miembros where empresa_id = eid and user_id = auth.uid() and rol = 'admin');
 $$;
 
+-- Los timbres son del plan: se comparten entre todas las empresas del mismo administrador.
 create or replace function public.timbres_usados(eid uuid) returns int
-language sql stable security definer set search_path = public as $$
-  select count(*)::int from public.facturas
-  where empresa_id = eid
-    and timbrada_en >= (date_trunc('month', now() at time zone 'America/Mexico_City') at time zone 'America/Mexico_City');
-$$;
+language plpgsql stable security definer set search_path = public as $$
+declare v_owner uuid; v_n int;
+begin
+  select owner_id into v_owner from public.empresas where id = eid;
+  select count(*)::int into v_n from public.facturas f join public.empresas e on e.id = f.empresa_id
+  where (e.id = eid or (v_owner is not null and e.owner_id = v_owner))
+    and f.timbrada_en >= (date_trunc('month', now() at time zone 'America/Mexico_City') at time zone 'America/Mexico_City');
+  return v_n;
+end $$;
 
 -- ---------- Row Level Security ----------
 alter table public.planes enable row level security;
@@ -156,16 +162,24 @@ end $$;
 
 create or replace function public.crear_empresa(p_razon text, p_rfc text, p_regimen text, p_version_privacidad text, p_version_terminos text)
 returns public.empresas language plpgsql security definer set search_path = public as $$
-declare v_uid uuid := auth.uid(); v_rfc text := upper(trim(p_rfc)); v_emp public.empresas;
+declare v_uid uuid := auth.uid(); v_rfc text := upper(trim(p_rfc)); v_emp public.empresas; v_prev public.empresas; v_n int;
 begin
   if v_uid is null then raise exception 'no_autenticado'; end if;
   if not public.rfc_valido(v_rfc) or v_rfc in ('XAXX010101000', 'XEXX010101000') then raise exception 'rfc_invalido'; end if;
   if char_length(trim(p_razon)) < 2 then raise exception 'razon_invalida'; end if;
   if p_regimen !~ '^[0-9]{3}$' then raise exception 'regimen_invalido'; end if;
   if coalesce(p_version_privacidad, '') = '' or coalesce(p_version_terminos, '') = '' then raise exception 'aceptacion_requerida'; end if;
-  insert into public.empresas (razon_social, rfc, regimen) values (trim(p_razon), v_rfc, p_regimen) returning * into v_emp;
+  -- Empresas adicionales: heredan el plan del administrador y no pueden exceder las que permite.
+  select * into v_prev from public.empresas where owner_id = v_uid order by creada_en limit 1;
+  select count(*)::int into v_n from public.empresas where owner_id = v_uid;
+  if v_prev.id is not null and v_n >= (select rfc_max from public.planes where id = v_prev.plan) then raise exception 'limite_empresas'; end if;
+  if exists (select 1 from public.empresas where owner_id = v_uid and rfc = v_rfc) then raise exception 'empresa_duplicada'; end if;
+  insert into public.empresas (razon_social, rfc, regimen, owner_id, plan, plan_elegido)
+    values (trim(p_razon), v_rfc, p_regimen, v_uid, coalesce(v_prev.plan, 'emprendedor'), coalesce(v_prev.plan_elegido, false)) returning * into v_emp;
   insert into public.miembros (empresa_id, user_id, rol) values (v_emp.id, v_uid, 'admin');
-  insert into public.aceptaciones (user_id, documento, version) values (v_uid, 'privacidad', p_version_privacidad), (v_uid, 'terminos', p_version_terminos);
+  if v_prev.id is null then
+    insert into public.aceptaciones (user_id, documento, version) values (v_uid, 'privacidad', p_version_privacidad), (v_uid, 'terminos', p_version_terminos);
+  end if;
   return v_emp;
 end $$;
 
@@ -250,12 +264,17 @@ end $$;
 -- Etapa 1 (sin cobros): el administrador elige o cambia su plan. En la etapa 3 esto se reemplaza por el flujo de pago.
 create or replace function public.elegir_plan(p_empresa uuid, p_plan text) returns public.empresas
 language plpgsql security definer set search_path = public as $$
-declare v_emp public.empresas;
+declare v_emp public.empresas; v_owner uuid; v_n int; v_max int;
 begin
   if auth.uid() is null then raise exception 'no_autenticado'; end if;
   if not public.es_admin(p_empresa) then raise exception 'sin_acceso'; end if;
-  if not exists (select 1 from public.planes where id = p_plan) then raise exception 'plan_invalido'; end if;
-  update public.empresas set plan = p_plan, plan_elegido = true where id = p_empresa returning * into v_emp;
+  select rfc_max into v_max from public.planes where id = p_plan;
+  if v_max is null then raise exception 'plan_invalido'; end if;
+  select owner_id into v_owner from public.empresas where id = p_empresa;
+  select count(*)::int into v_n from public.empresas where owner_id = v_owner;
+  if v_owner is not null and v_n > v_max then raise exception 'plan_insuficiente'; end if;
+  update public.empresas set plan = p_plan, plan_elegido = true where id = p_empresa or (v_owner is not null and owner_id = v_owner);
+  select * into v_emp from public.empresas where id = p_empresa;
   return v_emp;
 end $$;
 
@@ -289,3 +308,24 @@ revoke all on function public.crear_empresa(text, text, text, text, text), publi
 grant execute on function public.crear_empresa(text, text, text, text, text), public.guardar_factura(uuid, text, text, text, text, jsonb, boolean),
   public.timbrar_factura(uuid), public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(), public.elegir_plan(uuid, text),
   public.es_miembro(uuid), public.es_admin(uuid), public.timbres_usados(uuid) to authenticated;
+
+-- Panel del administrador: sus empresas con el número de facturas de cada una.
+create or replace function public.resumen_empresas()
+returns table (id uuid, razon_social text, rfc text, regimen text, plan text, creada_en timestamptz,
+               facturas int, timbradas int, borradores int, canceladas int, facturado numeric, timbres_mes int)
+language sql stable security definer set search_path = public as $$
+  select e.id, e.razon_social, e.rfc, e.regimen, e.plan, e.creada_en,
+         count(f.id)::int,
+         (count(f.id) filter (where f.estatus = 'timbrada'))::int,
+         (count(f.id) filter (where f.estatus = 'borrador'))::int,
+         (count(f.id) filter (where f.estatus = 'cancelada'))::int,
+         coalesce(sum(f.total) filter (where f.estatus = 'timbrada'), 0),
+         (count(f.id) filter (where f.timbrada_en >= (date_trunc('month', now() at time zone 'America/Mexico_City') at time zone 'America/Mexico_City')))::int
+  from public.empresas e
+  join public.miembros m on m.empresa_id = e.id and m.user_id = auth.uid() and m.rol = 'admin'
+  left join public.facturas f on f.empresa_id = e.id
+  group by e.id
+  order by e.creada_en;
+$$;
+revoke all on function public.resumen_empresas() from public, anon, authenticated;
+grant execute on function public.resumen_empresas() to authenticated;

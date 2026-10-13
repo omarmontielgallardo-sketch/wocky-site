@@ -2,23 +2,26 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { asegurarEmpresa } from '@/lib/empresa';
-import { LIMITES } from '@/lib/constants';
+import { LIMITES, RFC_MAX } from '@/lib/constants';
 import SiteNav from '@/components/SiteNav';
 import Footer from '@/components/Footer';
 import PlanPicker from '@/components/PlanPicker';
-import PanelClient, { type Empresa, type Factura, type Cliente, type Concepto } from '@/components/PanelClient';
+import PanelClient, { type Empresa, type Factura, type Cliente, type Concepto, type ResumenEmpresa } from '@/components/PanelClient';
 import { cerrarSesion } from '@/app/auth/actions';
 
 export const metadata: Metadata = { title: 'Mi panel' };
 export const dynamic = 'force-dynamic';
 
-export default async function PanelPage({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+export default async function PanelPage({ searchParams }: { searchParams: Promise<{ plan?: string; e?: string }> }) {
   const sp = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
   if (!user.email_confirmed_at) { await supabase.auth.signOut(); redirect('/login?error=confirma'); }
-  const empresaId = await asegurarEmpresa(supabase, user);
+  const primera = await asegurarEmpresa(supabase, user);
+  const { data: resumenRaw } = await supabase.rpc('resumen_empresas');
+  const resumen = ((resumenRaw ?? []) as Record<string, unknown>[]).map(r => ({ ...r, facturado: Number(r.facturado) })) as unknown as ResumenEmpresa[];
+  const empresaId = (sp.e && resumen.some(r => r.id === sp.e) ? sp.e : resumen[0]?.id) ?? primera;
 
   if (!empresaId) {
     return (
@@ -58,7 +61,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
         <PanelClient
           empresa={e} email={user.email ?? ''}
           facturas={(facturas.data ?? []) as Factura[]} clientes={(clientes.data ?? []) as Cliente[]} conceptos={(conceptos.data ?? []) as Concepto[]}
-          usados={Number(usados.data ?? 0)} limite={LIMITES[e.plan] ?? 40}
+          usados={Number(usados.data ?? 0)} limite={LIMITES[e.plan] ?? 40} empresas={resumen} rfcMax={RFC_MAX[e.plan] ?? 1}
         />
       </div></main>
       <Footer />

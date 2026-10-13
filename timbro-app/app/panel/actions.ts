@@ -3,8 +3,10 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { LEGAL_VERSION } from '@/lib/legal';
+import { limpiarRfc, validarRfc } from '@/lib/rfc';
 
-export type Resultado = { ok: true; mensaje?: string } | { ok: false; error: string };
+export type Resultado = { ok: true; mensaje?: string; id?: string } | { ok: false; error: string };
 
 const ERRORES: Record<string, string> = {
   limite_timbres: 'Llegaste al límite de timbres de tu plan. Mejora tu plan o compra timbres extra.',
@@ -16,6 +18,10 @@ const ERRORES: Record<string, string> = {
   sin_acceso: 'No tienes acceso a esa empresa.',
   estatus_invalido: 'Esa factura ya no se puede modificar.',
   no_autenticado: 'Tu sesión expiró. Inicia sesión de nuevo.',
+  limite_empresas: 'Tu plan ya no permite más empresas. Cambia de plan para agregar otra.',
+  empresa_duplicada: 'Ya registraste una empresa con ese RFC.',
+  razon_invalida: 'Escribe la razón social o el nombre de la empresa.',
+  plan_insuficiente: 'Tienes más empresas de las que permite ese plan. Elige un plan con más empresas.',
 };
 const mapError = (msg: string) => {
   const k = Object.keys(ERRORES).find(k => msg.includes(k));
@@ -47,9 +53,21 @@ export async function timbrarFactura(id: string): Promise<Resultado> { return si
 export async function cancelarFactura(id: string): Promise<Resultado> { return simple('cancelar_factura', id, 'Factura cancelada.'); }
 export async function eliminarBorrador(id: string): Promise<Resultado> { return simple('eliminar_borrador', id, 'Borrador eliminado.'); }
 
+export async function crearEmpresa(i: { razon: string; rfc: string; regimen: string }): Promise<Resultado> {
+  const rfc = limpiarRfc(i.rfc), rc = validarRfc(rfc);
+  if (!rc.ok) return { ok: false, error: rc.msg || 'Escribe el RFC de la empresa.' };
+  if (i.razon.trim().length < 2) return { ok: false, error: ERRORES.razon_invalida };
+  const { data, error } = await (await createClient()).rpc('crear_empresa', {
+    p_razon: i.razon.trim(), p_rfc: rfc, p_regimen: i.regimen.slice(0, 3), p_version_privacidad: LEGAL_VERSION, p_version_terminos: LEGAL_VERSION,
+  });
+  if (error) return { ok: false, error: mapError(error.message) };
+  revalidatePath('/panel');
+  return { ok: true, mensaje: 'Empresa agregada.', id: (data as { id: string }).id };
+}
+
 export async function elegirPlan(empresaId: string, plan: string): Promise<Resultado> {
   const { error } = await (await createClient()).rpc('elegir_plan', { p_empresa: empresaId, p_plan: plan });
-  if (error) return { ok: false, error: /sin_acceso/.test(error.message) ? 'Solo el administrador puede elegir el plan.' : 'No se pudo guardar tu plan. Intenta de nuevo.' };
+  if (error) return { ok: false, error: /sin_acceso/.test(error.message) ? 'Solo el administrador puede elegir el plan.' : /plan_insuficiente/.test(error.message) ? ERRORES.plan_insuficiente : 'No se pudo guardar tu plan. Intenta de nuevo.' };
   revalidatePath('/panel');
   return { ok: true, mensaje: 'Plan guardado.' };
 }

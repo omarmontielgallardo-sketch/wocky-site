@@ -496,3 +496,83 @@ details[open]::details-content{block-size:auto}
 .planbtn:hover{border-color:var(--brand);transform:translateY(-1px)}
 @media(max-width:860px){.pgrid{grid-template-columns:1fr}.pcard.sel,.pcard:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){.pcard,.pcheck{transition:none}}
+
+/* ---- Panel del administrador: pestañas y empresas ---- */
+.ptabs{display:flex;gap:6px;background:var(--soft);padding:5px;border-radius:14px;width:max-content;max-width:100%;margin-bottom:18px;overflow-x:auto}
+.ptabs button{border:0;background:none;padding:9px 18px;border-radius:10px;font:700 .88rem var(--sans);color:var(--muted);cursor:pointer;white-space:nowrap;transition:background .25s,color .25s,box-shadow .25s}
+.ptabs button.on{background:#fff;color:var(--brand);box-shadow:0 2px 10px rgba(40,30,120,.14)}
+.ptabs i{font-style:normal;background:var(--brand);color:#fff;border-radius:99px;font-size:.7rem;padding:1px 8px;margin-left:6px}
+.empsel{width:auto!important;margin:0!important;max-width:220px;font-weight:700}
+.empsel[hidden]{display:none}
+.emps .tiny{margin:-4px 0 10px}
+.emps td.num{font-variant-numeric:tabular-nums;text-align:right}.emps th:nth-child(n+3):nth-child(-n+8){text-align:right}
+.emps td.strong{font-weight:800}.emps td.mono{font-family:ui-monospace,monospace;font-size:.82rem}
+.emps table{min-width:860px}
+.newemp{margin-top:16px;display:grid;gap:6px}
+.newemp[hidden]{display:none}
+.newemp>b{margin-bottom:6px}
+
+/* ---- Impuestos: factura y estimación ---- */
+.taxes{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:14px 0 6px;background:linear-gradient(135deg,#fcfcff,#f6fbfa)}
+.taxes legend{font-weight:800;font-size:.84rem;padding:0 8px;color:var(--brand)}
+.tax-top{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px}
+.tax-top>div{flex:1 1 240px;min-width:0}
+.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.tax-row{display:grid;gap:2px;min-width:0}
+.tax-row label{display:flex;gap:8px;align-items:center;font-size:.8rem;font-weight:700}
+.tax-row input[type=checkbox]{width:auto;margin:0}
+.tax-row select{padding:8px 10px;font-size:.84rem;margin:0}
+.tax-row select:disabled{opacity:.5}
+#taxNote{margin-top:8px;line-height:1.45}
+.tot .grand{margin-top:6px}
+.taxcard .xinputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0 18px}
+.taxcard .xinputs label{font-size:.76rem}
+.taxcard .xinputs div[hidden],.taxcard .xinputs label[hidden]{display:none}
+.xgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.xbox{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fff}
+.xbox h3{font-size:.95rem;margin-bottom:8px}
+.xbox dl div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:.88rem;border-bottom:1px dashed var(--line)}
+.xbox dl div:last-child{border:0}
+.xbox dt{color:var(--muted)}.xbox dd{font-variant-numeric:tabular-nums;text-align:right}
+.xbox dl .sum{font-weight:800;border-top:2px solid var(--line);margin-top:4px;padding-top:10px}.xbox dl .sum dt{color:var(--ink)}
+.xtotal{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,var(--brand),#7a5cff 60%,var(--brand2));color:#fff;border-radius:16px;padding:18px 22px;margin:16px 0 10px}
+.xtotal span{font-weight:700}.xtotal small{display:block;opacity:.85;font-size:.76rem;margin-top:2px}
+.xtotal b{font-size:1.9rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.xnote{color:#7a5a00;background:#fff8e6;border:1px solid #f3dca0;border-radius:10px;padding:8px 12px}
+@media(max-width:700px){.tax-grid,.xgrid{grid-template-columns:1fr}}
+.tot div[hidden]{display:none}
+
+/* ---- Recibidas, calculadora, simulador y consejos ---- */
+.calc{margin-bottom:16px;padding:0;overflow:hidden}
+.calc summary{display:flex;gap:14px;align-items:center;padding:16px 20px;font-weight:400;cursor:pointer}
+.calc summary b{display:block;font-size:.95rem}
+.calc summary small{display:block;color:var(--muted);font-size:.8rem;margin-top:1px}
+.calc summary::after{margin-left:auto}
+.calc-ico{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#efedff,#e2f7f2);display:grid;place-items:center;flex:none}
+.calc-ico svg{width:22px;height:22px;fill:none;stroke:var(--brand);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.calc-body{padding:4px 20px 20px;border-top:1px solid var(--line);margin-top:0}
+.calc-body .seg{margin:14px 0 8px}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:10px 0}
+.calc-out{max-width:420px;margin:6px 0 12px}
+.calc-out .grand{border-top:2px solid var(--line)}
+.recform{margin-bottom:16px;display:grid;gap:6px}
+.recform>b{margin-bottom:2px}
+.recform .tiny{margin:-4px 0 8px}
+.recform .two-f{margin-bottom:4px}
+.card .table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.sim{margin-top:16px}
+.simtable{min-width:520px}
+.simtable td:not(:first-child),.simtable th:not(:first-child){text-align:right}
+.simtable tr.strong td{font-weight:800;border-top:2px solid var(--line)}
+.simtable td.down{color:var(--ok);font-weight:700}.simtable td.up{color:var(--bad);font-weight:700}
+.simmsg{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--soft);font-size:.9rem;font-weight:600}
+.simmsg.fav{background:#e2f7f2;color:var(--ok)}.simmsg.pay{background:#fff8e6;color:#7a5a00}
+.tips{margin-top:16px;background:linear-gradient(135deg,#faf9ff,#f1fbf8)}
+.tips>b{display:block;margin-bottom:10px}
+.tips ul{display:grid;gap:10px;margin-bottom:12px}
+.tips li{display:grid;gap:2px;padding-left:26px;position:relative;font-size:.88rem}
+.tips li:before{content:"✓";position:absolute;left:0;top:1px;width:18px;height:18px;border-radius:50%;background:var(--brand2);color:#fff;font-size:.62rem;font-weight:800;display:grid;place-items:center}
+.tips li span{color:var(--muted)}
+details.calc{border-radius:18px}
+.sim .xinputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0 18px}
+.sim .xinputs label{font-size:.76rem}

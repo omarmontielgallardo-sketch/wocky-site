@@ -64,10 +64,31 @@ for (let i = 0; i < 39; i++) await q(`select guardar_factura($1, 'Cliente Uno', 
 ok('40 timbres usados', (await q(`select timbres_usados($1) n`, [emp.id]))[0].n === 40);
 await throws('timbre 41 se bloquea', `select guardar_factura($1, 'Cliente Uno', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, true)`, [emp.id, lineas], 'limite_timbres');
 
+// Varias empresas por administrador
+await q(`select elegir_plan($1, 'negocio')`, [emp.id]);
+const [emp2] = await q(`select * from crear_empresa('Beta Servicios', 'BET200101AAA', '612', '2026-10-13', '2026-10-13')`);
+ok('la segunda empresa hereda el plan y queda elegida', emp2.plan === 'negocio' && emp2.plan_elegido === true);
+await throws('RFC repetido entre empresas se rechaza', `select crear_empresa('Otra', 'BET200101AAA', '612', 'v', 'v')`, [], 'empresa_duplicada');
+ok('los timbres son un pool entre empresas (40 ya usados)', (await q(`select timbres_usados($1) n`, [emp2.id]))[0].n === 40);
+await q(`select guardar_factura($1, 'Cliente Dos', 'XAXX010101000', 'G03', 'PUE', $2::jsonb, true)`, [emp2.id, lineas]);
+ok('el pool suma la factura de la segunda empresa', (await q(`select timbres_usados($1) n`, [emp.id]))[0].n === 41);
+const res = await q(`select * from resumen_empresas()`);
+ok('resumen: 2 empresas', res.length === 2, JSON.stringify(res));
+ok('resumen: conteo de facturas de la primera', res[0].facturas === 40 && res[0].timbradas === 39 && res[0].canceladas === 1 && res[0].borradores === 0 && res[0].timbres_mes === 40, JSON.stringify(res[0]));
+ok('resumen: conteo de la segunda', res[1].facturas === 1 && res[1].timbradas === 1 && Number(res[1].facturado) === 233.16, JSON.stringify(res[1]));
+await throws('no se baja a un plan con menos empresas', `select elegir_plan($1, 'emprendedor')`, [emp.id], 'plan_insuficiente');
+await q(`select crear_empresa('Carlos SA', 'CAR910315MX6', '626', 'v', 'v')`);
+await throws('el plan Negocio permite 3 empresas', `select crear_empresa('Delta SA', 'DEL850707HJ4', '626', 'v', 'v')`, [], 'limite_empresas');
+await q(`select elegir_plan($1, 'despacho')`, [emp.id]);
+ok('cambiar plan aplica a todas las empresas', (await q(`select count(*)::int c from empresas where plan = 'despacho'`))[0].c === 3);
+await q(`select crear_empresa('Delta SA', 'DEL850707HJ4', '626', 'v', 'v')`);
+ok('con Despacho se pueden agregar más', (await q(`select count(*)::int c from resumen_empresas()`))[0].c === 4);
+
 // Aislamiento entre empresas / usuarios
 await as(B);
 ok('B no ve facturas de A', (await q(`select count(*)::int c from facturas`))[0].c === 0);
 ok('B no ve empresas de A', (await q(`select count(*)::int c from empresas`))[0].c === 0);
+ok('B no tiene panel de empresas ajenas', (await q(`select count(*)::int c from resumen_empresas()`))[0].c === 0);
 await throws('B no puede elegir el plan de A', `select elegir_plan($1, 'despacho')`, [emp.id], 'sin_acceso');
 await throws('B no puede timbrar facturas de A', `select timbrar_factura($1)`, [f1.id], 'sin_acceso');
 await throws('B no puede crear facturas en la empresa de A', `select guardar_factura($1,'C','XAXX010101000','G03','PUE',$2::jsonb,false)`, [emp.id, lineas], 'sin_acceso');
@@ -86,7 +107,7 @@ ok('anónimo sí ve los planes', (await q(`select count(*)::int c from planes`))
 // Derecho de cancelación
 await as(A);
 await q(`select eliminar_mis_datos()`);
-ok('eliminar_mis_datos borra empresa y facturas', (await q(`select (select count(*) from empresas)::int e, (select count(*) from facturas)::int f, (select count(*) from aceptaciones)::int a`))[0].e === 0);
+ok('eliminar_mis_datos borra todas sus empresas y facturas', (await q(`select (select count(*) from empresas)::int e, (select count(*) from facturas)::int f, (select count(*) from aceptaciones)::int a`))[0].e === 0);
 
 console.log(`\n${pass} correctas, ${fail} con falla`);
 process.exit(fail ? 1 : 0);

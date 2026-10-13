@@ -1,14 +1,16 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
-import { cancelarFactura, eliminarBorrador, eliminarCuenta, exportarMisDatos, guardarFactura, timbrarFactura, type Resultado } from '@/app/panel/actions';
+import { crearEmpresa, cancelarFactura, eliminarBorrador, eliminarCuenta, exportarMisDatos, guardarFactura, timbrarFactura, type Resultado } from '@/app/panel/actions';
 import { cerrarSesion } from '@/app/auth/actions';
-import { NOMBRE_PLAN, USOS_CFDI } from '@/lib/constants';
+import { NOMBRE_PLAN, REGIMENES_OTROS, REGIMENES_USADOS, USOS_CFDI } from '@/lib/constants';
 import { limpiarRfc, money, validarRfc } from '@/lib/rfc';
 
 export type Empresa = { id: string; razon_social: string; rfc: string; regimen: string; plan: string };
 export type Linea = { descripcion: string; cantidad: number; precio: number };
 export type Factura = { id: string; folio: string; cliente_nombre: string; cliente_rfc: string; uso_cfdi: string; metodo_pago: string; lineas: Linea[]; total: number; estatus: 'borrador' | 'timbrada' | 'cancelada'; uuid_demo: string | null; timbrada_en: string | null; creada_en: string };
+export type ResumenEmpresa = { id: string; razon_social: string; rfc: string; regimen: string; plan: string; creada_en: string; facturas: number; timbradas: number; borradores: number; canceladas: number; facturado: number; timbres_mes: number };
 export type Cliente = { id: string; nombre: string; rfc: string };
 export type Concepto = { descripcion: string; precio: number };
 type Toast = { id: number; text: string; err?: boolean };
@@ -17,9 +19,23 @@ const CIRC = 326.7;
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const vacia = (): Linea => ({ descripcion: '', cantidad: 1, precio: 0 });
 
-export default function PanelClient({ empresa, email, facturas, clientes, conceptos, usados, limite }: {
-  empresa: Empresa; email: string; facturas: Factura[]; clientes: Cliente[]; conceptos: Concepto[]; usados: number; limite: number;
+export default function PanelClient({ empresa, email, facturas, clientes, conceptos, usados, limite, empresas, rfcMax }: {
+  empresa: Empresa; email: string; facturas: Factura[]; clientes: Cliente[]; conceptos: Concepto[]; usados: number; limite: number; empresas: ResumenEmpresa[]; rfcMax: number;
 }) {
+  const router = useRouter();
+  const [tab, setTab] = useState<'fact' | 'emp'>('fact');
+  const [nuevaEmp, setNuevaEmp] = useState(false);
+  const [eRazon, setERazon] = useState(''), [eRfc, setERfc] = useState(''), [eReg, setEReg] = useState('626'), [eMsg, setEMsg] = useState('');
+  const eRes = validarRfc(eRfc);
+  const abrirEmpresa = (id: string) => { setTab('fact'); router.push(`/panel?e=${id}`); };
+  const agregarEmpresa = () => {
+    if (!eRes.ok) return setEMsg(eRes.msg || 'Escribe el RFC de la empresa.');
+    if (eRazon.trim().length < 2) return setEMsg('Escribe la razón social o el nombre de la empresa.');
+    start(async () => {
+      const r = await crearEmpresa({ razon: eRazon, rfc: eRfc, regimen: eReg });
+      if (r.ok && r.id) { setERazon(''); setERfc(''); setEMsg(''); setNuevaEmp(false); router.push(`/panel?e=${r.id}`); } else if (!r.ok) setEMsg(r.error);
+    });
+  };
   const [pending, start] = useTransition();
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [msg, setMsg] = useState<{ text: string; err?: boolean } | null>(null);

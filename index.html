@@ -177,6 +177,9 @@
         <p class="fhint" id="rRfcHint" aria-live="polite">12 caracteres para personas morales, 13 para personas físicas.</p>
         <label for="rReg">Régimen fiscal</label>
         <select id="rReg"><optgroup label="Más usados"><option value="626 RESICO · Régimen Simplificado de Confianza">626 · RESICO · Régimen Simplificado de Confianza</option><option value="612 Personas Físicas con Actividades Empresariales y Profesionales">612 · Personas Físicas con Actividades Empresariales y Profesionales</option><option value="601 General de Ley Personas Morales">601 · General de Ley Personas Morales</option><option value="603 Personas Morales con Fines no Lucrativos">603 · Personas Morales con Fines no Lucrativos</option><option value="606 Arrendamiento">606 · Arrendamiento</option><option value="625 Actividades Empresariales con ingresos a través de Plataformas Tecnológicas">625 · Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option><option value="605 Sueldos y Salarios e Ingresos Asimilados a Salarios">605 · Sueldos y Salarios e Ingresos Asimilados a Salarios</option><option value="622 Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras">622 · Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option></optgroup><optgroup label="Otros regímenes"><option value="607 Enajenación o Adquisición de Bienes">607 · Enajenación o Adquisición de Bienes</option><option value="608 Demás ingresos">608 · Demás ingresos</option><option value="609 Consolidación">609 · Consolidación</option><option value="610 Residentes en el Extranjero sin Establecimiento Permanente en México">610 · Residentes en el Extranjero sin Establecimiento Permanente en México</option><option value="611 Ingresos por Dividendos (socios y accionistas)">611 · Ingresos por Dividendos (socios y accionistas)</option><option value="614 Ingresos por intereses">614 · Ingresos por intereses</option><option value="615 Ingresos por obtención de premios">615 · Ingresos por obtención de premios</option><option value="616 Sin obligaciones fiscales">616 · Sin obligaciones fiscales</option><option value="620 Sociedades Cooperativas de Producción que optan por diferir sus ingresos">620 · Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option><option value="621 Incorporación Fiscal">621 · Incorporación Fiscal</option><option value="623 Opcional para Grupos de Sociedades">623 · Opcional para Grupos de Sociedades</option><option value="624 Coordinados">624 · Coordinados</option><option value="628 Hidrocarburos">628 · Hidrocarburos</option><option value="629 Regímenes Fiscales Preferentes y Empresas Multinacionales">629 · Regímenes Fiscales Preferentes y Empresas Multinacionales</option><option value="630 Enajenación de acciones en bolsa de valores">630 · Enajenación de acciones en bolsa de valores</option></optgroup></select>
+        <label for="rGiro">¿A qué se dedica tu empresa?</label>
+        <select id="rGiro"></select>
+        <p class="fhint">Con esto sugerimos los impuestos de tus facturas (IVA, retenciones y otros).</p>
         <div class="loc-only">
           <label for="rEmail">Correo</label>
           <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" aria-describedby="rEmailHint" required>
@@ -225,11 +228,21 @@
       <div class="dash-head">
         <div><h2 id="dCompany">Empresa</h2><p class="muted"><span class="badge">Administrador</span> <span id="dRfc">RFC</span> · <span id="dMail"></span></p></div>
         <div class="dash-actions">
+          <label class="sr" for="dEmp">Empresa activa</label>
+          <select id="dEmp" class="empsel" hidden></select>
           <button class="planbtn" id="bPlan" type="button" aria-label="Cambiar de plan"><span id="dPlanName">Plan</span><small>Cambiar</small></button>
           <button class="btn ghost sm" id="bOut" type="button">Cerrar sesión</button>
         </div>
       </div>
 
+      <div class="ptabs" role="tablist" aria-label="Secciones del panel">
+        <button class="on" id="ptFact" type="button" role="tab" aria-selected="true">Emitidas</button>
+        <button id="ptRec" type="button" role="tab" aria-selected="false">Recibidas <i id="ptRecCount">0</i></button>
+        <button id="ptTax" type="button" role="tab" aria-selected="false">Impuestos</button>
+        <button id="ptEmp" type="button" role="tab" aria-selected="false">Mis empresas <i id="ptCount">1</i></button>
+      </div>
+
+      <div id="tabFact">
       <div class="card onboard" id="onboard">
         <div class="ob-head"><b>Primeros pasos</b><span id="obCount">1 de 3</span></div>
         <div class="ob-bar"><i id="obBar"></i></div>
@@ -246,6 +259,25 @@
         <button class="qbtn" id="qExample" type="button"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Rellenar ejemplo</button>
         <button class="qbtn" id="qSearch" type="button"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Buscar <kbd>/</kbd></button>
       </div>
+
+
+      <details class="card calc" id="calc">
+        <summary><span class="calc-ico"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M8 7h8M8 12h2M12 12h2M16 12h0M8 16h2M12 16h2M16 16h0"/></svg></span><span><b>Calculadora de facturas</b><small>Desglosa el IVA, calcula cuánto cobrar para recibir lo que quieres y pásalo a tu factura.</small></span></summary>
+        <div class="calc-body">
+          <div class="seg" id="calcModes" role="tablist" aria-label="Tipo de cálculo">
+            <button class="on" type="button" data-m="neto">Quiero recibir…</button>
+            <button type="button" data-m="desglosar">Desglosar IVA</button>
+            <button type="button" data-m="agregar">Agregar impuestos</button>
+          </div>
+          <p class="tiny" id="cHelp"></p>
+          <div class="calc-grid">
+            <div><label for="cMonto" id="cLabel">Monto neto que quiero recibir</label><input id="cMonto" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div id="cIvaBox" hidden><label for="cIva">IVA del total</label><select id="cIva"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option></select></div>
+          </div>
+          <dl class="tot calc-out" id="cOut"></dl>
+          <div class="actions"><button class="btn sm" id="cUse" type="button">Usar en la factura</button><button class="btn ghost sm" id="cClear" type="button">Limpiar</button></div>
+        </div>
+      </details>
 
       <div class="kpis">
         <div class="kpi"><small>Facturado este mes</small><b id="kTot">$0.00</b></div>
@@ -278,9 +310,33 @@
           </div>
           <div class="lines" id="lines"></div>
           <button class="link" id="bAdd" type="button">+ Agregar concepto</button>
+          <fieldset class="taxes" id="taxes">
+            <legend>Impuestos de esta factura</legend>
+            <div class="tax-top">
+              <div><label for="iGiro">Giro de la empresa</label><select id="iGiro"></select></div>
+              <button class="link" id="bTaxReset" type="button">Restablecer sugerencia</button>
+            </div>
+            <div class="tax-grid">
+              <div class="tax-row"><label for="tIvaSel">IVA</label>
+                <select id="tIvaSel"><option value="16">16% · tasa general</option><option value="8">8% · franja fronteriza</option><option value="0">0% · tasa cero</option><option value="exento">Exento</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIsrOn"> Retención de ISR</label>
+                <select id="tIsrSel"><option value="0.10">10%</option><option value="0.0125">1.25% (RESICO)</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIvaRetOn"> Retención de IVA</label>
+                <select id="tIvaRetSel"><option value="0.106667">2/3 del IVA (10.6667%)</option><option value="0.04">4% (autotransporte)</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIepsOn"> IEPS</label>
+                <select id="tIepsSel"><option value="0.08">8% alimentos de alta densidad calórica</option><option value="0.265">26.5% bebidas alcohólicas (hasta 14° G.L.)</option><option value="0.30">30% bebidas alcohólicas (14° a 20°)</option><option value="0.53">53% bebidas alcohólicas (más de 20°)</option><option value="1.6">160% tabacos labrados</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIshOn"> Impuesto sobre hospedaje</label>
+                <select id="tIshSel"><option value="0.02">2%</option><option value="0.03">3%</option><option value="0.04">4%</option><option value="0.05">5%</option></select></div>
+            </div>
+            <p class="tiny" id="taxNote"></p>
+          </fieldset>
           <dl class="tot">
             <div><dt>Subtotal</dt><dd id="tSub">$0.00</dd></div>
-            <div><dt>IVA 16%</dt><dd id="tIva">$0.00</dd></div>
+            <div id="rIeps" hidden><dt>IEPS</dt><dd id="tIeps">$0.00</dd></div>
+            <div id="rIsh" hidden><dt>Impuesto sobre hospedaje</dt><dd id="tIsh">$0.00</dd></div>
+            <div><dt id="lIva">IVA 16%</dt><dd id="tIva">$0.00</dd></div>
+            <div id="rIsr" hidden><dt id="lIsr">Retención ISR</dt><dd id="tIsr">$0.00</dd></div>
+            <div id="rIvaRet" hidden><dt id="lIvaRet">Retención IVA</dt><dd id="tIvaRet">$0.00</dd></div>
             <div class="grand"><dt>Total</dt><dd id="tTot">$0.00</dd></div>
           </dl>
           <div class="actions">
@@ -313,6 +369,118 @@
         <div><b>Mi privacidad</b><p class="tiny">Ejerce tus derechos sobre tus datos cuando quieras.</p></div>
         <div class="actions"><button class="btn ghost sm" id="bData" type="button">Ver mis datos</button><button class="btn ghost sm danger" id="bDel" type="button">Eliminar mi cuenta</button></div>
       </div>
+      </div>
+
+      <div id="tabRec" hidden>
+        <div class="kpis">
+          <div class="kpi"><small>Gastos deducibles del mes</small><b id="rkGasto">$0.00</b></div>
+          <div class="kpi"><small>IVA acreditable del mes</small><b id="rkIva">$0.00</b></div>
+          <div class="kpi"><small>Facturas recibidas</small><b id="rkCount">0</b></div>
+        </div>
+        <form class="card recform" id="fRec" novalidate>
+          <b>Registrar factura recibida</b>
+          <p class="tiny">Las facturas que te hacen tus proveedores. El IVA que pagaste se acredita y los gastos deducibles bajan tu ISR, según tu régimen.</p>
+          <div class="two-f">
+            <div><label for="cProv">Proveedor</label><input id="cProv" placeholder="Nombre o razón social" autocomplete="off" required></div>
+            <div><label for="cRfc">RFC del proveedor</label><input id="cRfc" class="rfc-input" placeholder="GAMJ800101AB8" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="cRfcHint" required><p class="fhint" id="cRfcHint" aria-live="polite"></p></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="cConc">Concepto</label><input id="cConc" placeholder="Renta de oficina, software, mercancía…" autocomplete="off" required></div>
+            <div><label for="cCat">Categoría</label><select id="cCat"><option>Servicios profesionales</option><option>Mercancía o insumos</option><option>Renta</option><option>Servicios (luz, internet, teléfono)</option><option>Transporte y combustible</option><option>Software y tecnología</option><option>Publicidad</option><option>Otros gastos</option></select></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="cFecha">Fecha de la factura</label><input id="cFecha" type="date" required></div>
+            <div><label for="cMet">Forma de pago</label><select id="cMet"><option value="transferencia">Transferencia</option><option value="tarjeta">Tarjeta</option><option value="cheque">Cheque</option><option value="efectivo">Efectivo</option></select></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="cSub">Subtotal (sin IVA)</label><input id="cSub" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" required></div>
+            <div><label for="cIvaR">IVA de la factura</label><select id="cIvaR"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option><option value="exento">Exento</option></select></div>
+          </div>
+          <label class="chk-l"><input type="checkbox" id="cDed" checked> <span>Es un gasto del negocio (deducible y con IVA acreditable)</span></label>
+          <p class="fhint" id="cPrev" aria-live="polite"></p>
+          <div class="actions"><button class="btn shine" type="submit">Registrar factura recibida</button></div>
+          <p class="amsg" id="cMsg" aria-live="polite" hidden></p>
+        </form>
+        <div class="card">
+          <div class="hist-head"><b>Facturas recibidas</b></div>
+          <div class="table"><table>
+            <thead><tr><th>Fecha</th><th>Proveedor</th><th>Concepto</th><th>Subtotal</th><th>IVA</th><th>Total</th><th>Tratamiento</th><th></th></tr></thead>
+            <tbody id="rBody"></tbody>
+          </table></div>
+          <div class="empty" id="rEmpty"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="5"/><path d="M16 16h16M16 23h16M16 30h9"/></svg><p><b>Aún no registras facturas recibidas</b><br>Agrégalas arriba para acreditar IVA y reducir tus impuestos.</p></div>
+        </div>
+      </div>
+
+      <div id="tabEmp" hidden>
+        <div class="kpis">
+          <div class="kpi"><small>Empresas registradas</small><b id="eCount">1</b></div>
+          <div class="kpi"><small>Facturas en total</small><b id="eFacts">0</b></div>
+          <div class="kpi"><small>Facturado en total</small><b id="eMonto">$0.00</b></div>
+        </div>
+        <div class="card emps">
+          <div class="hist-head"><b>Mis empresas</b><button class="btn sm shine" id="bAddEmp" type="button">+ Agregar empresa</button></div>
+          <p class="tiny" id="eLimit"></p>
+          <div class="table"><table>
+            <thead><tr><th>Empresa</th><th>RFC</th><th>Facturas</th><th>Timbradas</th><th>Borradores</th><th>Canceladas</th><th>Facturado</th><th>Timbres del mes</th><th></th></tr></thead>
+            <tbody id="eBody"></tbody>
+          </table></div>
+        </div>
+        <form class="card newemp" id="fEmp" novalidate hidden>
+          <b>Agregar empresa</b>
+          <label for="eRazon">Razón social o nombre</label>
+          <input id="eRazon" placeholder="Estudio Aurora S.A. de C.V." autocomplete="organization" required>
+          <label for="eRfc">RFC de la empresa</label>
+          <input id="eRfc" class="rfc-input" placeholder="EAU200101AB6" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="eRfcHint" required>
+          <p class="fhint" id="eRfcHint" aria-live="polite"></p>
+          <label for="eReg">Régimen fiscal</label>
+          <select id="eReg"></select>
+          <label for="eGiro">¿A qué se dedica la empresa?</label>
+          <select id="eGiro"></select>
+          <div class="actions"><button class="btn shine" type="submit">Agregar empresa</button><button class="btn ghost" id="bCancelEmp" type="button">Cancelar</button></div>
+          <p class="amsg" id="eMsg" aria-live="polite" hidden></p>
+        </form>
+      </div>
+      <div id="tabTax" hidden>
+        <div class="card taxcard">
+          <div class="hist-head"><b>Impuestos del periodo</b>
+            <div class="tools"><label class="sr" for="xMes">Periodo</label><select id="xMes"></select></div>
+          </div>
+          <p class="tiny" id="xReg"></p>
+          <div class="xinputs">
+            <div><label for="xGastos">Otros gastos deducibles del año (sin factura en Recibidas)</label><input id="xGastos" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="xIvaAc">Otro IVA acreditable del mes</label><input id="xIvaAc" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="xPrev">Pagos provisionales de ISR anteriores del año</label><input id="xPrev" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div id="xCoefBox"><label for="xCoef">Coeficiente de utilidad</label><input id="xCoef" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="0.2000"></div>
+            <label class="chk-l" id="xDedBox"><input type="checkbox" id="xDed35"> <span>Usar la deducción opcional del 35% (arrendamiento)</span></label>
+          </div>
+          <div class="xgrid">
+            <div class="xbox"><h3>IVA</h3><dl id="xIva"></dl></div>
+            <div class="xbox"><h3>ISR</h3><dl id="xIsr"></dl></div>
+          </div>
+          <div class="xtotal"><div><span>Total estimado a pagar</span><small id="xDue"></small></div><b id="xTot">$0.00</b></div>
+          <p class="tiny xnote" id="xNote"></p>
+          <p class="tiny">Estimación informativa a partir de tus facturas emitidas y recibidas en Timbro y de los datos que captures arriba. Usa las tarifas 2026 (art. 96 y 113-E de la Ley del ISR, Anexo 8 de la RMF 2026). No es una declaración: confirma los montos con tu contador antes de presentar.</p>
+        </div>
+
+        <div class="card sim" id="sim">
+          <div class="hist-head"><b>Simulador de facturas</b><button class="link" id="sClear" type="button">Limpiar</button></div>
+          <p class="tiny">Prueba qué pasaría con tu IVA y tus impuestos del periodo si emitieras o recibieras una factura más. No guarda nada.</p>
+          <div class="xinputs">
+            <div><label for="sIng">Factura que emitirías (subtotal)</label><input id="sIng" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="sIvaIng">IVA de esa factura</label><select id="sIvaIng"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option><option value="exento">Exento</option></select></div>
+            <div><label for="sGas">Factura que recibirías, gasto deducible (subtotal)</label><input id="sGas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="sIvaGas">IVA de ese gasto</label><select id="sIvaGas"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option><option value="exento">Exento</option></select></div>
+          </div>
+          <div class="table"><table class="simtable">
+            <thead><tr><th></th><th>Ahora</th><th>Con la simulación</th><th>Diferencia</th></tr></thead>
+            <tbody id="sBody"></tbody>
+          </table></div>
+          <p class="simmsg" id="sMsg" aria-live="polite"></p>
+        </div>
+        <div class="card tips" id="tips"><b>Cómo pagar menos impuestos, de forma legal</b><ul id="tipList"></ul><p class="tiny">Reducir impuestos significa aprovechar las deducciones y los acreditamientos que la ley permite. Un contador puede revisar tu caso concreto.</p></div>
+      </div>
+
+
     </div>
   </div>
 </section>

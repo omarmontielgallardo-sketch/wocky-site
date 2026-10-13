@@ -31,5 +31,6 @@ export const PLANES = [
   { id: 'despacho', nombre: 'Despacho', para: 'Contadores y agencias', precio: 649, timbres: 600, items: ['20 RFC · usuarios ilimitados', 'API y marca propia', 'Soporte prioritario'] },
 ] as const;
 export const LIMITES: Record<string, number> = { emprendedor: 40, negocio: 150, despacho: 600 };
+export const RFC_MAX: Record<string, number> = { emprendedor: 1, negocio: 3, despacho: 20 };
 export const NOMBRE_PLAN: Record<string, string> = { emprendedor: 'Emprendedor', negocio: 'Negocio', despacho: 'Despacho' };
 export const USOS_CFDI: [string, string][] = [['G03', 'G03 Gastos en general'], ['G01', 'G01 Adquisición de mercancías'], ['S01', 'S01 Sin efectos fiscales']];
