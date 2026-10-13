@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Timbro · Facturación electrónica CFDI 4.0</title>
-<meta name="description" content="Timbro: emite tus facturas CFDI 4.0 en menos de un minuto, desde el navegador o el celular. Hecho para freelancers y negocios pequeños en México.">
+<meta name="description" content="Timbro: crea, timbra y administra tus facturas CFDI 4.0 desde el navegador. Planes desde $99 al mes para México.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -12,163 +12,34 @@
 </head>
 <body>
 
-<header class="nav" id="nav">
+<header class="nav">
   <a href="#inicio" class="logo"><i></i>Timbro</a>
-  <button class="burger" id="burger" aria-label="Menú"><i></i><i></i></button>
-  <nav id="menu">
-    <a href="#funciones">Funciones</a>
-    <a href="#como">Cómo funciona</a>
+  <nav>
     <a href="#precios">Precios</a>
-    <a href="#membresia">Membresía</a>
     <a href="#faq">Preguntas</a>
-    <a href="#acceso" data-tab="login">Iniciar sesión</a>
-    <a class="btn sm" href="#acceso" data-tab="registro">Crear cuenta</a>
+    <a class="btn sm" href="#app" id="navAcct">Entrar</a>
   </nav>
 </header>
 
+<main>
 <section class="hero" id="inicio">
-  <div class="blob b1"></div><div class="blob b2"></div>
-  <div class="wrap hero-grid">
-    <div>
-      <p class="pill reveal">CFDI 4.0 · Hecho para México</p>
-      <h1 class="reveal">Factura en <em>un minuto</em>, sin dolores de cabeza.</h1>
-      <p class="lead reveal">Crea, timbra y envía tus facturas desde el navegador o el celular. Sin ser contador, sin instalar nada.</p>
-      <div class="cta reveal">
-        <a class="btn" href="#lista">Unirme a la lista de espera</a>
-        <a class="btn ghost" href="#como">Ver cómo funciona</a>
-      </div>
-      <p class="tiny reveal">Sin permanencia · Cancela cuando quieras</p>
-    </div>
-    <div class="mock reveal" aria-hidden="true">
-      <div class="inv">
-        <div class="inv-top"><b>Factura</b><span class="stamp">Timbrada ✓</span></div>
-        <div class="row"><small>Cliente</small><span>Estudio Aurora S.A. de C.V.</span></div>
-        <div class="row"><small>RFC</small><span>EAU 200101 AB1</span></div>
-        <div class="row"><small>Concepto</small><span>Diseño de marca</span></div>
-        <div class="line"></div>
-        <div class="row"><small>Subtotal</small><span>$12,000.00</span></div>
-        <div class="row"><small>IVA 16%</small><span>$1,920.00</span></div>
-        <div class="row total"><small>Total</small><span>$13,920.00</span></div>
-        <div class="send">Enviar por correo →</div>
-      </div>
-      <div class="chip c1">⚡ 45 segundos</div>
-      <div class="chip c2">📄 PDF + XML</div>
-    </div>
+  <p class="pill">CFDI 4.0 · México</p>
+  <h1>Factura en <em>un minuto</em>.</h1>
+  <p class="lead">Crea, timbra y administra tus facturas desde el navegador. Valida el RFC en vivo y lleva el control de tus timbres.</p>
+  <div class="cta">
+    <a class="btn" href="#app">Probar ahora</a>
+    <a class="btn ghost" href="#precios">Ver precios</a>
   </div>
 </section>
 
-<div class="marquee" aria-hidden="true">
-  <div class="track">
-    <span>CFDI 4.0</span><span>✦</span><span>Complemento de pago</span><span>✦</span><span>Cancelaciones</span><span>✦</span><span>Facturas recurrentes</span><span>✦</span>
-    <span>CFDI 4.0</span><span>✦</span><span>Complemento de pago</span><span>✦</span><span>Cancelaciones</span><span>✦</span><span>Facturas recurrentes</span><span>✦</span>
-  </div>
-</div>
-
-<section class="section" id="funciones">
+<section class="section" id="app">
   <div class="wrap">
-    <p class="eyebrow reveal">Funciones</p>
-    <h2 class="reveal">Todo lo que necesitas para facturar</h2>
-    <div class="grid">
-      <article class="card reveal"><div class="ico">⚡</div><h3>Rápido de verdad</h3><p>Guarda tus clientes y conceptos una vez. La siguiente factura son tres clics.</p></article>
-      <article class="card reveal"><div class="ico">✅</div><h3>Validación automática</h3><p>Revisamos RFC, régimen fiscal y código postal antes de timbrar para evitar errores.</p></article>
-      <article class="card reveal"><div class="ico">🔁</div><h3>Facturas recurrentes</h3><p>Programa cobros mensuales y que Timbro emita y envíe por ti.</p></article>
-      <article class="card reveal"><div class="ico">💳</div><h3>Complemento de pago</h3><p>Registra pagos parciales o diferidos (PPD) sin complicarte.</p></article>
-      <article class="card reveal"><div class="ico">📱</div><h3>Desde tu celular</h3><p>Pensado primero para móvil: factura desde donde estés.</p></article>
-      <article class="card reveal"><div class="ico">🔒</div><h3>Datos protegidos</h3><p>Tus certificados y datos fiscales se guardan cifrados.</p></article>
-    </div>
-  </div>
-</section>
+    <p class="demo-banner">Modo demostración: las facturas no se timbran ante el SAT y los datos se guardan solo en este navegador.</p>
 
-<section class="section alt" id="como">
-  <div class="wrap">
-    <p class="eyebrow reveal">Cómo funciona</p>
-    <h2 class="reveal">Tres pasos y listo</h2>
-    <div class="steps">
-      <div class="step reveal"><b>1</b><h3>Configura tu RFC</h3><p>Sube tu certificado (CSD) una sola vez.</p></div>
-      <div class="step reveal"><b>2</b><h3>Crea tu factura</h3><p>Elige cliente, concepto y monto.</p></div>
-      <div class="step reveal"><b>3</b><h3>Timbra y envía</h3><p>Se genera el PDF y XML y se manda a tu cliente.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="precios">
-  <div class="wrap">
-    <p class="eyebrow reveal">Precios</p>
-    <h2 class="reveal">Simple y transparente</h2>
-    <div class="prices">
-      <article class="plan reveal"><h3>Emprendedor</h3><p class="amt">$99<small>/mes</small></p><ul><li><b>40 facturas timbradas</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li><li>Soporte por WhatsApp</li></ul><a class="btn ghost-d" href="#lista">Lo quiero</a></article>
-      <article class="plan hot reveal"><span class="tag">Más popular</span><h3>Negocio</h3><p class="amt">$249<small>/mes</small></p><ul><li><b>150 facturas timbradas</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Facturas recurrentes</li><li>Portal de autofactura</li><li>Integraciones de venta</li></ul><a class="btn" href="#lista">Lo quiero</a></article>
-      <article class="plan reveal"><h3>Despacho</h3><p class="amt">$649<small>/mes</small></p><ul><li><b>600 facturas timbradas</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y webhooks</li><li>Marca propia</li><li>Soporte prioritario</li></ul><a class="btn ghost-d" href="#lista">Hablar con ventas</a></article>
-    </div>
-    <p class="note reveal">* Precios en MXN más IVA. Timbre extra: $3. Precios de referencia durante la fase de validación; pueden cambiar al lanzamiento.</p>
-  </div>
-</section>
-
-<section class="section alt" id="membresia">
-  <div class="wrap">
-    <p class="eyebrow reveal">Membresía</p>
-    <h2 class="reveal">Sabe siempre cuántas facturas te quedan</h2>
-    <p class="sub reveal">Puedes <b>generar</b> borradores sin límite; la cuota se consume solo al <b>timbrar</b>.</p>
-    <div class="mem-grid">
-      <div class="meter reveal" id="meter" data-used="12" data-limit="40">
-        <div class="meter-head"><b>Tu membresía</b><span class="stamp" id="mPlan">Emprendedor</span></div>
-        <div class="seg" role="tablist">
-          <button class="on" data-plan="emp" data-limit="40" data-name="Emprendedor">Emprendedor</button>
-          <button data-plan="neg" data-limit="150" data-name="Negocio">Negocio</button>
-          <button data-plan="des" data-limit="600" data-name="Despacho">Despacho</button>
-        </div>
-        <p class="big"><b id="mLeft">28</b> <span id="mLeftTxt">facturas por timbrar este mes</span></p>
-        <div class="bar"><i id="mBar"></i></div>
-        <p class="tiny"><span id="mUsed">12</span> timbradas<span id="mOf"> de 40</span> · Se reinicia el día 1</p>
-        <div class="actions">
-          <button class="btn sm" id="mGen" type="button">+ Generar borrador</button>
-          <button class="btn sm alt-btn" id="mStamp" type="button">Timbrar factura</button>
-        </div>
-        <p class="tiny" id="mMsg" aria-live="polite">Demostración: así verás tu consumo.</p>
-      </div>
-      <div class="table reveal">
-        <table>
-          <thead><tr><th></th><th>Emprendedor</th><th>Negocio</th><th>Despacho</th></tr></thead>
-          <tbody>
-            <tr><td>Generar borradores</td><td>Ilimitado</td><td>Ilimitado</td><td>Ilimitado</td></tr>
-            <tr><td>Timbrar al mes</td><td>40</td><td>150</td><td>600</td></tr>
-            <tr><td>RFC</td><td>1</td><td>3</td><td>20</td></tr>
-            <tr><td>Usuarios</td><td>1</td><td>3</td><td>Ilimitados</td></tr>
-            <tr><td>Complemento de pago</td><td>✓</td><td>✓</td><td>✓</td></tr>
-            <tr><td>Recurrentes y autofactura</td><td>—</td><td>✓</td><td>✓</td></tr>
-            <tr><td>API</td><td>—</td><td>—</td><td>✓</td></tr>
-            <tr><td>Timbre extra</td><td>$3</td><td>$3</td><td>$3</td></tr>
-          </tbody>
-        </table>
-        <p class="note">Cifras de ejemplo a validar.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section alt" id="faq">
-  <div class="wrap narrow">
-    <p class="eyebrow reveal">Preguntas</p>
-    <h2 class="reveal">Preguntas frecuentes</h2>
-    <details class="reveal"><summary>¿Ya puedo facturar con Timbro?</summary><p>Todavía estamos construyendo el producto. Apúntate a la lista de espera y te avisamos cuando abramos el acceso anticipado.</p></details>
-    <details class="reveal"><summary>¿Necesito saber de contabilidad?</summary><p>No. Timbro te guía con los campos y valida los datos antes de timbrar. Aun así, para dudas fiscales consulta a tu contador.</p></details>
-    <details class="reveal"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
-    <details class="reveal"><summary>¿Cómo se timbran las facturas?</summary><p>A través de un Proveedor Autorizado de Certificación (PAC) autorizado por el SAT.</p></details>
-  </div>
-</section>
-
-<section class="section" id="acceso">
-  <div class="wrap two acc">
-    <div class="reveal">
-      <p class="eyebrow">Acceso</p>
-      <h2>Entra con tu empresa</h2>
-      <p class="sub2">Cada cuenta se asocia al RFC de tu empresa. Puedes agregar más razones sociales después, según tu plan.</p>
-      <ul class="checks"><li>Datos fiscales validados al registrarte</li><li>Varios RFC y usuarios en Negocio y Despacho</li><li>Tu certificado (CSD) se guarda cifrado</li></ul>
-    </div>
-    <div class="authbox reveal">
+    <div class="authbox" id="authView">
       <div class="seg" role="tablist" aria-label="Acceso">
-        <button class="on" id="tabLogin" data-tab="login" role="tab">Iniciar sesión</button>
-        <button id="tabReg" data-tab="registro" role="tab">Crear cuenta</button>
+        <button class="on" id="tabLogin" type="button" data-tab="login">Iniciar sesión</button>
+        <button id="tabReg" type="button" data-tab="registro">Crear cuenta</button>
       </div>
       <form class="afrm" id="fLogin" novalidate>
         <label for="lEmail">Correo</label>
@@ -176,7 +47,6 @@
         <label for="lPass">Contraseña</label>
         <input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" required>
         <button class="btn" type="submit">Entrar</button>
-        <p class="tiny">¿Olvidaste tu contraseña? Disponible al lanzamiento.</p>
         <p class="amsg" id="lMsg" aria-live="polite" hidden></p>
       </form>
       <form class="afrm" id="fReg" novalidate hidden>
@@ -185,7 +55,7 @@
         <div class="two-f">
           <div><label for="rRfc">RFC</label><input id="rRfc" placeholder="EAU200101AB1" maxlength="13" autocapitalize="characters" required></div>
           <div><label for="rReg">Régimen fiscal</label>
-            <select id="rReg"><option>601 General de Ley PM</option><option>612 Personas físicas con actividad empresarial</option><option>626 RESICO</option><option>621 Incorporación fiscal</option></select></div>
+            <select id="rReg"><option>601 General de Ley PM</option><option>612 Persona física con actividad empresarial</option><option>626 RESICO</option><option>621 Incorporación fiscal</option></select></div>
         </div>
         <label for="rEmail">Correo</label>
         <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
@@ -194,28 +64,96 @@
         <button class="btn" type="submit">Crear cuenta</button>
         <p class="amsg" id="rMsg" aria-live="polite" hidden></p>
       </form>
-      <p class="tiny demo">Demostración: aún no se crean cuentas reales ni se guardan datos.</p>
+    </div>
+
+    <div id="dashView" hidden>
+      <div class="dash-head">
+        <div><h2 id="dCompany">Empresa</h2><p class="muted" id="dRfc">RFC</p></div>
+        <div class="dash-actions">
+          <label for="dPlan" class="sr">Plan</label>
+          <select id="dPlan">
+            <option value="emp">Emprendedor · $99</option>
+            <option value="neg">Negocio · $249</option>
+            <option value="des">Despacho · $649</option>
+          </select>
+          <button class="btn ghost sm" id="bOut" type="button">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card meter">
+          <b>Timbres del mes</b>
+          <p class="big"><b id="mLeft">0</b> <span>disponibles</span></p>
+          <div class="bar"><i id="mBar"></i></div>
+          <p class="tiny"><span id="mUsed">0</span> de <span id="mLimit">0</span> usados · timbre extra $3</p>
+          <p class="tiny">Los borradores no consumen timbres.</p>
+        </div>
+
+        <form class="card inv" id="fInv" novalidate>
+          <b>Nueva factura</b>
+          <div class="two-f">
+            <div><label for="iName">Cliente</label><input id="iName" placeholder="Nombre o razón social" required></div>
+            <div><label for="iRfc">RFC del cliente</label><input id="iRfc" placeholder="XAXX010101000" maxlength="13" autocapitalize="characters" required></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="iUso">Uso del CFDI</label>
+              <select id="iUso"><option value="G03">G03 Gastos en general</option><option value="G01">G01 Adquisición de mercancías</option><option value="S01">S01 Sin efectos fiscales</option></select></div>
+            <div><label for="iMet">Método de pago</label>
+              <select id="iMet"><option value="PUE">PUE · Pago en una exhibición</option><option value="PPD">PPD · Pago en parcialidades</option></select></div>
+          </div>
+          <div class="lines" id="lines"></div>
+          <button class="link" id="bAdd" type="button">+ Agregar concepto</button>
+          <dl class="tot">
+            <div><dt>Subtotal</dt><dd id="tSub">$0.00</dd></div>
+            <div><dt>IVA 16%</dt><dd id="tIva">$0.00</dd></div>
+            <div class="grand"><dt>Total</dt><dd id="tTot">$0.00</dd></div>
+          </dl>
+          <div class="actions">
+            <button class="btn" id="bStamp" type="button">Timbrar factura</button>
+            <button class="btn ghost" id="bDraft" type="button">Guardar borrador</button>
+          </div>
+          <p class="amsg" id="iMsg" aria-live="polite" hidden></p>
+        </form>
+      </div>
+
+      <div class="card hist">
+        <b>Mis facturas</b>
+        <div class="table"><table>
+          <thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estatus</th><th></th></tr></thead>
+          <tbody id="hBody"></tbody>
+        </table></div>
+        <p class="tiny" id="hEmpty">Todavía no hay facturas. Crea la primera arriba.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="section cta-band" id="lista">
-  <div class="wrap narrow center">
-    <h2 class="reveal">Sé de los primeros en probarlo</h2>
-    <p class="reveal">Déjanos tu correo y te damos acceso anticipado.</p>
-    <form class="form reveal" id="form">
-      <input name="email" type="email" placeholder="tu@correo.com" required aria-label="Correo electrónico">
-      <button class="btn" type="submit">Avísame</button>
-    </form>
-    <p class="ok" id="ok" hidden>¡Gracias! Te escribiremos pronto.</p>
+<section class="section alt" id="precios">
+  <div class="wrap">
+    <h2>Planes</h2>
+    <div class="prices">
+      <article class="plan"><h3>Emprendedor</h3><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
+      <article class="plan hot"><span class="tag">Más popular</span><h3>Negocio</h3><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Recurrentes</li><li>Autofactura</li></ul></article>
+      <article class="plan"><h3>Despacho</h3><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
+    </div>
+    <p class="note">MXN más IVA · Timbre extra $3 · Precios de referencia a validar.</p>
   </div>
 </section>
+
+<section class="section" id="faq">
+  <div class="wrap narrow">
+    <h2>Preguntas</h2>
+    <details><summary>¿Qué es un timbre?</summary><p>Una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
+    <details><summary>¿Ya timbra de verdad?</summary><p>Aún no. Esta versión es una demostración; el timbrado real se hará a través de un PAC autorizado.</p></details>
+    <details><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
+  </div>
+</section>
+</main>
 
 <footer class="foot">
   <div class="wrap foot-in">
     <a href="#inicio" class="logo"><i></i>Timbro</a>
-    <p>wockycontacto@gmail.com</p>
-    <p class="copy">© 2026 Timbro. Servicio en desarrollo.</p>
+    <p>wockycontacto@gmail.com · © 2026 Timbro · Servicio en desarrollo</p>
   </div>
 </footer>
 <script src="script.js"></script>
