@@ -164,7 +164,7 @@ function renderDash() {
   const u = acct; if (!u) return;
   const limit = PLANS[u.plan].limit, left = Math.max(limit - u.used, 0);
   $('#dCompany').textContent = u.razon;
-  $('#dRfc').textContent = 'RFC ' + u.rfc; $('#dMail').textContent = u.email || localEmail;
+  $('#dRfc').textContent = 'RFC ' + u.rfc + ' · Régimen ' + u.regimen.split(' ')[0]; $('#dMail').textContent = u.email || localEmail;
   $('#dPlan').value = u.plan;
   countTo($('#mLeft'), left, v => Math.round(v));
   $('#mUsed').textContent = u.used; $('#mLimit').textContent = limit;
