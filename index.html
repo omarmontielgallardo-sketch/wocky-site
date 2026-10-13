@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<a class="skip" href="#app">Saltar al contenido</a>
+<a class="skip" href="#inicio">Saltar al contenido</a>
 <div class="progress" id="progress"></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
@@ -32,15 +32,17 @@
   </a>
   <button class="burger" id="burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
   <nav id="menu">
+    <a href="#inicio" data-nav="home">Inicio</a>
     <a href="#funciones">Funciones</a>
     <a href="#como">Cómo funciona</a>
     <a href="#precios">Precios</a>
     <a href="#faq">Preguntas</a>
-    <a class="btn sm" href="#app" id="navAcct">Entrar</a>
+    <a class="navtab" href="#panel" id="navAcct" data-nav="panel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Panel</a>
   </nav>
 </header>
 
 <main>
+<div id="viewHome">
 <section class="hero" id="inicio">
   <div class="blob b1"></div><div class="blob b2"></div><div class="dots"></div>
   <div class="wrap hero-grid">
@@ -50,7 +52,7 @@
       <p class="slogan rise" style="--d:.32s">Facturar nunca sonó tan fácil.</p>
       <p class="lead rise" style="--d:.4s">Crea, timbra y administra tus CFDI 4.0 desde el navegador. Valida el RFC al instante y mantén el control de tus timbres, sin hojas de cálculo ni trámites.</p>
       <div class="cta rise" style="--d:.5s">
-        <a class="btn shine" href="#app">Probar ahora</a>
+        <a class="btn shine" href="#panel">Probar ahora</a>
         <a class="btn ghost" href="#como">Cómo funciona</a>
       </div>
       <p class="fine rise" style="--d:.6s">Cumple con el estándar CFDI 4.0 · Sin permanencia</p>
@@ -96,9 +98,34 @@
   </div>
 </section>
 
+<section class="section alt" id="precios">
+  <div class="wrap">
+    <div class="head rv"><p class="eyebrow">Precios</p><h2>Un plan para cada etapa</h2><p class="sub">Todos incluyen cuenta, historial de facturas y control de timbres.</p></div>
+    <div class="prices">
+      <article class="plan rv"><h3>Emprendedor</h3><p class="for">Freelancers y RESICO</p><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
+      <article class="plan hot rv"><span class="tag">Más popular</span><h3>Negocio</h3><p class="for">Pequeñas empresas</p><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Facturas recurrentes</li><li>Portal de autofactura</li></ul></article>
+      <article class="plan rv"><h3>Despacho</h3><p class="for">Contadores y agencias</p><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
+    </div>
+    <p class="note">Precios en pesos mexicanos más IVA. Timbre extra: $3. Precios de referencia durante la etapa de validación; pueden cambiar al lanzamiento.</p>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap narrow">
+    <div class="head rv"><p class="eyebrow">Preguntas</p><h2>Lo que más nos preguntan</h2></div>
+    <details class="rv"><summary>¿Qué es un timbre?</summary><p>Es una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
+    <details class="rv"><summary>¿Ya timbra de verdad?</summary><p>Todavía no. Esta versión es una demostración: crea, calcula y administra facturas, pero no las certifica ante el SAT. El timbrado real se hará a través de un Proveedor Autorizado de Certificación (PAC).</p></details>
+    <details class="rv"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
+    <details class="rv"><summary>¿Mis datos están seguros?</summary><p>En esta versión tus datos se guardan únicamente en tu navegador y no se envían a ningún servidor. Consulta nuestro <a href="#" data-open="dlgPriv">Aviso de privacidad</a>.</p></details>
+    <details class="rv"><summary>¿Timbro reemplaza a mi contador?</summary><p>No. Timbro es una herramienta para generar y administrar comprobantes; no ofrece asesoría fiscal ni contable.</p></details>
+  </div>
+</section>
+</div>
+
+<div id="viewPanel" hidden>
 <section class="section" id="app">
   <div class="wrap">
-    <div class="head rv"><p class="eyebrow">Pruébalo</p><h2>Tu panel de facturación</h2></div>
+    <div class="head"><p class="eyebrow">Tu cuenta</p><h2>Panel de facturación</h2></div>
     <p class="demo-banner" id="banner">Modo demostración: las facturas no se timbran ante el SAT. Tus datos se guardan solo en este navegador.</p>
 
     <div class="authbox" id="authView">
@@ -219,29 +246,7 @@
     </div>
   </div>
 </section>
-
-<section class="section alt" id="precios">
-  <div class="wrap">
-    <div class="head rv"><p class="eyebrow">Precios</p><h2>Un plan para cada etapa</h2><p class="sub">Todos incluyen cuenta, historial de facturas y control de timbres.</p></div>
-    <div class="prices">
-      <article class="plan rv"><h3>Emprendedor</h3><p class="for">Freelancers y RESICO</p><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
-      <article class="plan hot rv"><span class="tag">Más popular</span><h3>Negocio</h3><p class="for">Pequeñas empresas</p><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Facturas recurrentes</li><li>Portal de autofactura</li></ul></article>
-      <article class="plan rv"><h3>Despacho</h3><p class="for">Contadores y agencias</p><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
-    </div>
-    <p class="note">Precios en pesos mexicanos más IVA. Timbre extra: $3. Precios de referencia durante la etapa de validación; pueden cambiar al lanzamiento.</p>
-  </div>
-</section>
-
-<section class="section" id="faq">
-  <div class="wrap narrow">
-    <div class="head rv"><p class="eyebrow">Preguntas</p><h2>Lo que más nos preguntan</h2></div>
-    <details class="rv"><summary>¿Qué es un timbre?</summary><p>Es una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
-    <details class="rv"><summary>¿Ya timbra de verdad?</summary><p>Todavía no. Esta versión es una demostración: crea, calcula y administra facturas, pero no las certifica ante el SAT. El timbrado real se hará a través de un Proveedor Autorizado de Certificación (PAC).</p></details>
-    <details class="rv"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
-    <details class="rv"><summary>¿Mis datos están seguros?</summary><p>En esta versión tus datos se guardan únicamente en tu navegador y no se envían a ningún servidor. Consulta nuestro <a href="#" data-open="dlgPriv">Aviso de privacidad</a>.</p></details>
-    <details class="rv"><summary>¿Timbro reemplaza a mi contador?</summary><p>No. Timbro es una herramienta para generar y administrar comprobantes; no ofrece asesoría fiscal ni contable.</p></details>
-  </div>
-</section>
+</div>
 </main>
 
 <footer class="foot">
@@ -257,9 +262,9 @@
       </a>
       <p>Facturar nunca sonó tan fácil.</p>
     </div>
-    <div><h4>Producto</h4><ul><li><a href="#funciones">Funciones</a></li><li><a href="#precios">Precios</a></li><li><a href="#app">Probar</a></li><li><a href="#faq">Preguntas</a></li></ul></div>
+    <div><h4>Producto</h4><ul><li><a href="#funciones">Funciones</a></li><li><a href="#precios">Precios</a></li><li><a href="#panel">Panel</a></li><li><a href="#faq">Preguntas</a></li></ul></div>
     <div><h4>Legal</h4><ul><li><a href="#" data-open="dlgPriv">Aviso de privacidad</a></li><li><a href="#" data-open="dlgTerms">Términos y condiciones</a></li><li><a href="#" data-open="dlgCookies">Política de cookies</a></li><li><a href="#" id="cookiePrefs">Preferencias de cookies</a></li></ul></div>
-    <div><h4>Contacto</h4><ul><li>wockycontacto@gmail.com</li><li>México</li></ul></div>
+    <div><h4>Contacto</h4><ul><li><a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a></li><li>México</li></ul></div>
   </div>
   <p class="copy">© 2026 Timbro. Servicio en desarrollo; no sustituye asesoría fiscal ni contable.</p>
 </footer>
@@ -278,7 +283,7 @@
     <div class="summary"><b>En resumen</b><ul><li>Solo pedimos los datos necesarios para crear tu cuenta y tus facturas.</li><li>No vendemos tus datos ni los usamos para publicidad.</li><li>En esta versión se guardan en tu navegador, no en un servidor.</li><li>Puedes ver, corregir y eliminar tus datos desde tu panel o escribiéndonos.</li></ul></div>
     <p>Este Aviso de Privacidad se emite conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares y su normatividad aplicable.</p>
     <h3>1. Responsable</h3>
-    <p><b>[Nombre o razón social del responsable]</b>, con domicilio en <b>[domicilio completo en México]</b> (en adelante, «Timbro»), es responsable del tratamiento de tus datos personales. Contacto: wockycontacto@gmail.com.</p>
+    <p><b>[Nombre o razón social del responsable]</b>, con domicilio en <b>[domicilio completo en México]</b> (en adelante, «Timbro»), es responsable del tratamiento de tus datos personales. Contacto: <a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a>.</p>
     <h3>2. Datos personales que tratamos</h3>
     <ul><li><b>Identificación y contacto:</b> nombre o razón social y correo electrónico.</li><li><b>Fiscales:</b> RFC y régimen fiscal tuyos y de los clientes que captures (nombre y RFC).</li><li><b>De facturación:</b> conceptos, importes, fechas, folios y estatus de tus comprobantes.</li><li><b>Credenciales:</b> tu contraseña se guarda únicamente como un valor cifrado (hash), nunca en texto legible.</li><li><b>Aceptación:</b> la fecha en que aceptaste este aviso y los términos.</li></ul>
     <p>No recabamos datos personales sensibles. Al capturar datos de tus clientes declaras que tienes derecho a tratarlos y que cumples con la obligación de informarles sobre su tratamiento.</p>
@@ -292,7 +297,7 @@
     <h3>6. Conservación y seguridad</h3>
     <p>Conservamos tus datos mientras tengas cuenta y por el tiempo que exijan las disposiciones aplicables. Aplicamos medidas de seguridad administrativas, técnicas y físicas razonables, como el cifrado de contraseñas. Ningún sistema es infalible; si ocurriera una vulneración que afecte de forma significativa tus derechos, te lo informaremos.</p>
     <h3>7. Derechos ARCO, revocación y limitación</h3>
-    <p>Tienes derecho a <b>acceder, rectificar, cancelar u oponerte</b> al tratamiento de tus datos (derechos ARCO), a revocar tu consentimiento y a limitar el uso o divulgación de tus datos. Desde tu panel puedes ver y eliminar tus datos en «Mi privacidad». También puedes escribir a wockycontacto@gmail.com indicando: tu nombre y un medio para responderte, un documento que acredite tu identidad, la descripción clara de lo que solicitas y cualquier elemento que ayude a localizar tus datos. Responderemos dentro de los plazos que establece la ley.</p>
+    <p>Tienes derecho a <b>acceder, rectificar, cancelar u oponerte</b> al tratamiento de tus datos (derechos ARCO), a revocar tu consentimiento y a limitar el uso o divulgación de tus datos. Desde tu panel puedes ver y eliminar tus datos en «Mi privacidad». También puedes escribir a <a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a> indicando: tu nombre y un medio para responderte, un documento que acredite tu identidad, la descripción clara de lo que solicitas y cualquier elemento que ayude a localizar tus datos. Responderemos dentro de los plazos que establece la ley.</p>
     <h3>8. Menores de edad</h3>
     <p>Timbro está dirigido a personas mayores de 18 años. No recabamos de manera intencional datos de menores.</p>
     <h3>9. Cookies y tecnologías similares</h3>
@@ -333,7 +338,7 @@
     <h3>12. Ley aplicable y jurisdicción</h3>
     <p>Estos términos se rigen por las leyes de los Estados Unidos Mexicanos. Para su interpretación y cumplimiento, las partes se someten a los tribunales competentes de <b>[ciudad], México</b>, sin perjuicio de los derechos que la ley otorgue al consumidor.</p>
     <h3>13. Contacto y quejas</h3>
-    <p>Para dudas, aclaraciones o quejas escribe a wockycontacto@gmail.com. También puedes acudir a la Procuraduría Federal del Consumidor (Profeco).</p>
+    <p>Para dudas, aclaraciones o quejas escribe a <a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a>. También puedes acudir a la Procuraduría Federal del Consumidor (Profeco).</p>
   </div>
 </dialog>
 

@@ -12,7 +12,7 @@ ul{list-style:none}
 /* Progreso y navegación */
 .progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--brand),#00c2a8);z-index:100}
 .nav{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:16px 5vw;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:padding .3s,border-color .3s,background .3s}
-.nav.solid{padding:10px 5vw;background:rgba(255,255,255,.92);border-color:var(--line)}
+.nav.solid{background:rgba(255,255,255,.92);border-color:var(--line)}
 .logo{display:inline-flex;align-items:center;gap:10px}
 .mark{width:34px;height:34px;display:block;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
 .logo:hover .mark{transform:scale(1.08)}
@@ -324,3 +324,15 @@ dialog textarea{width:100%;border:1px solid var(--line);border-radius:12px;paddi
 }
 @media(max-width:520px){.toasts{left:12px;right:12px;justify-items:stretch}.toast{max-width:none}.chips{width:100%}}
 @media(prefers-reduced-motion:reduce){.view-in,.toast,.empty svg{animation:none!important}}
+.foot li a[href^="mailto:"],.legal-body a[href^="mailto:"]{color:var(--brand);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+/* Pestañas del menú superior */
+.nav nav a[data-nav].active:not(.navtab){color:var(--brand)}
+.nav nav a[data-nav].active:not(.navtab):after{width:100%}
+.navtab{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1.5px solid var(--line);border-radius:12px;font-weight:700;color:var(--brand);background:#fff;transition:background .2s,color .2s,border-color .2s,transform .2s}
+.navtab svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.navtab:hover{border-color:var(--brand);transform:translateY(-1px)}
+.navtab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.navtab:after{display:none}
+#viewPanel{padding-top:10px}
+.nav nav a.navtab.active,.nav nav a.navtab.active:hover{color:#fff}

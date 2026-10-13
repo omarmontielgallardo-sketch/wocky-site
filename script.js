@@ -23,7 +23,7 @@ addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 
 if ('IntersectionObserver' in window) {
   // Sección activa en el menú
-  const links = $$('#menu a[href^="#"]:not(.btn)');
+  const links = $$('#menu a[href^="#"]:not(.navtab):not([data-nav])');
   const spy = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
   }), { rootMargin: '-45% 0px -50% 0px' });
@@ -47,6 +47,31 @@ const countTo = (el, to, fmt = v => v) => {
   const tick = t => { const k = Math.min((t - t0) / 600, 1); el.textContent = fmt(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
 };
+
+// ---------- Vistas: Inicio y Panel (pestañas del menú superior) ----------
+const views = { home: $('#viewHome'), panel: $('#viewPanel') };
+let view = 'home';
+function setView(v, { scroll = true } = {}) {
+  view = v;
+  Object.entries(views).forEach(([k, el]) => { el.hidden = k !== v; if (k === v) { el.classList.remove('view-in'); el.offsetWidth; el.classList.add('view-in'); } });
+  $$('#menu [data-nav]').forEach(a => { const on = a.dataset.nav === v; a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
+  if (scroll) scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  if (v === 'panel') $$('.rv', views.panel).forEach(el => el.classList.add('in'));
+}
+// Cualquier enlace interno cambia de pestaña si hace falta
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.matches('[data-open]')) return;
+  const id = a.getAttribute('href').slice(1);
+  if (!id) return;
+  if (id === 'panel') { e.preventDefault(); setView('panel'); history.replaceState(null, '', '#panel'); return; }
+  const t = document.getElementById(id);
+  if (t && views.home.contains(t) && view !== 'home') {
+    e.preventDefault(); setView('home', { scroll: false }); history.replaceState(null, '', '#' + id);
+    requestAnimationFrame(() => t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }));
+  }
+});
+addEventListener('hashchange', () => { if (location.hash === '#panel' && view !== 'panel') setView('panel'); });
 
 // ---------- Documentos legales y cookies ----------
 let lastFocus = null;
@@ -117,7 +142,7 @@ const showTab = tab => {
 };
 $$('[data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 
-function showAuth() { swap($('#dashView'), $('#authView')); $('#navAcct').textContent = 'Entrar'; }
+function showAuth() { swap($('#dashView'), $('#authView'));  }
 
 $('#fReg').onsubmit = async e => {
   e.preventDefault();
@@ -154,7 +179,7 @@ function openDash() {
   if (!acct) return;
   acct.clients = acct.clients || []; acct.items = acct.items || [];
   if (acct.month !== monthKey()) { acct.month = monthKey(); acct.used = 0; persist(); }
-  swap($('#authView'), $('#dashView')); $('#navAcct').textContent = 'Mi cuenta';
+  swap($('#authView'), $('#dashView')); 
   if (!lines.length) addLine();
   renderDash();
 }
@@ -300,6 +325,7 @@ $('#bDelOk').onclick = () => {
 };
 
 // ---------- Inicio ----------
+setView(location.hash === '#panel' ? 'panel' : 'home', { scroll: false });
 (() => {
   const s = getSession(), u = s && loadDb()[s];
   if (u) { localEmail = s; acct = u; openDash(); } else { $('#authView').hidden = false; $('#dashView').hidden = true; }
