@@ -51,7 +51,11 @@ const countTo = (el, to, fmt = v => v) => {
 // ---------- Vistas: Inicio y Panel (pestañas del menú superior) ----------
 const views = { home: $('#viewHome'), panel: $('#viewPanel') };
 let view = 'home';
-function setView(v, { scroll = true } = {}) {
+function setView(v, opts = {}) {
+  if (document.startViewTransition && !reduceMotion && opts.scroll !== false) document.startViewTransition(() => applyView(v, opts));
+  else applyView(v, opts);
+}
+function applyView(v, { scroll = true } = {}) {
   view = v;
   Object.entries(views).forEach(([k, el]) => { el.hidden = k !== v; if (k === v) { el.classList.remove('view-in'); el.offsetWidth; el.classList.add('view-in'); } });
   $$('#menu [data-nav]').forEach(a => { const on = a.dataset.nav === v; a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
@@ -174,13 +178,14 @@ $('#fLogin').onsubmit = async e => {
 $('#bOut').onclick = () => { setSession(null); acct = null; localEmail = null; showAuth(); toast('Sesión cerrada.'); };
 
 // ---------- Panel ----------
-let lines = [], filter = 'todas', query = '';
+let lines = [], filter = 'todas', query = '', flashId = null;
 function openDash() {
   if (!acct) return;
   acct.clients = acct.clients || []; acct.items = acct.items || [];
   if (acct.month !== monthKey()) { acct.month = monthKey(); acct.used = 0; persist(); }
   swap($('#authView'), $('#dashView')); 
   if (!lines.length) addLine();
+  restoreDraft();
   renderDash();
 }
 
@@ -212,7 +217,7 @@ function renderDash() {
   const list = [...u.invoices].reverse().filter(i => (filter === 'todas' || i.estatus === filter) && (!q || i.cliente.toLowerCase().includes(q) || i.folio.toLowerCase().includes(q) || i.rfc.toLowerCase().includes(q)));
   const body = $('#hBody'); body.replaceChildren();
   list.forEach((inv, n) => {
-    const tr = document.createElement('tr'); tr.style.animationDelay = Math.min(n, 8) * 0.04 + 's';
+    const tr = document.createElement('tr'); tr.style.animationDelay = Math.min(n, 8) * 0.04 + 's'; if (inv.id === flashId) tr.classList.add('flash');
     const cell = t => { const td = document.createElement('td'); td.textContent = t; tr.append(td); return td; };
     cell(inv.folio);
     cell(new Date(inv.fecha).toLocaleDateString('es-MX'));
@@ -229,6 +234,7 @@ function renderDash() {
     body.append(tr);
   });
   $('#hEmpty').hidden = list.length > 0;
+  renderExtras();
   $('#hEmpty p').innerHTML = u.invoices.length ? '<b>Sin resultados</b><br>Prueba con otro filtro o búsqueda.' : '<b>Aún no hay facturas</b><br>Crea la primera con el formulario de arriba.';
 }
 $$('#chips button').forEach(b => b.onclick = () => { filter = b.dataset.f; renderDash(); });
@@ -256,7 +262,7 @@ function drawLines() {
     box.append(row);
   });
   if (focusLast) { const r = $$('.line', box).pop(); r && r.firstChild.focus(); focusLast = false; }
-  totals();
+  totals(); if (typeof saveDraft === 'function') saveDraft();
 }
 const calc = () => { const sub = lines.reduce((s, l) => s + l.q * l.p, 0); return { sub, tot: sub * 1.16 }; };
 function totals() { const t = calc(); $('#tSub').textContent = money(t.sub); $('#tIva').textContent = money(t.sub * 0.16); $('#tTot').textContent = money(t.tot); }
@@ -289,13 +295,14 @@ function stamp(id, newInv) {
     if (!inv.folio) inv.folio = 'A-' + String(++x.seq).padStart(4, '0');
     inv.estatus = 'timbrada'; inv.uuid = crypto.randomUUID(); x.used++; inv.fecha = Date.now();
   });
+  flashId = newInv ? newInv.id : id; renderDash(); celebrate();
   say(msg, 'Factura timbrada (demostración). Se descontó 1 timbre.'); toast('Factura timbrada. Quedan ' + (limit - acct.used) + ' timbres.'); return true;
 }
 $('#bStamp').onclick = () => { const inv = buildInvoice(); if (inv && stamp(null, inv)) resetForm(); };
 $('#bDraft').onclick = () => {
   const inv = buildInvoice(); if (!inv) return;
   update(u => { inv.folio = 'A-' + String(++u.seq).padStart(4, '0'); u.invoices.push(inv); remember(u, inv); });
-  say($('#iMsg'), 'Borrador guardado. No consume timbres.'); toast('Borrador guardado.'); resetForm();
+  flashId = inv.id; renderDash(); say($('#iMsg'), 'Borrador guardado. No consume timbres.'); toast('Borrador guardado.'); resetForm();
 };
 function duplicate(inv) {
   $('#iName').value = inv.cliente; $('#iRfc').value = inv.rfc; $('#iRfc').classList.add('ok');
@@ -329,6 +336,102 @@ $('#bDelOk').onclick = () => {
 $('#bCopyLink').onclick = async () => {
   try { await navigator.clipboard.writeText(location.href.split('#')[0]); toast('Enlace copiado.'); } catch { toast('No se pudo copiar. Copia la dirección desde el navegador.', 'err'); }
 };
+
+// ---------- Fluidez y facilidad ----------
+const fine = matchMedia('(pointer:fine)').matches;
+
+// Efecto de onda en botones
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest('.btn'); if (!b || reduceMotion) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 1.6, s = document.createElement('span');
+  s.className = 'ripple'; s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+  b.append(s); setTimeout(() => s.remove(), 650);
+});
+// Luz que sigue al cursor e inclinación suave en tarjetas
+if (fine && !reduceMotion) {
+  document.addEventListener('pointermove', e => {
+    const c = e.target.closest('.feat,.plan,.kpi'); if (!c) return;
+    const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    c.style.setProperty('--mx', x * 100 + '%'); c.style.setProperty('--my', y * 100 + '%');
+    if (!c.matches('.kpi')) { c.style.setProperty('--ry', (x - .5) * 7 + 'deg'); c.style.setProperty('--rx', (.5 - y) * 7 + 'deg'); }
+  }, { passive: true });
+  document.addEventListener('pointerout', e => { const c = e.target.closest('.feat,.plan'); if (c && !c.contains(e.relatedTarget)) { c.style.setProperty('--rx', '0deg'); c.style.setProperty('--ry', '0deg'); } });
+}
+// Volver arriba
+const toTop = $('#toTop');
+addEventListener('scroll', () => toTop.classList.toggle('show', scrollY > 700), { passive: true });
+toTop.onclick = () => scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+// Contadores de la portada
+$$('.hstats [data-count]').forEach(el => countTo(el, +el.dataset.count));
+// Palabra que cambia en la portada
+const rotor = $('#rotor');
+if (rotor && !reduceMotion) {
+  const words = rotor.dataset.words.split('|'); let wi = 0;
+  setInterval(() => { rotor.classList.add('out'); setTimeout(() => { wi = (wi + 1) % words.length; rotor.textContent = words[wi]; rotor.classList.remove('out'); }, 300); }, 2800);
+}
+// Celebración al timbrar
+function celebrate() {
+  if (reduceMotion) return;
+  const c = $('#celebrate'); c.classList.remove('on'); $$('.cf', c).forEach(x => x.remove());
+  const colors = ['#5b4bff', '#00c2a8', '#ffb84d', '#ff6b8b', '#2ff0cf'];
+  for (let i = 0; i < 30; i++) {
+    const f = document.createElement('i'), a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 200;
+    f.className = 'cf'; f.style.cssText = `--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d - 70}px;--r:${Math.random() * 720 - 360}deg;background:${colors[i % 5]};animation-delay:${Math.random() * .12}s`;
+    c.append(f);
+  }
+  c.offsetWidth; c.classList.add('on');
+  setTimeout(() => { c.classList.remove('on'); $$('.cf', c).forEach(x => x.remove()); }, 1800);
+}
+
+// Primeros pasos, clientes recientes y acciones rápidas
+function renderExtras() {
+  if (!acct) return;
+  const done = [true, acct.invoices.length > 0, acct.invoices.some(i => i.uuid)], n = done.filter(Boolean).length;
+  done.forEach((d, i) => $('#ob' + (i + 1)).classList.toggle('done', d));
+  $('#obCount').textContent = n === 3 ? '¡Listo!' : n + ' de 3'; $('#obBar').style.width = n / 3 * 100 + '%';
+  $('#onboard').classList.toggle('complete', n === 3);
+  const box = $('#recent'), rec = [...acct.clients].slice(-5).reverse();
+  box.hidden = !rec.length; box.replaceChildren(...rec.map(c => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'rchip'; b.textContent = c.name.length > 22 ? c.name.slice(0, 21) + '…' : c.name; b.title = c.name + ' · ' + c.rfc;
+    b.onclick = () => { $('#iName').value = c.name; $('#iRfc').value = c.rfc; $('#iRfc').classList.add('ok'); saveDraft(); const l = $('.line input'); l && l.focus(); };
+    return b;
+  }));
+  $('#qRepeat').disabled = !acct.invoices.length;
+}
+const goForm = () => { $('#fInv').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); setTimeout(() => $('#iName').focus({ preventScroll: true }), 350); };
+$('#qNew').onclick = goForm;
+$('#qRepeat').onclick = () => { const last = acct && acct.invoices[acct.invoices.length - 1]; if (last) duplicate(last); else toast('Aún no hay facturas para repetir.', 'err'); };
+$('#qExample').onclick = () => {
+  $('#iName').value = 'Estudio Aurora S.A. de C.V.'; $('#iRfc').value = 'EAU200101AB1'; $('#iRfc').classList.add('ok');
+  lines = [{ d: 'Diseño de marca', q: 1, p: 12000 }]; drawLines(); goForm(); toast('Ejemplo cargado. Presiona «Timbrar factura».');
+};
+$('#qSearch').onclick = () => { const i = $('#hSearch'); i.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); setTimeout(() => i.focus({ preventScroll: true }), 350); };
+// Atajos de teclado
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || !acct || view !== 'panel') return;
+  const t = e.target; if (t.closest && t.closest('input,textarea,select,[contenteditable],dialog')) return;
+  if (e.key === 'n' || e.key === 'N') { e.preventDefault(); goForm(); }
+  else if (e.key === '/') { e.preventDefault(); $('#qSearch').click(); }
+});
+// Borrador automático del formulario
+let draftT;
+function saveDraft() {
+  if (!acct) return; clearTimeout(draftT);
+  draftT = setTimeout(() => {
+    const f = { name: $('#iName').value, rfc: $('#iRfc').value, uso: $('#iUso').value, met: $('#iMet').value, lines: lines.map(l => ({ ...l })) };
+    const empty = !f.name && !f.rfc && lines.every(l => !l.d && !l.p);
+    if (empty && !acct.formDraft) return;
+    acct.formDraft = empty ? null : f; persist();
+  }, 400);
+}
+function restoreDraft() {
+  const f = acct && acct.formDraft; if (!f || $('#iName').value || lines.some(l => l.d || l.p)) return;
+  $('#iName').value = f.name; $('#iRfc').value = f.rfc; $('#iRfc').classList.toggle('ok', rfcOk(f.rfc)); $('#iUso').value = f.uso; $('#iMet').value = f.met;
+  lines = f.lines.length ? f.lines : [{ d: '', q: 1, p: 0 }]; drawLines(); toast('Recuperamos tu borrador sin terminar.');
+}
+$('#fInv').addEventListener('input', saveDraft); $('#fInv').addEventListener('change', saveDraft);
+// Indicador de carga en los botones de acceso
+[$('#fReg'), $('#fLogin')].forEach(f => { const orig = f.onsubmit; f.onsubmit = async e => { const sb = e.submitter; sb && sb.classList.add('loading'); try { return await orig.call(f, e); } finally { setTimeout(() => sb && sb.classList.remove('loading'), 250); } }; });
 
 // ---------- Inicio ----------
 setView(location.hash === '#panel' ? 'panel' : 'home', { scroll: false });

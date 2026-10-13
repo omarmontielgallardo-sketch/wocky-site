@@ -50,12 +50,12 @@
       <p class="pill rise" style="--d:0s"><i class="live"></i> Facturación electrónica · México</p>
       <h1><span class="w rise" style="--d:.08s">Factura</span> <span class="w rise" style="--d:.16s">en</span> <span class="w rise" style="--d:.24s"><em>un minuto</em>.</span></h1>
       <p class="slogan rise" style="--d:.32s">Facturar nunca sonó tan fácil.</p>
-      <p class="lead rise" style="--d:.4s">Crea, timbra y administra tus CFDI 4.0 desde el navegador. Valida el RFC al instante y mantén el control de tus timbres, sin hojas de cálculo ni trámites.</p>
+      <p class="lead rise" style="--d:.4s">Crea, timbra y administra tus CFDI 4.0 desde el navegador. Hecho para <span class="rotor" id="rotor" data-words="freelancers|negocios pequeños|despachos contables|emprendedores">freelancers</span>, sin hojas de cálculo ni trámites.</p>
       <div class="cta rise" style="--d:.5s">
         <a class="btn shine" href="#panel">Probar ahora</a>
         <a class="btn ghost" href="#como">Cómo funciona</a>
       </div>
-      <p class="fine rise" style="--d:.6s">Cumple con el estándar CFDI 4.0 · Sin permanencia</p>
+      <div class="hstats rise" style="--d:.6s"><div><b data-count="23">0</b><small>regímenes fiscales</small></div><div><b data-count="3">0</b><small>planes claros</small></div><div><b data-count="600">0</b><small>timbres máx. al mes</small></div></div>
     </div>
     <div class="mock rise" style="--d:.3s" aria-hidden="true">
       <div class="inv-card">
@@ -204,6 +204,23 @@
         </div>
       </div>
 
+      <div class="card onboard" id="onboard">
+        <div class="ob-head"><b>Primeros pasos</b><span id="obCount">1 de 3</span></div>
+        <div class="ob-bar"><i id="obBar"></i></div>
+        <ul class="ob-list">
+          <li class="done" id="ob1"><i></i>Registra tu empresa</li>
+          <li id="ob2"><i></i>Crea tu primera factura</li>
+          <li id="ob3"><i></i>Timbra una factura</li>
+        </ul>
+      </div>
+
+      <div class="quick" role="toolbar" aria-label="Acciones rápidas">
+        <button class="qbtn" id="qNew" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva factura <kbd>N</kbd></button>
+        <button class="qbtn" id="qRepeat" type="button"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Repetir la última</button>
+        <button class="qbtn" id="qExample" type="button"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Rellenar ejemplo</button>
+        <button class="qbtn" id="qSearch" type="button"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Buscar <kbd>/</kbd></button>
+      </div>
+
       <div class="kpis">
         <div class="kpi"><small>Facturado este mes</small><b id="kTot">$0.00</b></div>
         <div class="kpi"><small>Facturas timbradas</small><b id="kStamp">0</b></div>
@@ -224,7 +241,7 @@
         <form class="card inv" id="fInv" novalidate>
           <b>Nueva factura</b>
           <div class="two-f">
-            <div><label for="iName">Cliente</label><input id="iName" list="dlClients" placeholder="Nombre o razón social" autocomplete="off" required><datalist id="dlClients"></datalist><datalist id="dlItems"></datalist></div>
+            <div><label for="iName">Cliente</label><input id="iName" list="dlClients" placeholder="Nombre o razón social" autocomplete="off" required><datalist id="dlClients"></datalist><div class="recent" id="recent" hidden></div><datalist id="dlItems"></datalist></div>
             <div><label for="iRfc">RFC del cliente</label><input id="iRfc" placeholder="XAXX010101000" maxlength="13" autocapitalize="characters" required></div>
           </div>
           <div class="two-f eq">
@@ -245,6 +262,7 @@
             <button class="btn ghost" id="bDraft" type="button">Guardar borrador</button>
           </div>
           <p class="amsg" id="iMsg" aria-live="polite" hidden></p>
+          <p class="tiny hint">Atajos: <kbd>Enter</kbd> agrega un concepto · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> timbra · <kbd>N</kbd> nueva factura</p>
         </form>
       </div>
 
@@ -422,6 +440,8 @@
   </div>
 </dialog>
 
+<div class="celebrate" id="celebrate" aria-hidden="true"><div class="stamp-pop">TIMBRADA</div></div>
+<button class="totop" id="toTop" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <script src="script.js"></script>
 </body>
 </html>

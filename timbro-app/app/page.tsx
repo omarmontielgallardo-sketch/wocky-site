@@ -28,12 +28,12 @@ export default function Home() {
                 <span className="w rise" style={{ '--d': '.24s' } as React.CSSProperties}><em>un minuto</em>.</span>
               </h1>
               <p className="slogan rise" style={{ '--d': '.32s' } as React.CSSProperties}>Facturar nunca sonó tan fácil.</p>
-              <p className="lead rise" style={{ '--d': '.4s' } as React.CSSProperties}>Crea, timbra y administra tus CFDI 4.0 desde el navegador. Valida el RFC al instante y mantén el control de tus timbres, sin hojas de cálculo ni trámites.</p>
+              <p className="lead rise" style={{ '--d': '.4s' } as React.CSSProperties}>Crea, timbra y administra tus CFDI 4.0 desde el navegador. Hecho para <span className="rotor" id="rotor" data-words="freelancers|negocios pequeños|despachos contables|emprendedores">freelancers</span>, sin hojas de cálculo ni trámites.</p>
               <div className="cta rise" style={{ '--d': '.5s' } as React.CSSProperties}>
                 <Link className="btn shine" href="/registro">Crear mi cuenta</Link>
                 <a className="btn ghost" href="#como">Cómo funciona</a>
               </div>
-              <p className="fine rise" style={{ '--d': '.6s' } as React.CSSProperties}>Cumple con el estándar CFDI 4.0 · Sin permanencia</p>
+              <div className="hstats rise" style={{ '--d': '.6s' } as React.CSSProperties}><div><b data-count="23">0</b><small>regímenes fiscales</small></div><div><b data-count="3">0</b><small>planes claros</small></div><div><b data-count="600">0</b><small>timbres máx. al mes</small></div></div>
             </div>
             <div className="mock rise" style={{ '--d': '.3s' } as React.CSSProperties} aria-hidden="true">
               <div className="inv-card">
