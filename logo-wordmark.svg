@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48" role="img" aria-label="Timbro">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6c5cff"/><stop offset="1" stop-color="#00c2a8"/></linearGradient></defs>
+  <rect width="48" height="48" rx="13" fill="url(#g)"/>
+  <path d="M14 9h14.5L37 17.5V37a2.5 2.5 0 0 1-2.5 2.5h-20A2.5 2.5 0 0 1 12 37V11.5A2.5 2.5 0 0 1 14 9z" fill="#fff"/>
+  <path d="M28.5 9v6a2.5 2.5 0 0 0 2.5 2.5h6" fill="none" stroke="#d9d5ff" stroke-width="1.6"/>
+  <rect x="16" y="21" width="11" height="2.2" rx="1.1" fill="#cfc9ff"/>
+  <rect x="16" y="26" width="7" height="2.2" rx="1.1" fill="#cfc9ff"/>
+  <circle cx="33" cy="33" r="9.5" fill="#14142b" stroke="#fff" stroke-width="2"/>
+  <path d="M28.6 33.3l3.2 3.2 5.6-6.2" fill="none" stroke="#2ff0cf" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="60" y="34" font-family="'Plus Jakarta Sans',Arial,sans-serif" font-weight="800" font-size="30" letter-spacing="-1" fill="#14142b">timbro</text>
+</svg>

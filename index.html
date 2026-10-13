@@ -5,15 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Timbro · Facturación electrónica CFDI 4.0</title>
 <meta name="description" content="Timbro: crea, timbra y administra tus facturas CFDI 4.0 desde el navegador. Planes desde $99 al mes para México.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="progress" id="progress"></div>
 
-<header class="nav">
-  <a href="#inicio" class="logo"><i></i>Timbro</a>
+<header class="nav" id="nav">
+  <a href="#inicio" class="logo" aria-label="Timbro, inicio">
+    <svg class="mark anim" viewBox="0 0 48 48" aria-hidden="true">
+      <defs><linearGradient id="tmg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6c5cff"/><stop offset="1" stop-color="#00c2a8"/></linearGradient></defs>
+      <rect width="48" height="48" rx="13" fill="url(#tmg)"/>
+      <path d="M14 9h14.5L37 17.5V37a2.5 2.5 0 0 1-2.5 2.5h-20A2.5 2.5 0 0 1 12 37V11.5A2.5 2.5 0 0 1 14 9z" fill="#fff"/>
+      <path d="M28.5 9v6a2.5 2.5 0 0 0 2.5 2.5h6" fill="none" stroke="#d9d5ff" stroke-width="1.6"/>
+      <rect x="16" y="21" width="11" height="2.2" rx="1.1" fill="#cfc9ff"/>
+      <rect x="16" y="26" width="7" height="2.2" rx="1.1" fill="#cfc9ff"/>
+      <g class="seal"><circle cx="33" cy="33" r="9.5" fill="#14142b" stroke="#fff" stroke-width="2"/>
+      <path class="chk" d="M28.6 33.3l3.2 3.2 5.6-6.2" fill="none" stroke="#2ff0cf" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+    </svg>
+    <span class="word">timbro</span>
+  </a>
   <nav>
     <a href="#precios">Precios</a>
     <a href="#faq">Preguntas</a>
@@ -23,30 +37,65 @@
 
 <main>
 <section class="hero" id="inicio">
-  <p class="pill">CFDI 4.0 · México</p>
-  <h1>Factura en <em>un minuto</em>.</h1>
-  <p class="lead">Crea, timbra y administra tus facturas desde el navegador. Valida el RFC en vivo y lleva el control de tus timbres.</p>
-  <div class="cta">
-    <a class="btn" href="#app">Probar ahora</a>
-    <a class="btn ghost" href="#precios">Ver precios</a>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="dots"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="pill rise" style="--d:0s"><i class="live"></i> CFDI 4.0 · México</p>
+      <h1><span class="w rise" style="--d:.08s">Factura</span> <span class="w rise" style="--d:.16s">en</span> <span class="w rise" style="--d:.24s"><em>un minuto</em>.</span></h1>
+      <p class="lead rise" style="--d:.36s">Crea, timbra y administra tus facturas desde el navegador. Valida el RFC en vivo y lleva el control de tus timbres.</p>
+      <div class="cta rise" style="--d:.46s">
+        <a class="btn shine" href="#app">Probar ahora</a>
+        <a class="btn ghost" href="#precios">Ver precios</a>
+      </div>
+    </div>
+    <div class="mock rise" style="--d:.3s" aria-hidden="true">
+      <div class="inv-card">
+        <div class="top"><b>Factura A-0042</b><span class="tagt">CFDI 4.0</span></div>
+        <div class="r"><small>Cliente</small><span>Estudio Aurora S.A.</span></div>
+        <div class="r"><small>RFC</small><span>EAU 200101 AB1</span></div>
+        <div class="r"><small>Concepto</small><span>Diseño de marca</span></div>
+        <div class="sep"></div>
+        <div class="r"><small>Subtotal</small><span>$12,000.00</span></div>
+        <div class="r"><small>IVA 16%</small><span>$1,920.00</span></div>
+        <div class="r tot"><small>Total</small><span>$13,920.00</span></div>
+        <div class="stamp-big">TIMBRADA</div>
+      </div>
+      <div class="chip c1">⚡ 0.8 s</div>
+      <div class="chip c2">PDF + XML</div>
+    </div>
   </div>
 </section>
 
+<div class="marquee" aria-hidden="true"><div class="track">
+  <span>CFDI 4.0</span><i>✦</i><span>Complemento de pago</span><i>✦</i><span>Cancelaciones</span><i>✦</i><span>Facturas recurrentes</span><i>✦</i><span>Multi-RFC</span><i>✦</i><span>API</span><i>✦</i>
+  <span>CFDI 4.0</span><i>✦</i><span>Complemento de pago</span><i>✦</i><span>Cancelaciones</span><i>✦</i><span>Facturas recurrentes</span><i>✦</i><span>Multi-RFC</span><i>✦</i><span>API</span><i>✦</i>
+</div></div>
+
 <section class="section" id="app">
   <div class="wrap">
-    <p class="demo-banner">Modo demostración: las facturas no se timbran ante el SAT y los datos se guardan solo en este navegador.</p>
+    <p class="demo-banner" id="banner">Modo demostración: las facturas no se timbran ante el SAT. Tus datos se guardan solo en este navegador.</p>
 
     <div class="authbox" id="authView">
-      <div class="seg" role="tablist" aria-label="Acceso">
+      <div class="seg" id="authTabs" role="tablist" aria-label="Acceso">
         <button class="on" id="tabLogin" type="button" data-tab="login">Iniciar sesión</button>
         <button id="tabReg" type="button" data-tab="registro">Crear cuenta</button>
       </div>
+
+      <div class="cloud-ok" id="cloudNote" hidden>
+        <img id="cAv" alt="" width="40" height="40">
+        <div><b id="cName">Tu cuenta de Claude</b><small>Conectada · tus datos se guardan en la nube y solo tú los ves</small></div>
+      </div>
+      <div class="afrm" id="cloudEnter" hidden>
+        <p class="tiny" id="cloudCo"></p>
+        <button class="btn shine" id="bEnter" type="button">Entrar a mi empresa</button>
+      </div>
+
       <form class="afrm" id="fLogin" novalidate>
         <label for="lEmail">Correo</label>
         <input id="lEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
         <label for="lPass">Contraseña</label>
         <input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" required>
-        <button class="btn" type="submit">Entrar</button>
+        <button class="btn shine" type="submit">Entrar</button>
         <p class="amsg" id="lMsg" aria-live="polite" hidden></p>
       </form>
       <form class="afrm" id="fReg" novalidate hidden>
@@ -57,11 +106,13 @@
           <div><label for="rReg">Régimen fiscal</label>
             <select id="rReg"><option>601 General de Ley PM</option><option>612 Persona física con actividad empresarial</option><option>626 RESICO</option><option>621 Incorporación fiscal</option></select></div>
         </div>
-        <label for="rEmail">Correo</label>
-        <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
-        <label for="rPass">Contraseña</label>
-        <input id="rPass" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8" required>
-        <button class="btn" type="submit">Crear cuenta</button>
+        <div class="loc-only">
+          <label for="rEmail">Correo</label>
+          <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
+          <label for="rPass">Contraseña</label>
+          <input id="rPass" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button class="btn shine" type="submit" id="bReg">Crear cuenta</button>
         <p class="amsg" id="rMsg" aria-live="polite" hidden></p>
       </form>
     </div>
@@ -83,8 +134,10 @@
       <div class="dash-grid">
         <div class="card meter">
           <b>Timbres del mes</b>
-          <p class="big"><b id="mLeft">0</b> <span>disponibles</span></p>
-          <div class="bar"><i id="mBar"></i></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 120 120" class="ring" aria-hidden="true"><circle cx="60" cy="60" r="52" class="trk"/><circle cx="60" cy="60" r="52" class="val" id="mRing"/></svg>
+            <div class="ring-n"><b id="mLeft">0</b><small>disponibles</small></div>
+          </div>
           <p class="tiny"><span id="mUsed">0</span> de <span id="mLimit">0</span> usados · timbre extra $3</p>
           <p class="tiny">Los borradores no consumen timbres.</p>
         </div>
@@ -109,7 +162,7 @@
             <div class="grand"><dt>Total</dt><dd id="tTot">$0.00</dd></div>
           </dl>
           <div class="actions">
-            <button class="btn" id="bStamp" type="button">Timbrar factura</button>
+            <button class="btn shine" id="bStamp" type="button">Timbrar factura</button>
             <button class="btn ghost" id="bDraft" type="button">Guardar borrador</button>
           </div>
           <p class="amsg" id="iMsg" aria-live="polite" hidden></p>
@@ -130,11 +183,11 @@
 
 <section class="section alt" id="precios">
   <div class="wrap">
-    <h2>Planes</h2>
+    <h2 class="rv">Planes</h2>
     <div class="prices">
-      <article class="plan"><h3>Emprendedor</h3><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
-      <article class="plan hot"><span class="tag">Más popular</span><h3>Negocio</h3><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Recurrentes</li><li>Autofactura</li></ul></article>
-      <article class="plan"><h3>Despacho</h3><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
+      <article class="plan rv"><h3>Emprendedor</h3><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
+      <article class="plan hot rv"><span class="tag">Más popular</span><h3>Negocio</h3><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Recurrentes</li><li>Autofactura</li></ul></article>
+      <article class="plan rv"><h3>Despacho</h3><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
     </div>
     <p class="note">MXN más IVA · Timbre extra $3 · Precios de referencia a validar.</p>
   </div>
@@ -142,17 +195,27 @@
 
 <section class="section" id="faq">
   <div class="wrap narrow">
-    <h2>Preguntas</h2>
-    <details><summary>¿Qué es un timbre?</summary><p>Una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
-    <details><summary>¿Ya timbra de verdad?</summary><p>Aún no. Esta versión es una demostración; el timbrado real se hará a través de un PAC autorizado.</p></details>
-    <details><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
+    <h2 class="rv">Preguntas</h2>
+    <details class="rv"><summary>¿Qué es un timbre?</summary><p>Una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
+    <details class="rv"><summary>¿Ya timbra de verdad?</summary><p>Aún no. Esta versión es una demostración; el timbrado real se hará a través de un PAC autorizado.</p></details>
+    <details class="rv"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
   </div>
 </section>
 </main>
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <a href="#inicio" class="logo"><i></i>Timbro</a>
+    <a href="#inicio" class="logo" aria-label="Timbro">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect width="48" height="48" rx="13" fill="url(#tmg)"/>
+        <path d="M14 9h14.5L37 17.5V37a2.5 2.5 0 0 1-2.5 2.5h-20A2.5 2.5 0 0 1 12 37V11.5A2.5 2.5 0 0 1 14 9z" fill="#fff"/>
+        <path d="M28.5 9v6a2.5 2.5 0 0 0 2.5 2.5h6" fill="none" stroke="#d9d5ff" stroke-width="1.6"/>
+        <rect x="16" y="21" width="11" height="2.2" rx="1.1" fill="#cfc9ff"/><rect x="16" y="26" width="7" height="2.2" rx="1.1" fill="#cfc9ff"/>
+        <circle cx="33" cy="33" r="9.5" fill="#14142b" stroke="#fff" stroke-width="2"/>
+        <path d="M28.6 33.3l3.2 3.2 5.6-6.2" fill="none" stroke="#2ff0cf" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="word">timbro</span>
+    </a>
     <p>wockycontacto@gmail.com · © 2026 Timbro · Servicio en desarrollo</p>
   </div>
 </footer>
