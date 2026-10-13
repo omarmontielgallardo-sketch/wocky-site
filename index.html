@@ -21,7 +21,8 @@
     <a href="#precios">Precios</a>
     <a href="#membresia">Membresía</a>
     <a href="#faq">Preguntas</a>
-    <a class="btn sm" href="#lista">Quiero acceso</a>
+    <a href="#acceso" data-tab="login">Iniciar sesión</a>
+    <a class="btn sm" href="#acceso" data-tab="registro">Crear cuenta</a>
   </nav>
 </header>
 
@@ -153,6 +154,48 @@
     <details class="reveal"><summary>¿Necesito saber de contabilidad?</summary><p>No. Timbro te guía con los campos y valida los datos antes de timbrar. Aun así, para dudas fiscales consulta a tu contador.</p></details>
     <details class="reveal"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
     <details class="reveal"><summary>¿Cómo se timbran las facturas?</summary><p>A través de un Proveedor Autorizado de Certificación (PAC) autorizado por el SAT.</p></details>
+  </div>
+</section>
+
+<section class="section" id="acceso">
+  <div class="wrap two acc">
+    <div class="reveal">
+      <p class="eyebrow">Acceso</p>
+      <h2>Entra con tu empresa</h2>
+      <p class="sub2">Cada cuenta se asocia al RFC de tu empresa. Puedes agregar más razones sociales después, según tu plan.</p>
+      <ul class="checks"><li>Datos fiscales validados al registrarte</li><li>Varios RFC y usuarios en Negocio y Despacho</li><li>Tu certificado (CSD) se guarda cifrado</li></ul>
+    </div>
+    <div class="authbox reveal">
+      <div class="seg" role="tablist" aria-label="Acceso">
+        <button class="on" id="tabLogin" data-tab="login" role="tab">Iniciar sesión</button>
+        <button id="tabReg" data-tab="registro" role="tab">Crear cuenta</button>
+      </div>
+      <form class="afrm" id="fLogin" novalidate>
+        <label for="lEmail">Correo</label>
+        <input id="lEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
+        <label for="lPass">Contraseña</label>
+        <input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        <button class="btn" type="submit">Entrar</button>
+        <p class="tiny">¿Olvidaste tu contraseña? Disponible al lanzamiento.</p>
+        <p class="amsg" id="lMsg" aria-live="polite" hidden></p>
+      </form>
+      <form class="afrm" id="fReg" novalidate hidden>
+        <label for="rRazon">Razón social o nombre</label>
+        <input id="rRazon" placeholder="Estudio Aurora S.A. de C.V." autocomplete="organization" required>
+        <div class="two-f">
+          <div><label for="rRfc">RFC</label><input id="rRfc" placeholder="EAU200101AB1" maxlength="13" autocapitalize="characters" required></div>
+          <div><label for="rReg">Régimen fiscal</label>
+            <select id="rReg"><option>601 General de Ley PM</option><option>612 Personas físicas con actividad empresarial</option><option>626 RESICO</option><option>621 Incorporación fiscal</option></select></div>
+        </div>
+        <label for="rEmail">Correo</label>
+        <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
+        <label for="rPass">Contraseña</label>
+        <input id="rPass" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8" required>
+        <button class="btn" type="submit">Crear cuenta</button>
+        <p class="amsg" id="rMsg" aria-live="polite" hidden></p>
+      </form>
+      <p class="tiny demo">Demostración: aún no se crean cuentas reales ni se guardan datos.</p>
+    </div>
   </div>
 </section>
 

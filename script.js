@@ -56,3 +56,32 @@ $('#form').onsubmit = e => {
   new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { draw(); o.disconnect(); } })).observe(m);
   draw();
 })();
+
+// Acceso: pestañas y validación (demostración: no envía ni guarda datos)
+(() => {
+  const fL = $('#fLogin'), fR = $('#fReg');
+  const show = tab => {
+    const reg = tab === 'registro';
+    fL.hidden = reg; fR.hidden = !reg;
+    $('#tabLogin').classList.toggle('on', !reg);
+    $('#tabReg').classList.toggle('on', reg);
+  };
+  $$('[data-tab]').forEach(b => b.addEventListener('click', () => show(b.dataset.tab)));
+  const say = (el, text, err) => { el.hidden = false; el.textContent = text; el.classList.toggle('err', !!err); };
+  const rfcOk = v => /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/.test(v);
+  fL.onsubmit = e => {
+    e.preventDefault();
+    if (!fL.checkValidity()) return say($('#lMsg'), 'Escribe tu correo y contraseña.', true);
+    say($('#lMsg'), 'Demostración: el inicio de sesión estará disponible al lanzamiento.');
+    fL.reset();
+  };
+  fR.onsubmit = e => {
+    e.preventDefault();
+    const rfc = $('#rRfc'); rfc.value = rfc.value.trim().toUpperCase();
+    rfc.classList.toggle('bad', !rfcOk(rfc.value));
+    if (!rfcOk(rfc.value)) return say($('#rMsg'), 'El RFC no tiene un formato válido (12 o 13 caracteres).', true);
+    if (!fR.checkValidity()) return say($('#rMsg'), 'Completa todos los campos. La contraseña lleva mínimo 8 caracteres.', true);
+    say($('#rMsg'), 'Demostración: tu empresa se registrará cuando abramos el acceso anticipado.');
+    fR.reset();
+  };
+})();
