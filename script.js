@@ -324,6 +324,12 @@ $('#bDelOk').onclick = () => {
   $('#dlgDel').close(); acct = null; localEmail = null; lines = []; showAuth(); toast('Tu cuenta y tus datos fueron eliminados.');
 };
 
+
+// Descargar la app: copiar enlace
+$('#bCopyLink').onclick = async () => {
+  try { await navigator.clipboard.writeText(location.href.split('#')[0]); toast('Enlace copiado.'); } catch { toast('No se pudo copiar. Copia la dirección desde el navegador.', 'err'); }
+};
+
 // ---------- Inicio ----------
 setView(location.hash === '#panel' ? 'panel' : 'home', { scroll: false });
 (() => {

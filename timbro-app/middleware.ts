@@ -30,4 +30,4 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ['/((?!_next/static|_next/image|favicon.svg|logo.png|logo.svg).*)'] };
+export const config = { matcher: ['/((?!_next/static|_next/image|favicon.svg|logo.png|logo.svg|manifest.webmanifest|sw.js|icon-.*).*)'] };

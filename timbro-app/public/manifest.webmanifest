@@ -1,0 +1,16 @@
+{
+  "name": "Timbro",
+  "short_name": "Timbro",
+  "description": "Facturar nunca sonó tan fácil. Crea y timbra tus CFDI 4.0 desde tu teléfono.",
+  "lang": "es-MX",
+  "start_url": "/panel",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5b4bff",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

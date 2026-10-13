@@ -2,6 +2,7 @@ import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
 import Footer from '@/components/Footer';
 import { PLANES } from '@/lib/constants';
+import InstallApp from '@/components/InstallApp';
 
 const FAQ: [string, React.ReactNode][] = [
   ['¿Qué es un timbre?', 'Es una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.'],
@@ -75,6 +76,29 @@ export default function Home() {
               <li className="rv"><span className="n">2</span><h3>Captura la factura</h3><p>Elige al cliente, agrega conceptos y revisa el IVA y el total calculados.</p></li>
               <li className="rv"><span className="n">3</span><h3>Timbra y envía</h3><p>Con un clic se descuenta un timbre y la factura queda en tu historial.</p></li>
             </ol>
+          </div>
+        </section>
+
+        <section className="section" id="movil">
+          <div className="wrap mobile-grid">
+            <div className="mobile-copy rv">
+              <p className="eyebrow">App móvil</p>
+              <h2>Timbra desde tu teléfono</h2>
+              <p className="slogan2">Tu oficina cabe en tu bolsillo.</p>
+              <p className="sub">Captura, timbra y consulta tus facturas donde estés: en la junta, en el taxi o con tu cliente enfrente.</p>
+              <ul className="checks2"><li>Crea una factura en menos de un minuto</li><li>Tus clientes y conceptos se autocompletan</li><li>Mira cuántos timbres te quedan al instante</li></ul>
+              <div className="cta"><InstallApp /><span className="store-soon">App Store y Google Play · próximamente</span></div>
+            </div>
+            <div className="phone-wrap rv" aria-hidden="true">
+              <div className="phone"><div className="screen">
+                <div className="ph-top"><span className="ph-logo" /><b>timbro</b><span className="ph-chip">Plan Negocio</span></div>
+                <div className="ph-card"><small>Total a facturar</small><b>$13,920.00</b><span>Estudio Aurora S.A.</span></div>
+                <div className="ph-rows"><div><i /><i /></div><div><i /><i /></div></div>
+                <div className="ph-btn"><span className="s1">Timbrar factura</span><span className="s2">✓ Factura timbrada</span></div>
+                <p className="ph-foot">39 timbres disponibles</p>
+              </div></div>
+              <div className="chip c1">⚡ 0.8 s</div><div className="chip c2">PDF + XML</div>
+            </div>
           </div>
         </section>
 
