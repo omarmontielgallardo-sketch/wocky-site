@@ -191,16 +191,41 @@
       </form>
     </div>
 
+    <div id="planView" class="planview" hidden>
+      <div class="plan-head">
+        <p class="eyebrow" id="planStep">Último paso</p>
+        <h2 id="planTitle">Elige tu plan</h2>
+        <p class="sub" id="planSub">Tu cuenta ya está creada. Elige el plan que quieres usar; podrás cambiarlo cuando quieras.</p>
+      </div>
+      <div class="pgrid" role="radiogroup" aria-label="Plan">
+        <button type="button" class="pcard" role="radio" aria-checked="false" data-plan="emp">
+          <span class="pcheck" aria-hidden="true"></span>
+          <h3>Emprendedor</h3><p class="for">Freelancers y RESICO</p>
+          <p class="amt">$99<small>/mes</small></p>
+          <ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul>
+        </button>
+        <button type="button" class="pcard" role="radio" aria-checked="false" data-plan="neg">
+          <span class="ptag">Más popular</span><span class="pcheck" aria-hidden="true"></span>
+          <h3>Negocio</h3><p class="for">Pequeñas empresas</p>
+          <p class="amt">$249<small>/mes</small></p>
+          <ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Facturas recurrentes</li><li>Portal de autofactura</li></ul>
+        </button>
+        <button type="button" class="pcard" role="radio" aria-checked="false" data-plan="des">
+          <span class="pcheck" aria-hidden="true"></span>
+          <h3>Despacho</h3><p class="for">Contadores y agencias</p>
+          <p class="amt">$649<small>/mes</small></p>
+          <ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul>
+        </button>
+      </div>
+      <p class="note plan-note">Precios en pesos mexicanos más IVA. Por ahora no se realiza ningún cobro: es una demostración y el plan solo define tus timbres del mes.</p>
+      <div class="plan-act"><button class="btn shine" id="bPlanOk" type="button">Continuar con el plan Negocio</button><button class="btn ghost" id="bPlanCancel" type="button" hidden>Cancelar</button></div>
+    </div>
+
     <div id="dashView" hidden>
       <div class="dash-head">
         <div><h2 id="dCompany">Empresa</h2><p class="muted"><span class="badge">Administrador</span> <span id="dRfc">RFC</span> · <span id="dMail"></span></p></div>
         <div class="dash-actions">
-          <label for="dPlan" class="sr">Plan</label>
-          <select id="dPlan">
-            <option value="emp">Emprendedor · $99</option>
-            <option value="neg">Negocio · $249</option>
-            <option value="des">Despacho · $649</option>
-          </select>
+          <button class="planbtn" id="bPlan" type="button" aria-label="Cambiar de plan"><span id="dPlanName">Plan</span><small>Cambiar</small></button>
           <button class="btn ghost sm" id="bOut" type="button">Cerrar sesión</button>
         </div>
       </div>

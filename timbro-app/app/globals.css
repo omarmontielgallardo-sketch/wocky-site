@@ -484,3 +484,29 @@ details[open]::details-content{block-size:auto}
 .fhint{font-size:.74rem;color:var(--muted);min-height:1.1em;margin:-2px 0 6px;transition:color .2s}
 .fhint.ok{color:var(--ok);font-weight:600}
 .fhint.err{color:var(--bad);font-weight:600}
+
+/* ---- Elegir plan ---- */
+.planview{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.plan-head{max-width:620px;margin:0 auto 26px;text-align:center}
+.plan-head .sub{margin-top:8px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto}
+.pcard{position:relative;text-align:left;font:inherit;color:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:20px;padding:26px 22px;transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .25s}
+.pcard:hover{transform:translateY(-5px);border-color:#cfcaff;box-shadow:0 20px 40px rgba(40,30,120,.1)}
+.pcard.sel{border-color:var(--brand);box-shadow:0 0 0 4px rgba(91,75,255,.12),0 22px 44px rgba(40,30,120,.14);transform:translateY(-6px)}
+.pcard h3{font-size:1.05rem}
+.pcard .amt{font-size:2.2rem;font-weight:800;letter-spacing:-.04em;margin:4px 0 10px}.pcard .amt small{font-size:.85rem;color:var(--muted);font-weight:500}
+.pcard li{padding:4px 0 4px 22px;position:relative;color:var(--muted);font-size:.88rem}
+.pcard li:before{content:"✓";position:absolute;left:0;color:var(--brand2);font-weight:800}
+.pcard li b{color:var(--ink)}
+.pcheck{position:absolute;top:18px;right:18px;width:24px;height:24px;border-radius:50%;border:2px solid #cfcaff;display:grid;place-items:center;transition:background .25s,border-color .25s,transform .35s cubic-bezier(.2,1.6,.4,1)}
+.pcard.sel .pcheck{background:var(--brand);border-color:var(--brand);transform:scale(1.1)}
+.pcard.sel .pcheck:after{content:"✓";color:#fff;font-size:.8rem;font-weight:800}
+.ptag{position:absolute;top:-12px;left:20px;background:var(--brand);color:#fff;font-size:.7rem;font-weight:800;padding:3px 12px;border-radius:99px}
+.plan-note{max-width:900px;margin:18px auto 0;text-align:center}
+.plan-act{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.plan-act[hidden],.plan-act .btn[hidden]{display:none}
+.planbtn{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 14px;font:700 .84rem var(--sans);color:var(--ink);cursor:pointer;transition:.2s}
+.planbtn small{font-weight:700;font-size:.72rem;color:var(--brand);background:var(--soft);border-radius:99px;padding:2px 9px}
+.planbtn:hover{border-color:var(--brand);transform:translateY(-1px)}
+@media(max-width:860px){.pgrid{grid-template-columns:1fr}.pcard.sel,.pcard:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){.pcard,.pcheck{transition:none}}

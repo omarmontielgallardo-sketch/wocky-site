@@ -47,6 +47,13 @@ export async function timbrarFactura(id: string): Promise<Resultado> { return si
 export async function cancelarFactura(id: string): Promise<Resultado> { return simple('cancelar_factura', id, 'Factura cancelada.'); }
 export async function eliminarBorrador(id: string): Promise<Resultado> { return simple('eliminar_borrador', id, 'Borrador eliminado.'); }
 
+export async function elegirPlan(empresaId: string, plan: string): Promise<Resultado> {
+  const { error } = await (await createClient()).rpc('elegir_plan', { p_empresa: empresaId, p_plan: plan });
+  if (error) return { ok: false, error: /sin_acceso/.test(error.message) ? 'Solo el administrador puede elegir el plan.' : 'No se pudo guardar tu plan. Intenta de nuevo.' };
+  revalidatePath('/panel');
+  return { ok: true, mensaje: 'Plan guardado.' };
+}
+
 /** Derecho de acceso: copia de los datos del usuario (sin credenciales). */
 export async function exportarMisDatos(): Promise<string> {
   const supabase = await createClient();

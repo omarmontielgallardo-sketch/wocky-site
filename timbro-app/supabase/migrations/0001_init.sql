@@ -25,6 +25,7 @@ create table if not exists public.empresas (
   rfc text not null check (rfc ~ '^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$'),
   regimen text not null check (regimen ~ '^[0-9]{3}$'),
   plan text not null default 'emprendedor' references public.planes(id),
+  plan_elegido boolean not null default false,   -- el administrador debe elegir su plan después de crear la cuenta
   folio_seq int not null default 0,
   creada_en timestamptz not null default now()
 );
@@ -246,6 +247,18 @@ begin
   return v_f;
 end $$;
 
+-- Etapa 1 (sin cobros): el administrador elige o cambia su plan. En la etapa 3 esto se reemplaza por el flujo de pago.
+create or replace function public.elegir_plan(p_empresa uuid, p_plan text) returns public.empresas
+language plpgsql security definer set search_path = public as $$
+declare v_emp public.empresas;
+begin
+  if auth.uid() is null then raise exception 'no_autenticado'; end if;
+  if not public.es_admin(p_empresa) then raise exception 'sin_acceso'; end if;
+  if not exists (select 1 from public.planes where id = p_plan) then raise exception 'plan_invalido'; end if;
+  update public.empresas set plan = p_plan, plan_elegido = true where id = p_empresa returning * into v_emp;
+  return v_emp;
+end $$;
+
 create or replace function public.eliminar_borrador(p_id uuid) returns void
 language plpgsql security definer set search_path = public as $$
 declare v_f public.facturas;
@@ -271,8 +284,8 @@ end $$;
 
 revoke all on function public.crear_empresa(text, text, text, text, text), public._consumir_timbre(uuid),
   public.guardar_factura(uuid, text, text, text, text, jsonb, boolean), public.timbrar_factura(uuid),
-  public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(),
+  public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(), public.elegir_plan(uuid, text),
   public.es_miembro(uuid), public.es_admin(uuid), public.timbres_usados(uuid) from public, anon, authenticated;
 grant execute on function public.crear_empresa(text, text, text, text, text), public.guardar_factura(uuid, text, text, text, text, jsonb, boolean),
-  public.timbrar_factura(uuid), public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(),
+  public.timbrar_factura(uuid), public.cancelar_factura(uuid), public.eliminar_borrador(uuid), public.eliminar_mis_datos(), public.elegir_plan(uuid, text),
   public.es_miembro(uuid), public.es_admin(uuid), public.timbres_usados(uuid) to authenticated;

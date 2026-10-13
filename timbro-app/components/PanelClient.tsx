@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { cancelarFactura, eliminarBorrador, eliminarCuenta, exportarMisDatos, guardarFactura, timbrarFactura, type Resultado } from '@/app/panel/actions';
 import { cerrarSesion } from '@/app/auth/actions';
@@ -131,7 +132,7 @@ export default function PanelClient({ empresa, email, facturas, clientes, concep
           <p className="muted"><span className="badge">Administrador</span> RFC {empresa.rfc} · Régimen {empresa.regimen} · {email}</p>
         </div>
         <div className="dash-actions">
-          <span className="panel-plan">Plan <b>{NOMBRE_PLAN[empresa.plan] ?? empresa.plan}</b> · cambio de plan próximamente</span>
+          <Link className="planbtn" href="/panel?plan=1" aria-label="Cambiar de plan"><span>Plan {NOMBRE_PLAN[empresa.plan] ?? empresa.plan}</span><small>Cambiar</small></Link>
           <form action={cerrarSesion}><button className="btn ghost sm" type="submit">Cerrar sesión</button></form>
         </div>
       </div>

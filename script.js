@@ -104,7 +104,7 @@ $('#ckNec').onclick = () => setConsent('necessary');
 $('#cookiePrefs').onclick = e => { e.preventDefault(); $('#cookie').hidden = false; };
 
 // ---------- Datos (solo en este navegador) ----------
-const PLANS = { emp: { name: 'Emprendedor', limit: 40 }, neg: { name: 'Negocio', limit: 150 }, des: { name: 'Despacho', limit: 600 } };
+const PLANS = { emp: { name: 'Emprendedor', limit: 40, precio: 99 }, neg: { name: 'Negocio', limit: 150, precio: 249 }, des: { name: 'Despacho', limit: 600, precio: 649 } };
 let mem = {}, memSession = null, acct = null, localEmail = null;
 const loadDb = () => { try { return JSON.parse(localStorage.getItem('timbro_db') || '{}'); } catch { return mem; } };
 const saveDb = db => { mem = db; try { localStorage.setItem('timbro_db', JSON.stringify(db)); } catch {} };
@@ -188,7 +188,8 @@ const showTab = tab => {
 };
 $$('[data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 
-function showAuth() { swap($('#dashView'), $('#authView'));  }
+const only = el => { [$('#authView'), $('#dashView'), $('#planView')].forEach(x => { x.hidden = x !== el; }); el.classList.remove('view-in'); el.offsetWidth; el.classList.add('view-in'); if (view === 'panel' && scrollY > 80) scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); };
+function showAuth() { only($('#authView')); }
 
 $('#fReg').onsubmit = async e => {
   e.preventDefault();
@@ -228,7 +229,8 @@ function openDash() {
   if (!acct) return;
   acct.clients = acct.clients || []; acct.items = acct.items || [];
   if (acct.month !== monthKey()) { acct.month = monthKey(); acct.used = 0; persist(); }
-  swap($('#authView'), $('#dashView')); 
+  if (!acct.planElegido) { showPlan(true); return; }
+  only($('#dashView'));
   if (!lines.length) addLine();
   restoreDraft();
   renderDash();
@@ -240,7 +242,7 @@ function renderDash() {
   const limit = PLANS[u.plan].limit, left = Math.max(limit - u.used, 0);
   $('#dCompany').textContent = u.razon;
   $('#dRfc').textContent = 'RFC ' + u.rfc + ' · Régimen ' + u.regimen.split(' ')[0]; $('#dMail').textContent = u.email || localEmail;
-  $('#dPlan').value = u.plan;
+  $('#dPlanName').textContent = PLANS[u.plan].name + ' · $' + PLANS[u.plan].precio;
   countTo($('#mLeft'), left, v => Math.round(v));
   $('#mUsed').textContent = u.used; $('#mLimit').textContent = limit;
   const ring = $('#mRing');
@@ -284,7 +286,29 @@ function renderDash() {
 }
 $$('#chips button').forEach(b => b.onclick = () => { filter = b.dataset.f; renderDash(); });
 $('#hSearch').oninput = e => { query = e.target.value; renderDash(); };
-$('#dPlan').onchange = e => { update(u => { u.plan = e.target.value; }); toast('Plan cambiado a ' + PLANS[e.target.value].name + '.'); };
+// ---------- Elegir plan ----------
+let planSel = 'neg', planPrimera = true;
+function renderPlan() {
+  $$('.pcard').forEach(c => { const on = c.dataset.plan === planSel; c.classList.toggle('sel', on); c.setAttribute('aria-checked', on); });
+  $('#bPlanOk').textContent = (planPrimera ? 'Continuar con el plan ' : 'Cambiar al plan ') + PLANS[planSel].name;
+}
+function showPlan(primera) {
+  planPrimera = primera; planSel = acct.planElegido ? acct.plan : 'neg';
+  $('#planStep').textContent = primera ? 'Último paso' : 'Tu plan';
+  $('#planTitle').textContent = primera ? 'Elige tu plan' : 'Cambiar de plan';
+  $('#planSub').textContent = primera ? 'Tu cuenta ya está creada. Elige el plan que quieres usar; podrás cambiarlo cuando quieras.' : 'El cambio aplica a tus timbres de este mes.';
+  $('#bPlanCancel').hidden = primera;
+  only($('#planView')); renderPlan();
+}
+$$('.pcard').forEach(c => c.onclick = () => { planSel = c.dataset.plan; renderPlan(); });
+$('#bPlanOk').onclick = () => {
+  const primera = planPrimera;
+  update(u => { u.plan = planSel; u.planElegido = true; });
+  toast((primera ? 'Plan ' : 'Cambiaste al plan ') + PLANS[planSel].name + (primera ? ' activado.' : '.') + ' Sin cobro en la demostración.');
+  openDash();
+};
+$('#bPlanCancel').onclick = () => openDash();
+$('#bPlan').onclick = () => showPlan(false);
 
 // Conceptos y totales
 let focusLast = false;

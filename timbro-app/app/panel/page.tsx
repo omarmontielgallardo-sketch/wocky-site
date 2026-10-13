@@ -5,13 +5,15 @@ import { asegurarEmpresa } from '@/lib/empresa';
 import { LIMITES } from '@/lib/constants';
 import SiteNav from '@/components/SiteNav';
 import Footer from '@/components/Footer';
+import PlanPicker from '@/components/PlanPicker';
 import PanelClient, { type Empresa, type Factura, type Cliente, type Concepto } from '@/components/PanelClient';
 import { cerrarSesion } from '@/app/auth/actions';
 
 export const metadata: Metadata = { title: 'Mi panel' };
 export const dynamic = 'force-dynamic';
 
-export default async function PanelPage() {
+export default async function PanelPage({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+  const sp = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
@@ -33,13 +35,22 @@ export default async function PanelPage() {
   }
 
   const [empresa, facturas, clientes, conceptos, usados] = await Promise.all([
-    supabase.from('empresas').select('id,razon_social,rfc,regimen,plan').eq('id', empresaId).single(),
+    supabase.from('empresas').select('id,razon_social,rfc,regimen,plan,plan_elegido').eq('id', empresaId).single(),
     supabase.from('facturas').select('id,folio,cliente_nombre,cliente_rfc,uso_cfdi,metodo_pago,lineas,total,estatus,uuid_demo,timbrada_en,creada_en').eq('empresa_id', empresaId).order('creada_en', { ascending: false }).limit(500),
     supabase.from('clientes').select('id,nombre,rfc').eq('empresa_id', empresaId).order('nombre'),
     supabase.from('conceptos_frecuentes').select('descripcion,precio').eq('empresa_id', empresaId).order('descripcion'),
     supabase.rpc('timbres_usados', { eid: empresaId }),
   ]);
-  const e = empresa.data as Empresa;
+  const e = empresa.data as Empresa & { plan_elegido: boolean };
+  if (!e.plan_elegido || sp.plan) {
+    return (
+      <>
+        <SiteNav />
+        <main id="contenido" className="panel-wrap"><div className="wrap"><PlanPicker empresaId={e.id} actual={e.plan} primera={!e.plan_elegido} /></div></main>
+        <Footer />
+      </>
+    );
+  }
   return (
     <>
       <SiteNav />
