@@ -19,6 +19,7 @@
     <a href="#funciones">Funciones</a>
     <a href="#como">Cómo funciona</a>
     <a href="#precios">Precios</a>
+    <a href="#membresia">Membresía</a>
     <a href="#faq">Preguntas</a>
     <a class="btn sm" href="#lista">Quiero acceso</a>
   </nav>
@@ -94,11 +95,50 @@
     <p class="eyebrow reveal">Precios</p>
     <h2 class="reveal">Simple y transparente</h2>
     <div class="prices">
-      <article class="plan reveal"><h3>Gratis</h3><p class="amt">$0</p><ul><li>5 facturas al mes</li><li>PDF y XML</li><li>Envío por correo</li></ul><a class="btn ghost-d" href="#lista">Empezar</a></article>
-      <article class="plan hot reveal"><span class="tag">Más popular</span><h3>Básico</h3><p class="amt">$199<small>/mes</small></p><ul><li>Hasta 30 facturas</li><li>Complemento de pago</li><li>Cancelaciones</li><li>Soporte por WhatsApp</li></ul><a class="btn" href="#lista">Lo quiero</a></article>
-      <article class="plan reveal"><h3>Pro</h3><p class="amt">$449<small>/mes</small></p><ul><li>Facturas ilimitadas</li><li>Recurrentes</li><li>Varios usuarios</li><li>Acceso a API</li></ul><a class="btn ghost-d" href="#lista">Empezar</a></article>
+      <article class="plan reveal"><h3>Gratis</h3><p class="amt">$0</p><ul><li><b>5 facturas timbradas</b> al mes</li><li>PDF y XML</li><li>Envío por correo</li></ul><a class="btn ghost-d" href="#lista">Empezar</a></article>
+      <article class="plan hot reveal"><span class="tag">Más popular</span><h3>Básico</h3><p class="amt">$199<small>/mes</small></p><ul><li><b>30 facturas timbradas</b> al mes</li><li>Complemento de pago</li><li>Cancelaciones</li><li>Soporte por WhatsApp</li></ul><a class="btn" href="#lista">Lo quiero</a></article>
+      <article class="plan reveal"><h3>Pro</h3><p class="amt">$449<small>/mes</small></p><ul><li><b>Timbrado ilimitado</b></li><li>Recurrentes</li><li>Varios usuarios</li><li>Acceso a API</li></ul><a class="btn ghost-d" href="#lista">Empezar</a></article>
     </div>
     <p class="note reveal">* Precios de referencia durante la fase de validación; pueden cambiar al lanzamiento.</p>
+  </div>
+</section>
+
+<section class="section alt" id="membresia">
+  <div class="wrap">
+    <p class="eyebrow reveal">Membresía</p>
+    <h2 class="reveal">Sabe siempre cuántas facturas te quedan</h2>
+    <p class="sub reveal">Puedes <b>generar</b> borradores sin límite; la cuota se consume solo al <b>timbrar</b>.</p>
+    <div class="mem-grid">
+      <div class="meter reveal" id="meter" data-used="12" data-limit="30">
+        <div class="meter-head"><b>Tu membresía</b><span class="stamp" id="mPlan">Básico</span></div>
+        <div class="seg" role="tablist">
+          <button data-plan="gratis" data-limit="5" data-name="Gratis">Gratis</button>
+          <button class="on" data-plan="basico" data-limit="30" data-name="Básico">Básico</button>
+          <button data-plan="pro" data-limit="0" data-name="Pro">Pro</button>
+        </div>
+        <p class="big"><b id="mLeft">18</b> <span id="mLeftTxt">facturas por timbrar este mes</span></p>
+        <div class="bar"><i id="mBar"></i></div>
+        <p class="tiny"><span id="mUsed">12</span> timbradas<span id="mOf"> de 30</span> · Se reinicia el día 1</p>
+        <div class="actions">
+          <button class="btn sm" id="mGen" type="button">+ Generar borrador</button>
+          <button class="btn sm alt-btn" id="mStamp" type="button">Timbrar factura</button>
+        </div>
+        <p class="tiny" id="mMsg" aria-live="polite">Demostración: así verás tu consumo.</p>
+      </div>
+      <div class="table reveal">
+        <table>
+          <thead><tr><th></th><th>Gratis</th><th>Básico</th><th>Pro</th></tr></thead>
+          <tbody>
+            <tr><td>Generar borradores</td><td>Ilimitado</td><td>Ilimitado</td><td>Ilimitado</td></tr>
+            <tr><td>Timbrar al mes</td><td>5</td><td>30</td><td>Ilimitado*</td></tr>
+            <tr><td>Complemento de pago</td><td>—</td><td>✓</td><td>✓</td></tr>
+            <tr><td>Recurrentes</td><td>—</td><td>—</td><td>✓</td></tr>
+            <tr><td>Factura extra</td><td>—</td><td>$8 c/u</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p class="note">* Uso razonable. Cifras de ejemplo a validar.</p>
+      </div>
+    </div>
   </div>
 </section>
 
