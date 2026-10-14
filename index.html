@@ -4,87 +4,331 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Timbro · Facturación electrónica CFDI 4.0</title>
-<meta name="description" content="Timbro: crea, timbra y administra tus facturas CFDI 4.0 desde el navegador. Planes desde $99 al mes para México.">
+<meta name="description" content="Timbro: facturar nunca sonó tan fácil. Crea, timbra y administra tus CFDI 4.0 desde el navegador. Planes desde $99 al mes para México.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:title" content="Timbro · Facturación electrónica CFDI 4.0">
+<meta property="og:description" content="Facturar nunca sonó tan fácil.">
+<meta property="og:image" content="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip" href="#inicio">Saltar al contenido</a>
+<div class="progress" id="progress"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 
-<header class="nav">
-  <a href="#inicio" class="logo"><i></i>Timbro</a>
-  <nav>
+<header class="nav" id="nav">
+  <a href="#inicio" class="logo" aria-label="Timbro, inicio">
+    <svg class="mark anim" viewBox="0 0 48 48" aria-hidden="true">
+      <defs><linearGradient id="tmg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6c5cff"/><stop offset="1" stop-color="#00c2a8"/></linearGradient></defs>
+      <rect width="48" height="48" rx="13" fill="url(#tmg)"/>
+      <g class="bell"><circle cx="24" cy="10.5" r="2.3" fill="#fff"/><path d="M24 12.5c-6.2 0-9.8 4.5-9.8 10.2v5.6l-3.2 4.7v1.5h26v-1.5l-3.2-4.7v-5.6c0-5.7-3.6-10.2-9.8-10.2z" fill="#fff"/><path d="M20.3 36.8a3.7 3.7 0 0 0 7.4 0z" fill="#d9d5ff"/></g>
+      <g class="seal"><circle cx="35.5" cy="13" r="6.3" fill="#14142b" stroke="#fff" stroke-width="1.8"/><path class="chk" d="M32.4 13.3l2.1 2.1 3.9-4.4" fill="none" stroke="#2ff0cf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+    </svg>
+    <span class="word">timbro</span>
+  </a>
+  <button class="burger" id="burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
+  <nav id="menu">
+    <a href="#inicio" data-nav="home">Inicio</a>
+    <a href="#funciones">Funciones</a>
+    <a href="#como">Cómo funciona</a>
     <a href="#precios">Precios</a>
     <a href="#faq">Preguntas</a>
-    <a class="btn sm" href="#app" id="navAcct">Entrar</a>
+    <a class="navtab" href="#panel" id="navAcct" data-nav="panel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Panel</a>
   </nav>
 </header>
 
 <main>
+<div id="viewHome">
 <section class="hero" id="inicio">
-  <p class="pill">CFDI 4.0 · México</p>
-  <h1>Factura en <em>un minuto</em>.</h1>
-  <p class="lead">Crea, timbra y administra tus facturas desde el navegador. Valida el RFC en vivo y lleva el control de tus timbres.</p>
-  <div class="cta">
-    <a class="btn" href="#app">Probar ahora</a>
-    <a class="btn ghost" href="#precios">Ver precios</a>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="dots"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="pill rise" style="--d:0s"><i class="live"></i> Facturación electrónica · México</p>
+      <h1><span class="w rise" style="--d:.08s">Factura</span> <span class="w rise" style="--d:.16s">en</span> <span class="w rise" style="--d:.24s"><em>un minuto</em>.</span></h1>
+      <p class="slogan rise" style="--d:.32s">Facturar nunca sonó tan fácil.</p>
+      <p class="lead rise" style="--d:.4s">Crea, timbra y administra tus CFDI 4.0 desde el navegador. Hecho para <span class="rotor" id="rotor" data-words="freelancers|negocios pequeños|despachos contables|emprendedores">freelancers</span>, sin hojas de cálculo ni trámites.</p>
+      <div class="cta rise" style="--d:.5s">
+        <a class="btn shine" href="#panel">Probar ahora</a>
+        <a class="btn ghost" href="#como">Cómo funciona</a>
+      </div>
+      <div class="hstats rise" style="--d:.6s"><div><b data-count="23">0</b><small>regímenes fiscales</small></div><div><b data-count="3">0</b><small>planes claros</small></div><div><b data-count="600">0</b><small>timbres máx. al mes</small></div></div>
+    </div>
+    <div class="mock rise" style="--d:.3s" aria-hidden="true">
+      <div class="inv-card">
+        <div class="top"><b>Factura A-0042</b><span class="tagt">CFDI 4.0</span></div>
+        <div class="r"><small>Cliente</small><span>Estudio Aurora S.A.</span></div>
+        <div class="r"><small>RFC</small><span>EAU 200101 AB6</span></div>
+        <div class="r"><small>Concepto</small><span>Diseño de marca</span></div>
+        <div class="sep"></div>
+        <div class="r"><small>Subtotal</small><span>$12,000.00</span></div>
+        <div class="r"><small>IVA 16%</small><span>$1,920.00</span></div>
+        <div class="r tot"><small>Total</small><span>$13,920.00</span></div>
+        <div class="stamp-big">TIMBRADA</div>
+      </div>
+      <div class="chip c1">⚡ 0.8 s</div>
+      <div class="chip c2">PDF + XML</div>
+    </div>
   </div>
 </section>
 
+<section class="section" id="funciones">
+  <div class="wrap">
+    <div class="head rv"><p class="eyebrow">Por qué Timbro</p><h2>Menos trámite, más claridad</h2><p class="sub">Hecho para freelancers, negocios pequeños y despachos que quieren facturar bien a la primera.</p></div>
+    <div class="feats">
+      <article class="feat rv"><span class="ico"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><h3>Rápida</h3><p>Guarda tus clientes y conceptos una vez. La siguiente factura son tres clics.</p></article>
+      <article class="feat rv"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><h3>Sin errores</h3><p>Validamos el RFC y los datos fiscales antes de timbrar para evitar rechazos.</p></article>
+      <article class="feat rv"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h3>Con control</h3><p>Ve cuántos timbres te quedan, qué facturas están pendientes y cuáles cancelaste.</p></article>
+      <article class="feat rv"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/></svg></span><h3>Crece contigo</h3><p>De un RFC a veinte, de un usuario a un equipo, con planes claros y sin letra chica.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="como">
+  <div class="wrap">
+    <div class="head rv"><p class="eyebrow">Cómo funciona</p><h2>Tres pasos y listo</h2></div>
+    <ol class="steps">
+      <li class="rv"><span class="n">1</span><h3>Registra tu empresa</h3><p>Ingresa tu razón social, RFC y régimen fiscal. Tu cuenta queda lista en segundos.</p></li>
+      <li class="rv"><span class="n">2</span><h3>Captura la factura</h3><p>Elige al cliente, agrega conceptos y revisa el IVA y el total calculados.</p></li>
+      <li class="rv"><span class="n">3</span><h3>Timbra y envía</h3><p>Con un clic se descuenta un timbre y la factura queda en tu historial.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section" id="movil">
+  <div class="wrap mobile-grid">
+    <div class="mobile-copy rv">
+      <p class="eyebrow">App móvil</p>
+      <h2>Timbra desde tu teléfono</h2>
+      <p class="slogan2">Tu oficina cabe en tu bolsillo.</p>
+      <p class="sub">Captura, timbra y consulta tus facturas donde estés: en la junta, en el taxi o con tu cliente enfrente.</p>
+      <ul class="checks2"><li>Crea una factura en menos de un minuto</li><li>Tus clientes y conceptos se autocompletan</li><li>Mira cuántos timbres te quedan al instante</li></ul>
+      <div class="cta">
+        <a class="btn shine" href="#" data-open="dlgApp">Descargar la app</a>
+        <span class="store-soon">App Store y Google Play · próximamente</span>
+      </div>
+    </div>
+    <div class="phone-wrap rv" aria-hidden="true">
+      <div class="phone"><div class="screen">
+        <div class="ph-top"><span class="ph-logo"></span><b>timbro</b><span class="ph-chip">Plan Negocio</span></div>
+        <div class="ph-card"><small>Total a facturar</small><b>$13,920.00</b><span>Estudio Aurora S.A.</span></div>
+        <div class="ph-rows"><div><i></i><i></i></div><div><i></i><i></i></div></div>
+        <div class="ph-btn"><span class="s1">Timbrar factura</span><span class="s2">✓ Factura timbrada</span></div>
+        <p class="ph-foot">39 timbres disponibles</p>
+      </div></div>
+      <div class="chip c1">⚡ 0.8 s</div><div class="chip c2">PDF + XML</div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="precios">
+  <div class="wrap">
+    <div class="head rv"><p class="eyebrow">Precios</p><h2>Un plan para cada etapa</h2><p class="sub">Todos incluyen cuenta, historial de facturas y control de timbres.</p></div>
+    <div class="prices">
+      <article class="plan rv"><h3>Emprendedor</h3><p class="for">Freelancers y RESICO</p><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
+      <article class="plan hot rv"><span class="tag">Más popular</span><h3>Negocio</h3><p class="for">Pequeñas empresas</p><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Facturas recurrentes</li><li>Portal de autofactura</li></ul></article>
+      <article class="plan rv"><h3>Despacho</h3><p class="for">Contadores y agencias</p><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
+    </div>
+    <p class="note">Precios en pesos mexicanos más IVA. Timbre extra: $3. Precios de referencia durante la etapa de validación; pueden cambiar al lanzamiento.</p>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap narrow">
+    <div class="head rv"><p class="eyebrow">Preguntas</p><h2>Lo que más nos preguntan</h2></div>
+    <details class="rv"><summary>¿Qué es un timbre?</summary><p>Es una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
+    <details class="rv"><summary>¿Ya timbra de verdad?</summary><p>Todavía no. Esta versión es una demostración: crea, calcula y administra facturas, pero no las certifica ante el SAT. El timbrado real se hará a través de un Proveedor Autorizado de Certificación (PAC).</p></details>
+    <details class="rv"><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
+    <details class="rv"><summary>¿Mis datos están seguros?</summary><p>En esta versión tus datos se guardan únicamente en tu navegador y no se envían a ningún servidor. Consulta nuestro <a href="#" data-open="dlgPriv">Aviso de privacidad</a>.</p></details>
+    <details class="rv"><summary>¿Timbro reemplaza a mi contador?</summary><p>No. Timbro es una herramienta para generar y administrar comprobantes; no ofrece asesoría fiscal ni contable.</p></details>
+  </div>
+</section>
+</div>
+
+<div id="viewPanel" hidden>
 <section class="section" id="app">
   <div class="wrap">
-    <p class="demo-banner">Modo demostración: las facturas no se timbran ante el SAT y los datos se guardan solo en este navegador.</p>
+    <div class="head"><p class="eyebrow">Tu cuenta</p><h2>Panel de facturación</h2></div>
+    <p class="demo-banner" id="banner">Modo demostración: las facturas no se timbran ante el SAT. Tus datos se guardan solo en este navegador.</p>
 
     <div class="authbox" id="authView">
-      <div class="seg" role="tablist" aria-label="Acceso">
+      <p class="auth-note">La cuenta que creas es la del <b>administrador</b> de tu empresa: gestiona el plan, las facturas y el equipo.</p>
+      <div class="seg" id="authTabs" role="tablist" aria-label="Acceso">
         <button class="on" id="tabLogin" type="button" data-tab="login">Iniciar sesión</button>
         <button id="tabReg" type="button" data-tab="registro">Crear cuenta</button>
       </div>
+
       <form class="afrm" id="fLogin" novalidate>
         <label for="lEmail">Correo</label>
         <input id="lEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
         <label for="lPass">Contraseña</label>
-        <input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" required>
-        <button class="btn" type="submit">Entrar</button>
+        <div class="pw"><input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" required><button class="eye" type="button" aria-label="Mostrar contraseña" data-eye="lPass"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+        <button class="btn shine" type="submit">Entrar</button>
         <p class="amsg" id="lMsg" aria-live="polite" hidden></p>
       </form>
       <form class="afrm" id="fReg" novalidate hidden>
         <label for="rRazon">Razón social o nombre</label>
         <input id="rRazon" placeholder="Estudio Aurora S.A. de C.V." autocomplete="organization" required>
-        <div class="two-f">
-          <div><label for="rRfc">RFC</label><input id="rRfc" placeholder="EAU200101AB1" maxlength="13" autocapitalize="characters" required></div>
-          <div><label for="rReg">Régimen fiscal</label>
-            <select id="rReg"><option>601 General de Ley PM</option><option>612 Persona física con actividad empresarial</option><option>626 RESICO</option><option>621 Incorporación fiscal</option></select></div>
+        <label for="rRfc">RFC de tu empresa</label>
+        <input id="rRfc" class="rfc-input" placeholder="EAU200101AB6" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="rRfcHint" required>
+        <p class="fhint" id="rRfcHint" aria-live="polite">12 caracteres para personas morales, 13 para personas físicas.</p>
+        <label for="rReg">Régimen fiscal</label>
+        <select id="rReg"><optgroup label="Más usados"><option value="626 RESICO · Régimen Simplificado de Confianza">626 · RESICO · Régimen Simplificado de Confianza</option><option value="612 Personas Físicas con Actividades Empresariales y Profesionales">612 · Personas Físicas con Actividades Empresariales y Profesionales</option><option value="601 General de Ley Personas Morales">601 · General de Ley Personas Morales</option><option value="603 Personas Morales con Fines no Lucrativos">603 · Personas Morales con Fines no Lucrativos</option><option value="606 Arrendamiento">606 · Arrendamiento</option><option value="625 Actividades Empresariales con ingresos a través de Plataformas Tecnológicas">625 · Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option><option value="605 Sueldos y Salarios e Ingresos Asimilados a Salarios">605 · Sueldos y Salarios e Ingresos Asimilados a Salarios</option><option value="622 Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras">622 · Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option></optgroup><optgroup label="Otros regímenes"><option value="607 Enajenación o Adquisición de Bienes">607 · Enajenación o Adquisición de Bienes</option><option value="608 Demás ingresos">608 · Demás ingresos</option><option value="609 Consolidación">609 · Consolidación</option><option value="610 Residentes en el Extranjero sin Establecimiento Permanente en México">610 · Residentes en el Extranjero sin Establecimiento Permanente en México</option><option value="611 Ingresos por Dividendos (socios y accionistas)">611 · Ingresos por Dividendos (socios y accionistas)</option><option value="614 Ingresos por intereses">614 · Ingresos por intereses</option><option value="615 Ingresos por obtención de premios">615 · Ingresos por obtención de premios</option><option value="616 Sin obligaciones fiscales">616 · Sin obligaciones fiscales</option><option value="620 Sociedades Cooperativas de Producción que optan por diferir sus ingresos">620 · Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option><option value="621 Incorporación Fiscal">621 · Incorporación Fiscal</option><option value="623 Opcional para Grupos de Sociedades">623 · Opcional para Grupos de Sociedades</option><option value="624 Coordinados">624 · Coordinados</option><option value="628 Hidrocarburos">628 · Hidrocarburos</option><option value="629 Regímenes Fiscales Preferentes y Empresas Multinacionales">629 · Regímenes Fiscales Preferentes y Empresas Multinacionales</option><option value="630 Enajenación de acciones en bolsa de valores">630 · Enajenación de acciones en bolsa de valores</option></optgroup></select>
+        <label for="rGiro">¿A qué se dedica tu empresa?</label>
+        <select id="rGiro"></select>
+        <p class="fhint">Con esto sugerimos los impuestos de tus facturas (IVA, retenciones y otros).</p>
+        <div class="loc-only">
+          <label for="rEmail">Correo</label>
+          <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" aria-describedby="rEmailHint" required>
+          <p class="fhint" id="rEmailHint" aria-live="polite"></p>
+          <label for="rPass">Contraseña</label>
+          <div class="pw"><input id="rPass" type="password" placeholder="Mínimo 8 caracteres" aria-describedby="pwHint" autocomplete="new-password" minlength="8" required><button class="eye" type="button" aria-label="Mostrar contraseña" data-eye="rPass"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
         </div>
-        <label for="rEmail">Correo</label>
-        <input id="rEmail" type="email" placeholder="tu@empresa.mx" autocomplete="email" required>
-        <label for="rPass">Contraseña</label>
-        <input id="rPass" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8" required>
-        <button class="btn" type="submit">Crear cuenta</button>
+        <p class="tiny" id="pwHint">Usa 8 o más caracteres. Tu contraseña se guarda cifrada en tu navegador.</p>
+        <label class="chk-l"><input type="checkbox" id="rAcc" required> <span>Leí el <a href="#" data-open="dlgPriv">Aviso de privacidad</a> y acepto los <a href="#" data-open="dlgTerms">Términos y condiciones</a>.</span></label>
+        <button class="btn shine" type="submit" id="bReg">Crear cuenta de administrador</button>
         <p class="amsg" id="rMsg" aria-live="polite" hidden></p>
       </form>
     </div>
 
-    <div id="dashView" hidden>
-      <div class="dash-head">
-        <div><h2 id="dCompany">Empresa</h2><p class="muted" id="dRfc">RFC</p></div>
-        <div class="dash-actions">
-          <label for="dPlan" class="sr">Plan</label>
-          <select id="dPlan">
-            <option value="emp">Emprendedor · $99</option>
-            <option value="neg">Negocio · $249</option>
-            <option value="des">Despacho · $649</option>
-          </select>
+    <div id="planView" class="planview" hidden>
+      <div class="plan-head">
+        <p class="eyebrow" id="planStep">Último paso</p>
+        <h2 id="planTitle">Elige tu plan</h2>
+        <p class="sub" id="planSub">Tu cuenta ya está creada. Elige el plan que quieres usar; podrás cambiarlo cuando quieras.</p>
+      </div>
+      <div class="pgrid" role="radiogroup" aria-label="Plan">
+        <button type="button" class="pcard" role="radio" aria-checked="false" data-plan="emp">
+          <span class="pcheck" aria-hidden="true"></span>
+          <h3>Emprendedor</h3><p class="for">Freelancers y RESICO</p>
+          <p class="amt">$99<small>/mes</small></p>
+          <ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul>
+        </button>
+        <button type="button" class="pcard" role="radio" aria-checked="false" data-plan="neg">
+          <span class="ptag">Más popular</span><span class="pcheck" aria-hidden="true"></span>
+          <h3>Negocio</h3><p class="for">Pequeñas empresas</p>
+          <p class="amt">$249<small>/mes</small></p>
+          <ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Facturas recurrentes</li><li>Portal de autofactura</li></ul>
+        </button>
+        <button type="button" class="pcard" role="radio" aria-checked="false" data-plan="des">
+          <span class="pcheck" aria-hidden="true"></span>
+          <h3>Despacho</h3><p class="for">Contadores y agencias</p>
+          <p class="amt">$649<small>/mes</small></p>
+          <ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul>
+        </button>
+      </div>
+      <p class="note plan-note">Precios en pesos mexicanos más IVA. Por ahora no se realiza ningún cobro: es una demostración y el plan solo define tus timbres del mes.</p>
+      <div class="plan-act"><button class="btn shine" id="bPlanOk" type="button">Continuar con el plan Negocio</button><button class="btn ghost" id="bPlanCancel" type="button" hidden>Cancelar</button></div>
+    </div>
+
+    <div id="dashView" class="shell" hidden>
+      <aside class="side">
+        <div class="side-brand">
+          <span class="avatar" id="dInitial" aria-hidden="true">T</span>
+          <div class="side-name"><h2 id="dCompany">Empresa</h2><p id="dRfc">RFC</p><p class="giro" id="dGiro"></p></div>
+        </div>
+        <nav class="side-nav" role="tablist" aria-label="Secciones del panel">
+          <button class="on" id="ptRes" type="button" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Resumen</span></button>
+          <button id="ptFact" type="button" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span>Emitidas</span></button>
+          <button id="ptRec" type="button" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v13H8l-4 4z"/><path d="M8 9h8M8 13h5"/></svg><span>Recibidas</span><i id="ptRecCount">0</i></button>
+          <button id="ptTax" type="button" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span>Impuestos</span></button>
+          <button id="ptEmp" type="button" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Empresas</span><i id="ptCount">1</i></button>
+        </nav>
+        <div class="side-foot">
+          <label class="sr" for="dEmp">Empresa activa</label>
+          <select id="dEmp" class="empsel" hidden></select>
+          <button class="planbtn" id="bPlan" type="button" aria-label="Cambiar de plan"><span id="dPlanName">Plan</span><small>Cambiar</small></button>
+          <p class="side-mail"><span class="badge">Admin</span><span id="dMail"></span></p>
           <button class="btn ghost sm" id="bOut" type="button">Cerrar sesión</button>
         </div>
+      </aside>
+
+      <div class="main">
+        <div class="topbar">
+          <div><p class="eyebrow" id="pgEyebrow">Tu panel</p><h1 id="pgTitle">Resumen</h1></div>
+          <button class="cmdbtn" id="bCmd" type="button" aria-label="Buscar o ir a"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Buscar o ir a…</span><kbd>Ctrl</kbd><kbd>K</kbd></button>
+        </div>
+
+        <div id="tabRes">
+          <div class="kpis kpis4">
+            <div class="kpi"><small>Facturado este mes</small><b id="rsIng">$0.00</b><em id="rsIngD"></em></div>
+            <div class="kpi"><small>Gastos deducibles del mes</small><b id="rsGas">$0.00</b><em id="rsGasD"></em></div>
+            <div class="kpi" id="rsIvaBox"><small id="rsIvaL">IVA del mes</small><b id="rsIva">$0.00</b><em id="rsIvaD"></em></div>
+            <div class="kpi"><small>Timbres disponibles</small><b id="rsTim">0</b><em id="rsTimD"></em></div>
+          </div>
+          <div class="res-grid">
+            <div class="card chartcard">
+              <div class="hist-head"><b>Ingresos y gastos</b><div class="legend"><span class="lg i">Emitidas</span><span class="lg g">Recibidas</span></div></div>
+              <div class="chart" id="chart" role="img" aria-label="Gráfica de ingresos y gastos de los últimos seis meses"></div>
+              <p class="tiny" id="chartNote"></p>
+            </div>
+            <div class="card ivacard">
+              <b>Tu IVA este mes</b>
+              <div class="ivabars" id="ivaBars"></div>
+              <p class="ivamsg" id="ivaMsg"></p>
+              <button class="link" id="goTax" type="button">Ver el detalle de impuestos →</button>
+            </div>
+          </div>
+          <div class="card activity">
+            <div class="hist-head"><b>Actividad reciente</b><div class="tools"><button class="btn sm" id="rNewInv" type="button">+ Nueva factura</button><button class="btn ghost sm" id="rNewRec" type="button">+ Factura recibida</button></div></div>
+            <ul class="act-list" id="actList"></ul>
+            <div class="empty" id="actEmpty"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="5"/><path d="M16 16h16M16 23h16M16 30h9"/></svg><p><b>Todavía no hay movimientos</b><br>Crea tu primera factura emitida o registra un gasto.</p></div>
+          </div>
+        </div>
+
+        <div id="tabFact" hidden>
+      <div class="card onboard" id="onboard">
+        <div class="ob-head"><b>Primeros pasos</b><span id="obCount">1 de 3</span></div>
+        <div class="ob-bar"><i id="obBar"></i></div>
+        <ul class="ob-list">
+          <li class="done" id="ob1"><i></i>Registra tu empresa</li>
+          <li id="ob2"><i></i>Crea tu primera factura</li>
+          <li id="ob3"><i></i>Timbra una factura</li>
+        </ul>
+      </div>
+
+      <div class="quick" role="toolbar" aria-label="Acciones rápidas">
+        <button class="qbtn" id="qNew" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva factura <kbd>N</kbd></button>
+        <button class="qbtn" id="qRepeat" type="button"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Repetir la última</button>
+        <button class="qbtn" id="qExample" type="button"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Rellenar ejemplo</button>
+        <button class="qbtn" id="qSearch" type="button"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Buscar <kbd>/</kbd></button>
+      </div>
+
+
+      <details class="card calc" id="calc">
+        <summary><span class="calc-ico"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M8 7h8M8 12h2M12 12h2M16 12h0M8 16h2M12 16h2M16 16h0"/></svg></span><span><b>Calculadora de facturas</b><small>Desglosa el IVA, calcula cuánto cobrar para recibir lo que quieres y pásalo a tu factura.</small></span></summary>
+        <div class="calc-body">
+          <div class="seg" id="calcModes" role="tablist" aria-label="Tipo de cálculo">
+            <button class="on" type="button" data-m="neto">Quiero recibir…</button>
+            <button type="button" data-m="desglosar">Desglosar IVA</button>
+            <button type="button" data-m="agregar">Agregar impuestos</button>
+          </div>
+          <p class="tiny" id="cHelp"></p>
+          <div class="calc-grid">
+            <div><label for="cMonto" id="cLabel">Monto neto que quiero recibir</label><input id="cMonto" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div id="cIvaBox" hidden><label for="cIva">IVA del total</label><select id="cIva"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option></select></div>
+          </div>
+          <dl class="tot calc-out" id="cOut"></dl>
+          <div class="actions"><button class="btn sm" id="cUse" type="button">Usar en la factura</button><button class="btn ghost sm" id="cClear" type="button">Limpiar</button></div>
+        </div>
+      </details>
+
+      <div class="kpis">
+        <div class="kpi"><small>Facturado este mes</small><b id="kTot">$0.00</b></div>
+        <div class="kpi"><small>Facturas timbradas</small><b id="kStamp">0</b></div>
+        <div class="kpi"><small>Borradores</small><b id="kDraft">0</b></div>
       </div>
 
       <div class="dash-grid">
         <div class="card meter">
           <b>Timbres del mes</b>
-          <p class="big"><b id="mLeft">0</b> <span>disponibles</span></p>
-          <div class="bar"><i id="mBar"></i></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 120 120" class="ring" aria-hidden="true"><circle cx="60" cy="60" r="52" class="trk"/><circle cx="60" cy="60" r="52" class="val" id="mRing"/></svg>
+            <div class="ring-n"><b id="mLeft">0</b><small>disponibles</small></div>
+          </div>
           <p class="tiny"><span id="mUsed">0</span> de <span id="mLimit">0</span> usados · timbre extra $3</p>
           <p class="tiny">Los borradores no consumen timbres.</p>
         </div>
@@ -92,8 +336,8 @@
         <form class="card inv" id="fInv" novalidate>
           <b>Nueva factura</b>
           <div class="two-f">
-            <div><label for="iName">Cliente</label><input id="iName" placeholder="Nombre o razón social" required></div>
-            <div><label for="iRfc">RFC del cliente</label><input id="iRfc" placeholder="XAXX010101000" maxlength="13" autocapitalize="characters" required></div>
+            <div><label for="iName">Cliente</label><input id="iName" list="dlClients" placeholder="Nombre o razón social" autocomplete="off" required><datalist id="dlClients"></datalist><div class="recent" id="recent" hidden></div><datalist id="dlItems"></datalist></div>
+            <div><label for="iRfc">RFC del cliente</label><input id="iRfc" class="rfc-input" placeholder="GAMJ800101AB8" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="iRfcHint" required><p class="fhint" id="iRfcHint" aria-live="polite"></p></div>
           </div>
           <div class="two-f eq">
             <div><label for="iUso">Uso del CFDI</label>
@@ -103,59 +347,341 @@
           </div>
           <div class="lines" id="lines"></div>
           <button class="link" id="bAdd" type="button">+ Agregar concepto</button>
+          <fieldset class="taxes" id="taxes">
+            <legend>Impuestos de esta factura</legend>
+            <div class="tax-top">
+              <div><label for="iGiro">Giro de la empresa</label><select id="iGiro"></select></div>
+              <button class="link" id="bTaxReset" type="button">Restablecer sugerencia</button>
+            </div>
+            <div class="tax-grid">
+              <div class="tax-row"><label for="tIvaSel">IVA</label>
+                <select id="tIvaSel"><option value="16">16% · tasa general</option><option value="8">8% · franja fronteriza</option><option value="0">0% · tasa cero</option><option value="exento">Exento</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIsrOn"> Retención de ISR</label>
+                <select id="tIsrSel"><option value="0.10">10%</option><option value="0.0125">1.25% (RESICO)</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIvaRetOn"> Retención de IVA</label>
+                <select id="tIvaRetSel"><option value="0.106667">2/3 del IVA (10.6667%)</option><option value="0.04">4% (autotransporte)</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIepsOn"> IEPS</label>
+                <select id="tIepsSel"><option value="0.08">8% alimentos de alta densidad calórica</option><option value="0.265">26.5% bebidas alcohólicas (hasta 14° G.L.)</option><option value="0.30">30% bebidas alcohólicas (14° a 20°)</option><option value="0.53">53% bebidas alcohólicas (más de 20°)</option><option value="1.6">160% tabacos labrados</option></select></div>
+              <div class="tax-row"><label><input type="checkbox" id="tIshOn"> Impuesto sobre hospedaje</label>
+                <select id="tIshSel"><option value="0.02">2%</option><option value="0.03">3%</option><option value="0.04">4%</option><option value="0.05">5%</option></select></div>
+            </div>
+            <p class="tiny" id="taxNote"></p>
+          </fieldset>
           <dl class="tot">
             <div><dt>Subtotal</dt><dd id="tSub">$0.00</dd></div>
-            <div><dt>IVA 16%</dt><dd id="tIva">$0.00</dd></div>
+            <div id="rIeps" hidden><dt>IEPS</dt><dd id="tIeps">$0.00</dd></div>
+            <div id="rIsh" hidden><dt>Impuesto sobre hospedaje</dt><dd id="tIsh">$0.00</dd></div>
+            <div><dt id="lIva">IVA 16%</dt><dd id="tIva">$0.00</dd></div>
+            <div id="rIsr" hidden><dt id="lIsr">Retención ISR</dt><dd id="tIsr">$0.00</dd></div>
+            <div id="rIvaRet" hidden><dt id="lIvaRet">Retención IVA</dt><dd id="tIvaRet">$0.00</dd></div>
             <div class="grand"><dt>Total</dt><dd id="tTot">$0.00</dd></div>
           </dl>
           <div class="actions">
-            <button class="btn" id="bStamp" type="button">Timbrar factura</button>
+            <button class="btn shine" id="bStamp" type="button">Timbrar factura</button>
             <button class="btn ghost" id="bDraft" type="button">Guardar borrador</button>
           </div>
           <p class="amsg" id="iMsg" aria-live="polite" hidden></p>
+          <p class="tiny hint">Atajos: <kbd>Enter</kbd> agrega un concepto · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> timbra · <kbd>N</kbd> nueva factura</p>
         </form>
       </div>
 
       <div class="card hist">
-        <b>Mis facturas</b>
+        <div class="hist-head"><b>Mis facturas</b>
+          <div class="tools">
+            <div class="chips" id="chips" role="group" aria-label="Filtrar por estatus">
+              <button type="button" class="on" data-f="todas">Todas <i>0</i></button><button type="button" data-f="timbrada">Timbradas <i>0</i></button><button type="button" data-f="borrador">Borradores <i>0</i></button><button type="button" data-f="cancelada">Canceladas <i>0</i></button>
+            </div>
+            <label class="sr" for="hSearch">Buscar</label>
+            <input id="hSearch" type="search" placeholder="Buscar cliente o folio">
+          </div>
+        </div>
         <div class="table"><table>
           <thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estatus</th><th></th></tr></thead>
           <tbody id="hBody"></tbody>
         </table></div>
-        <p class="tiny" id="hEmpty">Todavía no hay facturas. Crea la primera arriba.</p>
+        <div class="empty" id="hEmpty"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="5"/><path d="M16 16h16M16 23h16M16 30h9"/></svg><p><b>Aún no hay facturas</b><br>Crea la primera con el formulario de arriba.</p></div>
       </div>
-    </div>
-  </div>
-</section>
 
-<section class="section alt" id="precios">
-  <div class="wrap">
-    <h2>Planes</h2>
-    <div class="prices">
-      <article class="plan"><h3>Emprendedor</h3><p class="amt">$99<small>/mes</small></p><ul><li><b>40 timbres</b> al mes</li><li>1 RFC · 1 usuario</li><li>Complemento de pago</li><li>Cancelaciones</li></ul></article>
-      <article class="plan hot"><span class="tag">Más popular</span><h3>Negocio</h3><p class="amt">$249<small>/mes</small></p><ul><li><b>150 timbres</b> al mes</li><li>3 RFC · 3 usuarios</li><li>Recurrentes</li><li>Autofactura</li></ul></article>
-      <article class="plan"><h3>Despacho</h3><p class="amt">$649<small>/mes</small></p><ul><li><b>600 timbres</b> al mes</li><li>20 RFC · usuarios ilimitados</li><li>API y marca propia</li><li>Soporte prioritario</li></ul></article>
-    </div>
-    <p class="note">MXN más IVA · Timbre extra $3 · Precios de referencia a validar.</p>
-  </div>
-</section>
+      <div class="card priv">
+        <div><b>Mi privacidad</b><p class="tiny">Ejerce tus derechos sobre tus datos cuando quieras.</p></div>
+        <div class="actions"><button class="btn ghost sm" id="bData" type="button">Ver mis datos</button><button class="btn ghost sm danger" id="bDel" type="button">Eliminar mi cuenta</button></div>
+      </div>
+      </div>
 
-<section class="section" id="faq">
-  <div class="wrap narrow">
-    <h2>Preguntas</h2>
-    <details><summary>¿Qué es un timbre?</summary><p>Una factura certificada ante el SAT. Cada factura timbrada descuenta uno de tu plan; los borradores no.</p></details>
-    <details><summary>¿Ya timbra de verdad?</summary><p>Aún no. Esta versión es una demostración; el timbrado real se hará a través de un PAC autorizado.</p></details>
-    <details><summary>¿Qué necesito para empezar?</summary><p>Tu RFC y tu certificado de sello digital (CSD) vigente.</p></details>
-  </div>
+      <div id="tabRec" hidden>
+        <div class="kpis">
+          <div class="kpi"><small>Gastos deducibles del mes</small><b id="rkGasto">$0.00</b></div>
+          <div class="kpi"><small>IVA acreditable del mes</small><b id="rkIva">$0.00</b></div>
+          <div class="kpi"><small>Facturas recibidas</small><b id="rkCount">0</b></div>
+        </div>
+        <form class="card recform" id="fRec" novalidate>
+          <b>Registrar factura recibida</b>
+          <p class="tiny">Las facturas que te hacen tus proveedores. El IVA que pagaste se acredita y los gastos deducibles bajan tu ISR, según tu régimen.</p>
+          <div class="two-f">
+            <div><label for="cProv">Proveedor</label><input id="cProv" placeholder="Nombre o razón social" autocomplete="off" required></div>
+            <div><label for="cRfc">RFC del proveedor</label><input id="cRfc" class="rfc-input" placeholder="GAMJ800101AB8" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="cRfcHint" required><p class="fhint" id="cRfcHint" aria-live="polite"></p></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="cConc">Concepto</label><input id="cConc" placeholder="Renta de oficina, software, mercancía…" autocomplete="off" required></div>
+            <div><label for="cCat">Categoría</label><select id="cCat"><option>Servicios profesionales</option><option>Mercancía o insumos</option><option>Renta</option><option>Servicios (luz, internet, teléfono)</option><option>Transporte y combustible</option><option>Software y tecnología</option><option>Publicidad</option><option>Otros gastos</option></select></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="cFecha">Fecha de la factura</label><input id="cFecha" type="date" required></div>
+            <div><label for="cMet">Forma de pago</label><select id="cMet"><option value="transferencia">Transferencia</option><option value="tarjeta">Tarjeta</option><option value="cheque">Cheque</option><option value="efectivo">Efectivo</option></select></div>
+          </div>
+          <div class="two-f eq">
+            <div><label for="cSub">Subtotal (sin IVA)</label><input id="cSub" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" required></div>
+            <div><label for="cIvaR">IVA de la factura</label><select id="cIvaR"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option><option value="exento">Exento</option></select></div>
+          </div>
+          <label class="chk-l"><input type="checkbox" id="cDed" checked> <span>Es un gasto del negocio (deducible y con IVA acreditable)</span></label>
+          <p class="fhint" id="cPrev" aria-live="polite"></p>
+          <div class="actions"><button class="btn shine" type="submit">Registrar factura recibida</button></div>
+          <p class="amsg" id="cMsg" aria-live="polite" hidden></p>
+        </form>
+        <div class="card">
+          <div class="hist-head"><b>Facturas recibidas</b></div>
+          <div class="table"><table>
+            <thead><tr><th>Fecha</th><th>Proveedor</th><th>Concepto</th><th>Subtotal</th><th>IVA</th><th>Total</th><th>Tratamiento</th><th></th></tr></thead>
+            <tbody id="rBody"></tbody>
+          </table></div>
+          <div class="empty" id="rEmpty"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="5"/><path d="M16 16h16M16 23h16M16 30h9"/></svg><p><b>Aún no registras facturas recibidas</b><br>Agrégalas arriba para acreditar IVA y reducir tus impuestos.</p></div>
+        </div>
+      </div>
+
+      <div id="tabEmp" hidden>
+        <div class="kpis">
+          <div class="kpi"><small>Empresas registradas</small><b id="eCount">1</b></div>
+          <div class="kpi"><small>Facturas en total</small><b id="eFacts">0</b></div>
+          <div class="kpi"><small>Facturado en total</small><b id="eMonto">$0.00</b></div>
+        </div>
+        <div class="card emps">
+          <div class="hist-head"><b>Mis empresas</b><button class="btn sm shine" id="bAddEmp" type="button">+ Agregar empresa</button></div>
+          <p class="tiny" id="eLimit"></p>
+          <div class="table"><table>
+            <thead><tr><th>Empresa</th><th>RFC</th><th>Facturas</th><th>Timbradas</th><th>Borradores</th><th>Canceladas</th><th>Facturado</th><th>Timbres del mes</th><th></th></tr></thead>
+            <tbody id="eBody"></tbody>
+          </table></div>
+        </div>
+        <form class="card newemp" id="fEmp" novalidate hidden>
+          <b>Agregar empresa</b>
+          <label for="eRazon">Razón social o nombre</label>
+          <input id="eRazon" placeholder="Estudio Aurora S.A. de C.V." autocomplete="organization" required>
+          <label for="eRfc">RFC de la empresa</label>
+          <input id="eRfc" class="rfc-input" placeholder="EAU200101AB6" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="eRfcHint" required>
+          <p class="fhint" id="eRfcHint" aria-live="polite"></p>
+          <label for="eReg">Régimen fiscal</label>
+          <select id="eReg"></select>
+          <label for="eGiro">¿A qué se dedica la empresa?</label>
+          <select id="eGiro"></select>
+          <div class="actions"><button class="btn shine" type="submit">Agregar empresa</button><button class="btn ghost" id="bCancelEmp" type="button">Cancelar</button></div>
+          <p class="amsg" id="eMsg" aria-live="polite" hidden></p>
+        </form>
+      </div>
+      <div id="tabTax" hidden>
+        <div class="card taxcard">
+          <div class="hist-head"><b>Impuestos del periodo</b>
+            <div class="tools"><label class="sr" for="xMes">Periodo</label><select id="xMes"></select></div>
+          </div>
+          <p class="tiny" id="xReg"></p>
+          <div class="xinputs">
+            <div><label for="xGastos">Otros gastos deducibles del año (sin factura en Recibidas)</label><input id="xGastos" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="xIvaAc">Otro IVA acreditable del mes</label><input id="xIvaAc" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="xPrev">Pagos provisionales de ISR anteriores del año</label><input id="xPrev" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div id="xCoefBox"><label for="xCoef">Coeficiente de utilidad</label><input id="xCoef" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="0.2000"></div>
+            <label class="chk-l" id="xDedBox"><input type="checkbox" id="xDed35"> <span>Usar la deducción opcional del 35% (arrendamiento)</span></label>
+          </div>
+          <div class="xgrid">
+            <div class="xbox"><h3>IVA</h3><dl id="xIva"></dl></div>
+            <div class="xbox"><h3>ISR</h3><dl id="xIsr"></dl></div>
+          </div>
+          <div class="xtotal"><div><span>Total estimado a pagar</span><small id="xDue"></small></div><b id="xTot">$0.00</b></div>
+          <p class="tiny xnote" id="xNote"></p>
+          <p class="tiny">Estimación informativa a partir de tus facturas emitidas y recibidas en Timbro y de los datos que captures arriba. Usa las tarifas 2026 (art. 96 y 113-E de la Ley del ISR, Anexo 8 de la RMF 2026). No es una declaración: confirma los montos con tu contador antes de presentar.</p>
+        </div>
+
+        <div class="card sim" id="sim">
+          <div class="hist-head"><b>Simulador de facturas</b><button class="link" id="sClear" type="button">Limpiar</button></div>
+          <p class="tiny">Prueba qué pasaría con tu IVA y tus impuestos del periodo si emitieras o recibieras una factura más. No guarda nada.</p>
+          <div class="xinputs">
+            <div><label for="sIng">Factura que emitirías (subtotal)</label><input id="sIng" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="sIvaIng">IVA de esa factura</label><select id="sIvaIng"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option><option value="exento">Exento</option></select></div>
+            <div><label for="sGas">Factura que recibirías, gasto deducible (subtotal)</label><input id="sGas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+            <div><label for="sIvaGas">IVA de ese gasto</label><select id="sIvaGas"><option value="16">16%</option><option value="8">8%</option><option value="0">0%</option><option value="exento">Exento</option></select></div>
+          </div>
+          <div class="table"><table class="simtable">
+            <thead><tr><th></th><th>Ahora</th><th>Con la simulación</th><th>Diferencia</th></tr></thead>
+            <tbody id="sBody"></tbody>
+          </table></div>
+          <p class="simmsg" id="sMsg" aria-live="polite"></p>
+        </div>
+        <div class="card tips" id="tips"><b>Cómo pagar menos impuestos, de forma legal</b><ul id="tipList"></ul><p class="tiny">Reducir impuestos significa aprovechar las deducciones y los acreditamientos que la ley permite. Un contador puede revisar tu caso concreto.</p></div>
+      </div>
+
+
+    </div>
+        </div>
+    </div>
 </section>
+</div>
 </main>
 
 <footer class="foot">
-  <div class="wrap foot-in">
-    <a href="#inicio" class="logo"><i></i>Timbro</a>
-    <p>wockycontacto@gmail.com · © 2026 Timbro · Servicio en desarrollo</p>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <a href="#inicio" class="logo" aria-label="Timbro">
+        <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect width="48" height="48" rx="13" fill="url(#tmg)"/>
+          <g class="bell"><circle cx="24" cy="10.5" r="2.3" fill="#fff"/><path d="M24 12.5c-6.2 0-9.8 4.5-9.8 10.2v5.6l-3.2 4.7v1.5h26v-1.5l-3.2-4.7v-5.6c0-5.7-3.6-10.2-9.8-10.2z" fill="#fff"/><path d="M20.3 36.8a3.7 3.7 0 0 0 7.4 0z" fill="#d9d5ff"/></g>
+          <g class="seal"><circle cx="35.5" cy="13" r="6.3" fill="#14142b" stroke="#fff" stroke-width="1.8"/><path class="chk" d="M32.4 13.3l2.1 2.1 3.9-4.4" fill="none" stroke="#2ff0cf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+        </svg>
+        <span class="word">timbro</span>
+      </a>
+      <p>Facturar nunca sonó tan fácil.</p>
+    </div>
+    <div><h4>Producto</h4><ul><li><a href="#funciones">Funciones</a></li><li><a href="#movil">App móvil</a></li><li><a href="#precios">Precios</a></li><li><a href="#panel">Panel</a></li><li><a href="#faq">Preguntas</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a href="#" data-open="dlgPriv">Aviso de privacidad</a></li><li><a href="#" data-open="dlgTerms">Términos y condiciones</a></li><li><a href="#" data-open="dlgCookies">Política de cookies</a></li><li><a href="#" id="cookiePrefs">Preferencias de cookies</a></li></ul></div>
+    <div><h4>Contacto</h4><ul><li><a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a></li><li>México</li></ul></div>
   </div>
+  <p class="copy">© 2026 Timbro. Servicio en desarrollo; no sustituye asesoría fiscal ni contable.</p>
 </footer>
+
+<!-- Aviso de cookies -->
+<div class="cookie" id="cookie" role="dialog" aria-label="Aviso de cookies" hidden>
+  <p><b>Tu privacidad importa.</b> Usamos únicamente almacenamiento local necesario para que Timbro funcione (tu sesión y tus datos de demostración). No usamos cookies de publicidad. <a href="#" data-open="dlgCookies">Más información</a></p>
+  <div class="cookie-act"><button class="btn sm" id="ckOk" type="button">Aceptar</button><button class="btn ghost sm" id="ckNec" type="button">Solo necesarias</button></div>
+</div>
+
+<!-- Documentos legales -->
+<dialog class="legal" id="dlgPriv" aria-labelledby="tPriv">
+  <div class="legal-head"><h2 id="tPriv">Aviso de privacidad</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+  <div class="legal-body">
+    <p class="upd">Última actualización: 13 de octubre de 2026</p>
+    <div class="summary"><b>En resumen</b><ul><li>Solo pedimos los datos necesarios para crear tu cuenta y tus facturas.</li><li>No vendemos tus datos ni los usamos para publicidad.</li><li>En esta versión se guardan en tu navegador, no en un servidor.</li><li>Puedes ver, corregir y eliminar tus datos desde tu panel o escribiéndonos.</li></ul></div>
+    <p>Este Aviso de Privacidad se emite conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares y su normatividad aplicable.</p>
+    <h3>1. Responsable</h3>
+    <p><b>[Nombre o razón social del responsable]</b>, con domicilio en <b>[domicilio completo en México]</b> (en adelante, «Timbro»), es responsable del tratamiento de tus datos personales. Contacto: <a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a>.</p>
+    <h3>2. Datos personales que tratamos</h3>
+    <ul><li><b>Identificación y contacto:</b> nombre o razón social y correo electrónico.</li><li><b>Fiscales:</b> RFC y régimen fiscal tuyos y de los clientes que captures (nombre y RFC).</li><li><b>De facturación:</b> conceptos, importes, fechas, folios y estatus de tus comprobantes.</li><li><b>Credenciales:</b> tu contraseña se guarda únicamente como un valor cifrado (hash), nunca en texto legible.</li><li><b>Aceptación:</b> la fecha en que aceptaste este aviso y los términos.</li></ul>
+    <p>No recabamos datos personales sensibles. Al capturar datos de tus clientes declaras que tienes derecho a tratarlos y que cumples con la obligación de informarles sobre su tratamiento.</p>
+    <h3>3. Dónde se guardan tus datos en esta versión</h3>
+    <p>Timbro está en etapa de demostración. Tus datos de cuenta y facturas se guardan en tu propio navegador y no se envían a ningún servidor. No los usamos para otros fines.</p>
+    <h3>4. Finalidades</h3>
+    <p><b>Primarias (necesarias para el servicio):</b> crear y administrar tu cuenta; elaborar y administrar comprobantes; llevar el control de tu plan y de tus timbres; atender tus solicitudes y dudas; y cumplir obligaciones legales.</p>
+    <p><b>Secundarias:</b> no utilizamos tus datos para mercadotecnia o publicidad. Si en el futuro lo hiciéramos, te pediremos tu consentimiento por separado y podrás negarte sin afectar el servicio.</p>
+    <h3>5. Transferencias y encargados</h3>
+    <p>No vendemos tus datos. Podremos compartirlos con proveedores que nos prestan servicios (por ejemplo, alojamiento, procesamiento de pagos y un Proveedor Autorizado de Certificación para el timbrado, cuando esté disponible) y con autoridades, como el SAT, cuando la ley lo exija. Las transferencias necesarias para cumplir la relación jurídica o una obligación legal no requieren tu consentimiento. Antes de que existan transferencias adicionales actualizaremos este aviso.</p>
+    <h3>6. Conservación y seguridad</h3>
+    <p>Conservamos tus datos mientras tengas cuenta y por el tiempo que exijan las disposiciones aplicables. Aplicamos medidas de seguridad administrativas, técnicas y físicas razonables, como el cifrado de contraseñas. Ningún sistema es infalible; si ocurriera una vulneración que afecte de forma significativa tus derechos, te lo informaremos.</p>
+    <h3>7. Derechos ARCO, revocación y limitación</h3>
+    <p>Tienes derecho a <b>acceder, rectificar, cancelar u oponerte</b> al tratamiento de tus datos (derechos ARCO), a revocar tu consentimiento y a limitar el uso o divulgación de tus datos. Desde tu panel puedes ver y eliminar tus datos en «Mi privacidad». También puedes escribir a <a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a> indicando: tu nombre y un medio para responderte, un documento que acredite tu identidad, la descripción clara de lo que solicitas y cualquier elemento que ayude a localizar tus datos. Responderemos dentro de los plazos que establece la ley.</p>
+    <h3>8. Menores de edad</h3>
+    <p>Timbro está dirigido a personas mayores de 18 años. No recabamos de manera intencional datos de menores.</p>
+    <h3>9. Cookies y tecnologías similares</h3>
+    <p>Consulta nuestra <a href="#" data-open="dlgCookies">Política de cookies</a>.</p>
+    <h3>10. Cambios a este aviso</h3>
+    <p>Podremos modificar este aviso. Publicaremos la versión vigente en este sitio, con su fecha de actualización.</p>
+    <h3>11. Autoridad</h3>
+    <p>Si consideras que tu derecho a la protección de datos personales fue vulnerado, puedes acudir ante la autoridad competente en la materia.</p>
+  </div>
+</dialog>
+
+<dialog class="legal" id="dlgTerms" aria-labelledby="tTerms">
+  <div class="legal-head"><h2 id="tTerms">Términos y condiciones</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+  <div class="legal-body">
+    <p class="upd">Última actualización: 13 de octubre de 2026</p>
+    <h3>1. Aceptación</h3>
+    <p>Al crear una cuenta o usar Timbro aceptas estos términos y el <a href="#" data-open="dlgPriv">Aviso de privacidad</a>. Si no estás de acuerdo, no uses el servicio.</p>
+    <h3>2. El servicio</h3>
+    <p>Timbro es una herramienta en línea para elaborar y administrar comprobantes fiscales digitales (CFDI). <b>La versión actual es una demostración: no certifica comprobantes ante el SAT ni los envía a ninguna autoridad.</b> El timbrado real se realizará a través de un Proveedor Autorizado de Certificación (PAC) cuando esté disponible, y se te avisará.</p>
+    <h3>3. Tu cuenta</h3>
+    <p>Debes proporcionar información veraz y actualizada, y usar únicamente RFC y datos que tengas derecho a utilizar. Eres responsable de la confidencialidad de tus credenciales y de la actividad en tu cuenta.</p>
+    <h3>4. Responsabilidad fiscal</h3>
+    <p>El contenido de cada comprobante (datos, conceptos, importes e impuestos) es responsabilidad exclusiva del usuario. Timbro no ofrece asesoría fiscal, contable ni legal. Consulta a un profesional cuando lo necesites.</p>
+    <h3>5. Uso aceptable</h3>
+    <p>No debes usar Timbro para emitir comprobantes falsos o simulados, suplantar identidades, vulnerar la seguridad del servicio ni infringir la ley.</p>
+    <h3>6. Planes, precios y pagos</h3>
+    <p>Los planes incluyen una cantidad mensual de timbres. Los precios se expresan en pesos mexicanos más IVA y son de referencia durante la etapa de validación; antes de cualquier cobro te mostraremos el precio total, la forma de pago y las condiciones, y pedirás tu aceptación expresa. Actualmente no se realiza ningún cobro.</p>
+    <h3>7. Cancelación y reembolsos</h3>
+    <p>No hay plazo forzoso: podrás cancelar tu plan en cualquier momento, y la cancelación surtirá efecto al terminar el periodo ya pagado. Las condiciones de reembolso, en su caso, se informarán antes del primer cobro y respetarán los derechos que la ley te reconozca.</p>
+    <h3>8. Disponibilidad y cambios</h3>
+    <p>Procuramos mantener el servicio disponible, pero no garantizamos que sea ininterrumpido ni libre de errores. Podemos modificar, suspender o descontinuar funciones; si hay cambios relevantes, te avisaremos.</p>
+    <h3>9. Limitación de responsabilidad</h3>
+    <p>En la medida permitida por la ley, Timbro no será responsable por daños indirectos, pérdida de información o sanciones derivadas de la información que captures, ni de decisiones tomadas con base en el servicio. Nada en estos términos limita derechos que la ley te reconozca como consumidor.</p>
+    <h3>10. Propiedad intelectual</h3>
+    <p>El nombre, logotipo, diseño y software de Timbro pertenecen a su titular. Tú conservas la titularidad de los datos que captures.</p>
+    <h3>11. Terminación</h3>
+    <p>Puedes dejar de usar el servicio en cualquier momento. Podemos suspender cuentas que incumplan estos términos.</p>
+    <h3>12. Ley aplicable y jurisdicción</h3>
+    <p>Estos términos se rigen por las leyes de los Estados Unidos Mexicanos. Para su interpretación y cumplimiento, las partes se someten a los tribunales competentes de <b>[ciudad], México</b>, sin perjuicio de los derechos que la ley otorgue al consumidor.</p>
+    <h3>13. Contacto y quejas</h3>
+    <p>Para dudas, aclaraciones o quejas escribe a <a href="mailto:timbrocontacto@gmail.com">timbrocontacto@gmail.com</a>. También puedes acudir a la Procuraduría Federal del Consumidor (Profeco).</p>
+  </div>
+</dialog>
+
+<dialog class="legal" id="dlgCookies" aria-labelledby="tCook">
+  <div class="legal-head"><h2 id="tCook">Política de cookies</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+  <div class="legal-body">
+    <p class="upd">Última actualización: 13 de octubre de 2026</p>
+    <h3>¿Qué son?</h3>
+    <p>Son archivos o datos que un sitio guarda en tu dispositivo para recordar información. Timbro usa almacenamiento local del navegador (<i>localStorage</i>), que cumple una función equivalente.</p>
+    <h3>Qué guardamos</h3>
+    <table class="ltab"><thead><tr><th>Nombre</th><th>Para qué sirve</th><th>Tipo</th></tr></thead><tbody>
+      <tr><td>timbro_session</td><td>Mantener tu sesión iniciada</td><td>Necesaria</td></tr>
+      <tr><td>timbro_db</td><td>Guardar tu cuenta y facturas de demostración en tu navegador</td><td>Necesaria</td></tr>
+      <tr><td>timbro_consent</td><td>Recordar tu elección sobre este aviso</td><td>Necesaria</td></tr>
+    </tbody></table>
+    <h3>Lo que no hacemos</h3>
+    <p>No usamos cookies publicitarias ni de analítica o seguimiento propias.</p>
+    <h3>Terceros</h3>
+    <p>Para mostrar la tipografía, el sitio carga fuentes de Google Fonts, por lo que Google puede recibir tu dirección IP y datos técnicos del navegador al cargarlas, conforme a sus propias políticas.</p>
+    <h3>Cómo gestionarlas</h3>
+    <p>Puedes cambiar tu elección con «Preferencias de cookies» en el pie de página, y borrar los datos del sitio desde la configuración de tu navegador. Si los borras, se cerrará tu sesión y se eliminarán las cuentas locales de demostración.</p>
+    <h3>Cambios</h3>
+    <p>Si empezamos a usar herramientas adicionales (por ejemplo, analítica), actualizaremos esta política y te pediremos tu consentimiento antes.</p>
+  </div>
+</dialog>
+
+<dialog class="cmd" id="dlgCmd" aria-label="Buscar o ir a">
+  <div class="cmd-box">
+    <div class="cmd-in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="cmdIn" placeholder="Escribe una sección o una acción…" autocomplete="off" aria-label="Buscar comando" role="combobox" aria-expanded="true" aria-controls="cmdList"></div>
+    <ul id="cmdList" role="listbox"></ul>
+    <p class="tiny cmd-foot"><kbd>↑</kbd><kbd>↓</kbd> para moverte · <kbd>Enter</kbd> para elegir · <kbd>Esc</kbd> para cerrar</p>
+  </div>
+</dialog>
+
+<dialog class="legal small" id="dlgApp" aria-labelledby="tApp">
+  <div class="legal-head"><h2 id="tApp">Descarga la app de Timbro</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+  <div class="legal-body">
+    <p>Timbro se instala directamente desde el navegador de tu teléfono, sin pasar por una tienda de aplicaciones:</p>
+    <ol class="how"><li><b>Abre Timbro</b> en tu teléfono (Safari en iPhone, Chrome en Android).</li><li><b>iPhone:</b> toca Compartir y elige «Agregar a pantalla de inicio».<br><b>Android:</b> toca el menú ⋮ y elige «Instalar app».</li><li>Listo: tendrás el ícono de la campana y se abrirá como una app.</li></ol>
+    <p class="tiny">Las versiones para App Store y Google Play llegarán más adelante.</p>
+    <div class="actions"><button class="btn sm" id="bCopyLink" type="button">Copiar enlace de Timbro</button><button class="btn ghost sm" type="button" data-close>Cerrar</button></div>
+  </div>
+</dialog>
+
+<dialog class="legal small" id="dlgData" aria-labelledby="tData">
+  <div class="legal-head"><h2 id="tData">Mis datos</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+  <div class="legal-body">
+    <p>Esta es la copia de los datos que Timbro guarda de tu cuenta (derecho de acceso). Por seguridad no incluye tu contraseña cifrada.</p>
+    <label class="sr" for="dataBox">Datos de tu cuenta</label>
+    <textarea id="dataBox" readonly rows="12"></textarea>
+    <div class="actions"><button class="btn sm" id="bCopy" type="button">Copiar</button><button class="btn ghost sm" type="button" data-close>Cerrar</button></div>
+  </div>
+</dialog>
+
+<dialog class="legal small" id="dlgDel" aria-labelledby="tDel">
+  <div class="legal-head"><h2 id="tDel">Eliminar mi cuenta</h2><button class="x" type="button" data-close aria-label="Cerrar">×</button></div>
+  <div class="legal-body">
+    <p>Se borrarán de forma definitiva tu cuenta, tus clientes y todas tus facturas guardadas en este navegador. <b>Esta acción no se puede deshacer.</b></p>
+    <p>Los comprobantes ya certificados ante el SAT deben conservarse conforme a las disposiciones fiscales aplicables; descarga o guarda una copia antes de continuar.</p>
+    <label for="delConfirm">Escribe <b>ELIMINAR</b> para confirmar</label>
+    <input id="delConfirm" autocomplete="off" placeholder="ELIMINAR">
+    <div class="actions"><button class="btn danger-solid sm" id="bDelOk" type="button" disabled>Eliminar definitivamente</button><button class="btn ghost sm" type="button" data-close>Cancelar</button></div>
+  </div>
+</dialog>
+
+<div class="celebrate" id="celebrate" aria-hidden="true"><div class="stamp-pop">TIMBRADA</div></div>
+<button class="totop" id="toTop" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <script src="script.js"></script>
 </body>
 </html>
