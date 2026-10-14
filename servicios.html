@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wocky · Páginas web hechas por personas</title>
+<meta name="description" content="Diseño y mejora de páginas web para negocios en México. Trato humano, precios claros y sin letra chiquita.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14142b;--muted:#5b5b78;--line:#e7e7f3;--brand:#6c5cff;--teal:#00c2a8;--bg:#fff;--soft:#f6f5ff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#f1f1fb;--muted:#a9a9c6;--line:#2a2a4a;--bg:#12122a;--soft:#1a1a38}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:400 1rem/1.6 Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+h1,h2,h3{line-height:1.15;letter-spacing:-.03em;margin:0}
+.hero{padding:72px 0 48px;text-align:center}
+.tag{display:inline-block;background:var(--soft);color:var(--brand);font-weight:600;font-size:.85rem;padding:6px 14px;border-radius:99px}
+h1{font-size:clamp(2.1rem,6vw,3.6rem);font-weight:800;margin:18px auto 14px;max-width:16ch}
+h1 span{background:linear-gradient(135deg,var(--brand),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);max-width:56ch;margin:0 auto 26px;font-size:1.1rem}
+.btn{display:inline-block;background:linear-gradient(135deg,var(--brand),var(--teal));color:#fff;text-decoration:none;font-weight:600;padding:14px 26px;border-radius:14px;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(108,92,255,.3)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+section{padding:48px 0}
+h2{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:8px}
+.sub{text-align:center;color:var(--muted);margin:0 auto 32px;max-width:52ch}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{border:1px solid var(--line);border-radius:20px;padding:24px;background:var(--bg)}
+.card h3{font-size:1.15rem;margin-bottom:6px}.card p{color:var(--muted);margin:0}
+.price{border:1px solid var(--line);border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.price.pop{border:2px solid var(--brand);box-shadow:0 18px 44px rgba(108,92,255,.15);position:relative}
+.price.pop::before{content:"Más pedido";position:absolute;top:-13px;left:24px;background:var(--brand);color:#fff;font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:99px}
+.price b{font-size:1.9rem;letter-spacing:-.03em;white-space:nowrap}.price small{color:var(--muted);font-weight:400;font-size:.9rem}
+.price ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;flex:1}
+.price li::before{content:"✓ ";color:var(--teal);font-weight:800}
+.steps{counter-reset:s;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.steps div{background:var(--soft);border-radius:18px;padding:22px}
+.steps div::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;margin-bottom:10px}
+.cta{background:linear-gradient(135deg,#6c5cff,#00c2a8);color:#fff;border-radius:28px;padding:44px 24px;text-align:center;margin:20px 0 60px}
+.cta h2{color:#fff}.cta p{margin:8px auto 22px;max-width:46ch;opacity:.95}
+.cta .btn{background:#fff;color:#14142b}
+.note{color:var(--muted);font-size:.85rem;text-align:center;margin-top:14px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 0 40px}
+.reveal{animation:up .6s cubic-bezier(.2,.8,.2,1) both}@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero reveal">
+  <span class="tag">🔔 Diseño web hecho por personas</span>
+  <h1>Tu negocio, con una página que <span>se siente tuya</span></h1>
+  <p class="lead">Creo y mejoro páginas web claras, bonitas y rápidas. Platicamos sin tecnicismos, sabes en qué va tu proyecto y siempre hay alguien que te responde.</p>
+  <a class="btn" href="#contacto">Quiero mi página</a> <a class="btn ghost" href="#precios">Ver precios</a>
+</header>
+
+<section aria-labelledby="t1">
+  <h2 id="t1">Por qué trabajar conmigo</h2>
+  <p class="sub">Una página web no es solo diseño: es lo que hace que un cliente nuevo confíe en ti.</p>
+  <div class="grid">
+    <div class="card"><h3>💬 Trato humano</h3><p>Hablas con la persona que hace tu página, no con un robot ni un ticket.</p></div>
+    <div class="card"><h3>🧾 Precios claros</h3><p>Sabes cuánto cuesta desde el inicio. Sin cargos escondidos ni letra chiquita.</p></div>
+    <div class="card"><h3>📱 Se ve bien en el celular</h3><p>Tus clientes te ven desde el teléfono; tu página está pensada para eso.</p></div>
+    <div class="card"><h3>🚀 Hecha para que te escriban</h3><p>Botones de WhatsApp, formularios y textos pensados para convertir visitas en clientes.</p></div>
+  </div>
+</section>
+
+<section id="precios" aria-labelledby="t2">
+  <h2 id="t2">Cuánto cuesta</h2>
+  <p class="sub">Precios en pesos mexicanos. Pago en dos partes: la mitad para empezar y la mitad al entregar.</p>
+  <div class="grid">
+    <article class="price">
+      <h3>Mejora de tu página</h3><b>Desde $2,000 <small>MXN</small></b>
+      <ul><li>Revisión de tu página actual</li><li>Diseño más limpio y moderno</li><li>Optimización para celular</li><li>Mejoras de velocidad</li></ul>
+      <a class="btn ghost" href="#contacto">Pedir revisión</a>
+    </article>
+    <article class="price pop">
+      <h3>Página de presentación</h3><b>$4,500 <small>MXN</small></b>
+      <ul><li>Una página completa (inicio, servicios, contacto)</li><li>Diseño a tu medida</li><li>Botón de WhatsApp y mapa</li><li>Entrega en 7 a 10 días</li></ul>
+      <a class="btn" href="#contacto">Lo quiero</a>
+    </article>
+    <article class="price">
+      <h3>Sitio completo</h3><b>$8,500 <small>MXN</small></b>
+      <ul><li>Hasta 5 secciones</li><li>Galería, blog o catálogo</li><li>Formulario de contacto</li><li>Aparece mejor en Google</li></ul>
+      <a class="btn ghost" href="#contacto">Cotizar</a>
+    </article>
+    <article class="price">
+      <h3>Tienda o sistema</h3><b>Desde $15,000 <small>MXN</small></b>
+      <ul><li>Tienda en línea o app a medida</li><li>Cuentas de usuario, pagos o citas</li><li>Cotización según tu proyecto</li></ul>
+      <a class="btn ghost" href="#contacto">Platicar mi idea</a>
+    </article>
+  </div>
+  <p class="note">Mantenimiento opcional: $500 MXN al mes (cambios de texto, respaldos y soporte). El dominio y el hosting se pagan aparte, al costo.</p>
+</section>
+
+<section aria-labelledby="t3">
+  <h2 id="t3">Así trabajamos</h2>
+  <p class="sub">Cuatro pasos sencillos, sin sorpresas.</p>
+  <div class="steps">
+    <div><b>Platicamos</b><br>Me cuentas de tu negocio y qué quieres lograr. Es gratis y sin compromiso.</div>
+    <div><b>Te propongo</b><br>Recibes una propuesta con precio y fechas. Tú decides.</div>
+    <div><b>La construyo</b><br>Te voy mostrando avances para que opines en el camino.</div>
+    <div><b>La publicamos</b><br>La dejo en línea, te enseño a usarla y sigo disponible.</div>
+  </div>
+</section>
+
+<section id="contacto" class="cta" aria-labelledby="t4">
+  <h2 id="t4">¿Platicamos de tu página?</h2>
+  <p>Escríbeme y te respondo personalmente. La primera consulta no cuesta nada.</p>
+  <a class="btn" href="mailto:TU-CORREO@ejemplo.com?subject=Quiero%20una%20p%C3%A1gina%20web">Escríbeme por correo</a>
+</section>
+</main>
+<footer>© 2026 Wocky · Diseño web con trato humano</footer>
+</body>
+</html>
